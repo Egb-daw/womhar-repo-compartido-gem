@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.rack.report.pageTitle})}"></th:block>
+</head>
+
+<body class="womhat-report-page">
+<div class="report-toolbar report-print-hide">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <a th:href="@{/racks/detail(id=${rack.id})}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            <span th:text="#{msg.rack.report.action.backDetail}">Volver al rack</span>
+        </a>
+    </div>
+
+    <button type="button" class="btn btn-primary" data-print-report>
+        <i class="bi bi-printer me-1"></i>
+        <span th:text="#{msg.rack.report.action.print}">Imprimir / Guardar PDF</span>
+    </button>
+</div>
+
+<main class="report-shell">
+    <article class="report-sheet">
+        <header class="report-sheet__header">
+            <div class="report-sheet__copy">
+                <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                <h1 class="report-sheet__title" th:text="#{msg.rack.report.title}">
+                    Reporte del rack
+                </h1>
+
+                <p class="report-sheet__subtitle" th:text="#{msg.rack.report.subtitle}">
+                    Documento técnico imprimible con ocupación, ubicación y equipos instalados.
+                </p>
+
+                <ul class="report-context-list">
+                    <li>
+                        <i class="bi bi-building"></i>
+                        <span class="fw-semibold" th:text="#{msg.rack.field.dataCenter}">CPD</span>
+                        <span class="text-muted">·</span>
+                        <span th:text="${(rack.dataCenterCode != null and !#strings.isEmpty(rack.dataCenterCode) ? rack.dataCenterCode : '-') + ((rack.dataCenterName != null and !#strings.isEmpty(rack.dataCenterName)) ? ' · ' + rack.dataCenterName : '')}">
+                            CPD-SEV-01 · Principal
+                        </span>
+                    </li>
+                    <li>
+                        <i class="bi bi-door-open"></i>
+                        <span class="fw-semibold" th:text="#{msg.rack.field.room}">Sala</span>
+                        <span class="text-muted">·</span>
+                        <span th:text="${rack.roomName != null and !#strings.isEmpty(rack.roomName) ? rack.roomName : '-'}">
+                            Sala A
+                        </span>
+                    </li>
+                    <li>
+                        <i class="bi bi-layers"></i>
+                        <span class="fw-semibold" th:text="#{msg.rack.field.floor}">Planta</span>
+                        <span class="text-muted">·</span>
+                        <span th:text="${rack.floor != null and !#strings.isEmpty(rack.floor) ? rack.floor : '-'}">
+                            PB
+                        </span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="report-sheet__meta">
+                <span class="report-sheet__meta-label" th:text="#{msg.rack.field.locationLabel}">
+                    Etiqueta
+                </span>
+                <strong class="report-sheet__meta-value" th:text="${rack.locationLabel}">
+                    Rack A01
+                </strong>
+                <span class="report-sheet__meta-copy">
+                    <span th:text="#{msg.rack.report.generatedAt}">Generado el</span>
+                    <span th:text="${generatedAt != null ? #temporals.format(generatedAt, 'dd/MM/yyyy HH:mm') : '-'}">
+                        14/04/2026 18:00
+                    </span>
+                </span>
+            </div>
+        </header>
+
+        <section class="technical-quick-grid report-summary-grid">
+            <article class="technical-quick-card">
+                <span class="technical-quick-card__label" th:text="#{msg.rack.field.capacityU}">
+                    Capacidad
+                </span>
+                <strong class="technical-quick-card__value"
+                        th:text="${rack.capacityU != null ? rack.capacityU + 'U' : '-'}">
+                    42U
+                </strong>
+                <span class="technical-quick-card__meta"
+                      th:text="${rack.dimension != null and !#strings.isEmpty(rack.dimension) ? rack.dimension : '-'}">
+                    600x1000
+                </span>
+            </article>
+
+            <article class="technical-quick-card">
+                <span class="technical-quick-card__label" th:text="#{msg.rack.detail.field.occupancyPercent}">
+                    Ocupación
+                </span>
+                <strong class="technical-quick-card__value"
+                        th:text="${rack.occupancyPercent != null ? rack.occupancyPercent + '%' : '0%'}">
+                    0%
+                </strong>
+                <span class="technical-quick-card__meta"
+                      th:text="${(rack.occupiedU != null ? rack.occupiedU : 0) + 'U / ' + (rack.capacityU != null ? rack.capacityU : 0) + 'U'}">
+                    0U / 42U
+                </span>
+                <div class="technical-meter" aria-hidden="true">
+                    <span class="technical-meter__fill"
+                          th:style="'width:' + (rack.occupancyPercent != null ? rack.occupancyPercent : 0) + '%'"></span>
+                </div>
+            </article>
+
+            <article class="technical-quick-card">
+                <span class="technical-quick-card__label" th:text="#{msg.rack.field.equipmentCount}">
+                    Equipos
+                </span>
+                <strong class="technical-quick-card__value"
+                        th:text="${rack.equipmentCount != null ? rack.equipmentCount : 0}">
+                    0
+                </strong>
+                <span class="technical-quick-card__meta"
+                      th:text="${rack.groupName != null and !#strings.isEmpty(rack.groupName) ? rack.groupName : '-'}">
+                    Core
+                </span>
+            </article>
+
+            <article class="technical-quick-card">
+                <span class="technical-quick-card__label" th:text="#{msg.rack.field.status}">
+                    Estado
+                </span>
+                <strong class="technical-quick-card__value"
+                        th:text="${rack.status != null ? rackStatusLabels.get(rack.status) : '-'}">
+                    ACTIVE
+                </strong>
+                <span class="technical-quick-card__meta"
+                      th:text="${rack.functionName != null and !#strings.isEmpty(rack.functionName) ? rack.functionName : '-'}">
+                    Producción
+                </span>
+            </article>
+        </section>
+
+        <section class="report-section">
+            <div class="report-section__head">
+                <div>
+                    <h2 class="report-section__title" th:text="#{msg.rack.report.section.summary}">
+                        Resumen técnico
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Resumen imprimible de ubicación/capacidad para revisión técnica en sala. -->
+            <div class="report-data-grid">
+                <section class="report-block">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle technical-data-table mb-0">
+                            <tbody>
+                            <tr><th th:text="#{msg.rack.detail.field.id}">ID</th><td th:text="${rack.id}">1</td></tr>
+                            <tr><th th:text="#{msg.rack.field.locationLabel}">Etiqueta</th><td th:text="${rack.locationLabel != null and !#strings.isEmpty(rack.locationLabel) ? rack.locationLabel : '-'}">A01</td></tr>
+                            <tr><th th:text="#{msg.rack.field.room}">Sala</th><td th:text="${rack.roomName != null and !#strings.isEmpty(rack.roomName) ? rack.roomName : '-'}">Sala A</td></tr>
+                            <tr><th th:text="#{msg.rack.field.floor}">Planta</th><td th:text="${rack.floor != null and !#strings.isEmpty(rack.floor) ? rack.floor : '-'}">PB</td></tr>
+                            <tr><th th:text="#{msg.rack.field.position}">Posición</th><td th:text="${(rack.positionX != null ? rack.positionX : 0) + ', ' + (rack.positionY != null ? rack.positionY : 0)}">0, 0</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="report-block">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle technical-data-table mb-0">
+                            <tbody>
+                            <tr><th th:text="#{msg.rack.field.capacityU}">Capacidad U</th><td th:text="${rack.capacityU != null ? rack.capacityU + 'U' : '-'}">42U</td></tr>
+                            <tr><th th:text="#{msg.rack.field.functionName}">Función</th><td th:text="${rack.functionName != null and !#strings.isEmpty(rack.functionName) ? rack.functionName : '-'}">Producción</td></tr>
+                            <tr><th th:text="#{msg.rack.field.groupName}">Grupo</th><td th:text="${rack.groupName != null and !#strings.isEmpty(rack.groupName) ? rack.groupName : '-'}">Core</td></tr>
+                            <tr><th th:text="#{msg.rack.field.dimension}">Dimensión</th><td th:text="${rack.dimension != null and !#strings.isEmpty(rack.dimension) ? rack.dimension : '-'}">600x1000</td></tr>
+                            <tr><th th:text="#{msg.rack.field.status}">Estado</th><td><span class="technical-chip" th:text="${rack.status != null ? rackStatusLabels.get(rack.status) : '-'}">ACTIVE</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <section class="report-section">
+            <div class="report-section__head">
+                <div>
+                    <h2 class="report-section__title" th:text="#{msg.rack.report.section.inventory}">
+                        Inventario instalado
+                    </h2>
+                </div>
+
+                <span class="technical-counter"
+                      th:text="${rack.equipments != null ? #lists.size(rack.equipments) : 0}">
+                    0
+                </span>
+            </div>
+
+            <!-- Inventario operativo del rack para auditoría y documentación de campo. -->
+            <div class="report-table-shell table-responsive"
+                 th:if="${rack.equipments != null and !#lists.isEmpty(rack.equipments)}">
+                <table class="table report-list-table align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th th:text="#{msg.equipment.field.name}">Nombre</th>
+                        <th th:text="#{msg.equipment.field.type}">Tipo</th>
+                        <th th:text="#{msg.equipment.field.serialNumber}">Serie</th>
+                        <th th:text="#{msg.equipment.field.slotPositionU}">U inicio</th>
+                        <th th:text="#{msg.equipment.field.slotHeightU}">Altura</th>
+                        <th th:text="#{msg.equipment.field.status}">Estado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="equipment : ${rack.equipments}">
+                        <td th:text="${equipment.name != null and !#strings.isEmpty(equipment.name) ? equipment.name : '-'}">Host-01</td>
+                        <td><span class="technical-chip" th:text="${equipment.type != null ? equipment.type : '-'}">SERVER</span></td>
+                        <td th:text="${equipment.serialNumber != null and !#strings.isEmpty(equipment.serialNumber) ? equipment.serialNumber : '-'}">SN-001</td>
+                        <td th:text="${equipment.slotPositionU != null ? equipment.slotPositionU : '-'}">1</td>
+                        <td th:text="${equipment.slotHeightU != null ? equipment.slotHeightU + 'U' : '-'}">2U</td>
+                        <td><span class="technical-chip" th:text="${equipment.status != null ? equipmentStatusLabels.get(equipment.status) : '-'}">ACTIVE</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state"
+                 th:if="${rack.equipments == null or #lists.isEmpty(rack.equipments)}">
+                <i class="bi bi-router fs-2 d-block mb-2"></i>
+                <strong class="d-block mb-2" th:text="#{msg.rack.report.empty.subtitle}">
+                    Inventario del rack
+                </strong>
+                <span th:text="#{msg.rack.report.empty}">
+                    No hay equipos instalados en este rack en el momento de generar el reporte.
+                </span>
+            </div>
+        </section>
+
+        <footer class="report-footer">
+            <p class="report-footer__copy mb-1" th:text="#{msg.rack.report.footer}">
+                Reporte generado desde WoMHAT a partir del estado actual del rack.
+            </p>
+            <p class="report-footer__meta mb-0">
+                <span th:text="#{msg.rack.report.generatedAt}">Generado el</span>
+                <span th:text="${generatedAt != null ? #temporals.format(generatedAt, 'dd/MM/yyyy HH:mm') : '-'}">
+                    14/04/2026 18:00
+                </span>
+            </p>
+        </footer>
+    </article>
+</main>
+
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

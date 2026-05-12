@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="es"
+      th:lang="${#locale.language}"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT · ' + #{msg.public.register.pageTitle})}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body page-auth page-auth-register">
+
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="auth womhat-main flex-grow-1">
+    <section class="auth-panel auth-panel--brand">
+        <div class="auth-brand-card">
+            <div class="auth-brand-card__logo">
+                <span class="auth-brand-card__logo-badge">
+                    <img th:src="@{/assets/images/Logo1.svg}" alt="WoMHAT">
+                </span>
+                <span class="auth-brand-card__wordmark">WoMHAT</span>
+            </div>
+
+            <h2 class="auth-brand-card__title" th:text="#{msg.public.register.welcome.title}">¿Ya tienes cuenta?</h2>
+
+            <p class="auth-brand-card__text" th:text="#{msg.public.register.welcome.text}">
+                Accede a tu panel para continuar gestionando tu infraestructura.
+            </p>
+
+            <div class="auth-brand-card__metrics">
+                <div class="auth-brand-card__metric">
+                    <i class="bi bi-grid-1x2" aria-hidden="true"></i>
+                    <div>
+                        <strong th:text="#{msg.sidebar.catalog}">Catálogo</strong>
+                        <span th:text="#{msg.public.register.intro}">Crea tu cuenta para acceder al panel, al catálogo interno y al seguimiento de tus pedidos.</span>
+                    </div>
+                </div>
+
+                <div class="auth-brand-card__metric">
+                    <i class="bi bi-receipt" aria-hidden="true"></i>
+                    <div>
+                        <strong th:text="#{msg.sidebar.orders}">Mis pedidos</strong>
+                        <span th:text="#{msg.public.register.intro}">Crea tu cuenta para acceder al panel, al catálogo interno y al seguimiento de tus pedidos.</span>
+                    </div>
+                </div>
+            </div>
+
+            <a class="btn btn-light auth-brand-card__cta"
+               th:href="@{/login}"
+               th:text="#{msg.public.register.login}">
+                INICIAR SESIÓN
+            </a>
+        </div>
+    </section>
+
+    <section class="auth-panel auth-panel--form">
+        <div class="auth-card">
+
+            <h1 class="auth-title" th:text="#{msg.public.register.title}">Crear cuenta</h1>
+            <p class="auth-intro" th:text="#{msg.public.register.intro}">
+                Crea tu cuenta para acceder al panel, al catálogo interno y al seguimiento de tus pedidos.
+            </p>
+
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+            <form class="auth-form" method="post" th:action="@{/register}" th:object="${registerForm}" data-womhat-validate="true" data-disable-on-submit="true">
+                <div class="alert alert-danger"
+                     th:if="${#fields.hasAnyErrors()}"
+                     th:text="#{msg.form.validation.review}">
+                    Revisa los campos marcados antes de continuar.
+                </div>
+
+                <div class="auth-field">
+                    <label class="form-label" for="regUser" th:text="#{msg.public.register.username}">Usuario</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person" aria-hidden="true"></i></span>
+                        <input autocomplete="username"
+                               class="form-control"
+                               id="regUser"
+                               required
+                               maxlength="60"
+                               type="text"
+                               th:field="*{username}"
+                               th:placeholder="#{msg.public.register.username.placeholder}"
+                               th:classappend="${#fields.hasErrors('username')} ? ' is-invalid' : ''"
+                               th:attr="aria-invalid=${#fields.hasErrors('username')} ? 'true' : null, aria-describedby=${#fields.hasErrors('username')} ? 'regUserError' : null">
+                    </div>
+                    <div class="invalid-feedback d-block" id="regUserError" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+
+                <div class="auth-field">
+                    <label class="form-label" for="regEmail" th:text="#{msg.public.register.email}">Correo electrónico</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+                        <input autocomplete="email"
+                               class="form-control"
+                               id="regEmail"
+                               required
+                               maxlength="100"
+                               type="email"
+                               th:field="*{email}"
+                               th:placeholder="#{msg.public.register.email.placeholder}"
+                               th:classappend="${#fields.hasErrors('email')} ? ' is-invalid' : ''"
+                               th:attr="aria-invalid=${#fields.hasErrors('email')} ? 'true' : null, aria-describedby=${#fields.hasErrors('email')} ? 'regEmailError' : null">
+                    </div>
+                    <div class="invalid-feedback d-block" id="regEmailError" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="auth-field">
+                    <label class="form-label" for="regPass" th:text="#{msg.public.register.password}">Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock" aria-hidden="true"></i></span>
+                        <input autocomplete="new-password"
+                               class="form-control"
+                               id="regPass"
+                               required
+                               minlength="8"
+                               maxlength="72"
+                               type="password"
+                               th:field="*{password}"
+                               th:placeholder="#{msg.public.register.password.placeholder}"
+                               th:classappend="${#fields.hasErrors('password')} ? ' is-invalid' : ''"
+                               th:attr="aria-invalid=${#fields.hasErrors('password')} ? 'true' : null, aria-describedby=${#fields.hasErrors('password')} ? 'regPassError' : null">
+                        <button class="btn auth-password-toggle"
+                                type="button"
+                                data-password-toggle="regPass"
+                                th:aria-label="#{msg.public.password.toggle}"
+                                aria-label="Mostrar u ocultar contraseña">
+                            <i class="bi bi-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback d-block" id="regPassError" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <div class="auth-field">
+                    <label class="form-label" for="confirmPassword" th:text="#{msg.public.register.confirmPassword}">
+                        Confirmar contraseña
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-shield-lock" aria-hidden="true"></i></span>
+                        <input autocomplete="new-password"
+                               class="form-control"
+                               id="confirmPassword"
+                               required
+                               minlength="8"
+                               maxlength="72"
+                               type="password"
+                               th:field="*{confirmPassword}"
+                               th:placeholder="#{msg.public.register.confirmPassword.placeholder}"
+                               th:classappend="${#fields.hasErrors('confirmPassword')} ? ' is-invalid' : ''"
+                               th:attr="aria-invalid=${#fields.hasErrors('confirmPassword')} ? 'true' : null, aria-describedby=${#fields.hasErrors('confirmPassword')} ? 'confirmPasswordError' : null">
+                        <button class="btn auth-password-toggle"
+                                type="button"
+                                data-password-toggle="confirmPassword"
+                                th:aria-label="#{msg.public.password.toggle}"
+                                aria-label="Mostrar u ocultar contraseña">
+                            <i class="bi bi-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback d-block"
+                         id="confirmPasswordError"
+                         th:if="${#fields.hasErrors('confirmPassword')}"
+                         th:errors="*{confirmPassword}"></div>
+                </div>
+
+                <button class="btn womhat-auth-btn" type="submit" th:text="#{msg.public.register.submit}">
+                    REGISTRARME
+                </button>
+
+                <div class="auth-sep" aria-hidden="true">
+                    <span th:text="#{msg.public.login.separator}">o</span>
+                </div>
+
+                <div class="auth-socials" th:attr="aria-label=#{msg.public.oauth.group}">
+                    <a class="auth-social"
+                       th:href="@{/oauth2/authorization/github}"
+                       th:aria-label="#{msg.public.oauth.github}">
+                        <img th:src="@{/assets/images/GitHub.svg}"
+                             th:alt="#{msg.public.oauth.github}"
+                             width="28">
+                    </a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+
+</body>
+</html>

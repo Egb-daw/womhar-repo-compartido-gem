@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.rack.list.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-user-page"
+      th:classappend="${adminAccess} ? ' womhat-private-page' : ''">
+<header th:replace="~{fragments/header :: header(${!adminAccess})}"></header>
+
+<main th:class="${adminAccess} ? 'dashboard-layout womhat-main flex-grow-1' : 'womhat-main flex-grow-1'">
+    <aside th:if="${adminAccess}" class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section th:class="${adminAccess} ? 'dashboard-content' : 'py-4 py-lg-5'">
+        <div th:class="${adminAccess} ? 'container-fluid px-4 rack-list-view' : 'container rack-list-view'">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(true)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3"
+                                  th:text="${adminAccess} ? #{msg.rack.list.kicker.admin} : #{msg.rack.list.kicker.user}">RACKS</span>
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2"
+                                        th:text="${adminAccess} ? #{msg.rack.list.title.admin} : #{msg.rack.list.title.user}">Racks</h1>
+                                    <p class="technical-hero__subtitle mb-0"
+                                       th:text="${adminAccess} ? #{msg.rack.list.subtitle.admin} : #{msg.rack.list.subtitle.user}">
+                                        Listado general de racks del CPD.
+                                    </p>
+                                </div>
+                                <div class="technical-hero__actions">
+                                    <a th:if="${adminAccess}" th:href="@{/racks/new}" class="btn btn-success">
+                                        <i class="bi bi-plus-lg me-1"></i><span th:text="#{msg.rack.list.action.new}">Nuevo rack</span>
+                                    </a>
+                                    <a th:if="${!adminAccess}" th:href="@{/catalog}" class="btn btn-outline-primary">
+                                        <i class="bi bi-shop me-1"></i><span th:text="#{msg.sidebar.catalog}">Catálogo interno</span>
+                                    </a>
+                                    <a th:if="${!adminAccess}" th:href="@{/dashboard}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i><span th:text="#{msg.catalog.list.action.dashboard}">Mi panel</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <ul class="womhat-tech-meta technical-hero__meta" th:if="${page != null}">
+                                <li><i class="bi bi-hdd-rack"></i><span class="fw-semibold" th:text="#{msg.list.metric.total}">Total</span><span class="text-muted">·</span><span th:text="${page.totalElements}">0</span></li>
+                                <li><i class="bi bi-arrow-left-right"></i><span class="fw-semibold" th:text="#{msg.list.meta.sort}">Orden</span><span class="text-muted">·</span><span th:text="#{msg.rack.list.sort.default}">Ubicación: A-Z</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="technical-quick-grid" th:if="${page != null}">
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.list.metric.visible}">Racks visibles</span>
+                            <strong class="technical-quick-card__value" th:text="${page.totalElements}">0</strong>
+                            <span class="technical-quick-card__meta"
+                                  th:text="${adminAccess} ? #{msg.rack.list.metric.visible.admin} : #{msg.rack.list.metric.visible.user}">Cobertura</span>
+                        </article>
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.list.metric.currentPage}">Página actual</span>
+                            <strong class="technical-quick-card__value" th:text="${page.number + 1}">1</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.rack.list.metric.currentPage.meta(${page.totalPages})}">de 1 páginas</span>
+                        </article>
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.list.metric.pageSize}">Tamaño de página</span>
+                            <strong class="technical-quick-card__value" th:text="${page.size}">10</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.list.metric.pageSizeValue}">Registros por página</span>
+                        </article>
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.common.actions}">Acciones</span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${adminAccess} ? #{msg.list.access.admin} : #{msg.list.access.user}">Lectura</strong>
+                            <span class="technical-quick-card__meta"
+                                  th:text="${adminAccess} ? #{msg.rack.list.metric.access.adminMeta} : #{msg.rack.list.metric.access.userMeta}">Detalle</span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div><h2 class="technical-card__title mb-0" th:text="${adminAccess} ? #{msg.rack.list.section.admin} : #{msg.rack.list.section.user}">Racks</h2></div>
+                        <span class="technical-counter" th:text="${page != null ? page.totalElements : 0}">0</span>
+                    </div>
+
+                    <div class="crud-toolbar" th:if="${page != null}">
+                        <div class="small text-muted">
+                            <span th:text="#{msg.pagination.info(${page.number + 1}, ${page.totalPages}, ${page.totalElements})}">Página 1 de 1 (0 registros en total)</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive technical-table-shell" th:if="${page != null and !#lists.isEmpty(page.content)}">
+                        <table class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="table-dark">
+                            <tr>
+                                <th th:text="#{msg.rack.field.locationLabel}">Etiqueta</th>
+                                <th th:text="#{msg.rack.field.room}">Sala</th>
+                                <th th:text="#{msg.rack.field.capacityU}">Capacidad</th>
+                                <th th:text="#{msg.rack.field.functionName}">Función</th>
+                                <th th:text="#{msg.rack.field.groupName}">Grupo</th>
+                                <th th:text="#{msg.rack.field.status}">Estado</th>
+                                <th th:text="#{msg.rack.field.equipmentCount}">Equipos</th>
+                                <th th:if="${adminAccess}" th:text="#{msg.rack.list.table.catalog}">Catálogo</th>
+                                <th th:text="#{msg.common.actions}">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="rack : ${page.content}">
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <span class="fw-semibold" th:text="${!adminAccess ? (rack.catalogDisplayName != null and !#strings.isEmpty(rack.catalogDisplayName) ? rack.catalogDisplayName : (rack.locationLabel != null and !#strings.isEmpty(rack.locationLabel) ? rack.locationLabel : '-')) : (rack.locationLabel != null and !#strings.isEmpty(rack.locationLabel) ? rack.locationLabel : '-')}">Rack Red 42U</span>
+                                        <small class="text-muted" th:text="${(rack.locationLabel != null and !#strings.isEmpty(rack.locationLabel) ? rack.locationLabel : '-') + ((rack.dimension != null and !#strings.isEmpty(rack.dimension)) ? ' · ' + rack.dimension : '')}">RACK-01 · 600x1000</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <span th:text="${rack.roomName != null and !#strings.isEmpty(rack.roomName) ? rack.roomName : '-'}">Sala A</span>
+                                        <small class="text-muted" th:text="${rack.dataCenterCode != null and !#strings.isEmpty(rack.dataCenterCode) ? rack.dataCenterCode : '-'}">CPD-SEV-01</small>
+                                    </div>
+                                </td>
+                                <td th:text="${rack.capacityU != null ? rack.capacityU + 'U' : '-'}">42U</td>
+                                <td th:text="${rack.functionName != null and !#strings.isEmpty(rack.functionName) ? rack.functionName : '-'}">Producción</td>
+                                <td th:text="${rack.groupName != null and !#strings.isEmpty(rack.groupName) ? rack.groupName : '-'}">Core</td>
+                                <td>
+                                    <span class="technical-chip"
+                                          th:text="${rack.status != null and rack.status.name() == 'ACTIVE'} ? #{msg.rack.status.active} : (${rack.status != null and rack.status.name() == 'MAINTENANCE'} ? #{msg.rack.status.maintenance} : (${rack.status != null and rack.status.name() == 'INACTIVE'} ? #{msg.rack.status.inactive} : '-'))">ACTIVE</span>
+                                </td>
+                                <td><span class="technical-chip" th:text="${rack.equipmentCount != null ? rack.equipmentCount : 0}">0</span></td>
+                                <td th:if="${adminAccess}">
+                                    <span class="badge"
+                                          th:classappend="${rack.catalogVisible} ? ' text-bg-success' : ' text-bg-secondary'"
+                                          th:text="${rack.catalogVisible} ? #{msg.rack.list.catalog.visible} : #{msg.rack.list.catalog.hidden}">Publicado</span>
+                                </td>
+                                <td class="text-nowrap">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a th:href="@{/racks/detail(id=${rack.id})}" class="btn btn-outline-secondary btn-sm" th:text="#{msg.common.detail}">Detalle</a>
+                                        <a th:if="${adminAccess}" th:href="@{/racks/edit(id=${rack.id})}" class="btn btn-primary btn-sm" th:text="#{msg.common.edit}">Editar</a>
+                                        <form th:if="${adminAccess}" th:action="@{/racks/delete}" method="post" class="d-inline">
+                                            <input type="hidden" name="id" th:value="${rack.id}"/>
+                                            <button type="submit" class="btn btn-danger btn-sm" th:text="#{msg.common.delete}">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="empty-state" th:if="${page == null or #lists.isEmpty(page.content)}">
+                        <i class="bi bi-hdd-rack fs-2 d-block mb-2"></i>
+                        <span th:text="${adminAccess} ? #{msg.rack.list.empty} : #{msg.rack.list.empty.user}">No hay racks registrados.</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center p-3" th:if="${page != null and page.totalPages > 1}">
+                        <div class="small text-muted">
+                            <span th:text="#{msg.pagination.info(${page.number + 1}, ${page.totalPages}, ${page.totalElements})}">Página 1 de 1 (0 registros en total)</span>
+                        </div>
+                        <nav th:attr="aria-label=#{msg.pagination.aria.label}">
+                            <ul class="pagination mb-0">
+                                <li class="page-item" th:classappend="${page.first} ? ' disabled'">
+                                    <a class="page-link" th:href="@{/racks(page=${page.number - 1}, size=${page.size}, sort=${sortParam})}" th:text="#{msg.pagination.prev}">Anterior</a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? ' active'">
+                                    <a class="page-link" th:text="${i + 1}" th:href="@{/racks(page=${i}, size=${page.size}, sort=${sortParam})}">1</a>
+                                </li>
+                                <li class="page-item" th:classappend="${page.last} ? ' disabled'">
+                                    <a class="page-link" th:href="@{/racks(page=${page.number + 1}, size=${page.size}, sort=${sortParam})}" th:text="#{msg.pagination.next}">Siguiente</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
