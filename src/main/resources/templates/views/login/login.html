@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es"
+      th:lang="${#locale.language}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT · ' + #{msg.public.login.pageTitle})}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body page-auth page-auth-login">
+
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="auth womhat-main flex-grow-1">
+    <section class="auth-panel auth-panel--brand">
+        <div class="auth-brand-card">
+            <div class="auth-brand-card__logo">
+                <span class="auth-brand-card__logo-badge">
+                    <img th:src="@{/assets/images/Logo1.svg}" alt="WoMHAT">
+                </span>
+                <span class="auth-brand-card__wordmark">WoMHAT</span>
+            </div>
+
+            <h2 class="auth-brand-card__title" th:text="#{msg.public.login.welcome.title}">¡Bienvenido!</h2>
+
+            <p class="auth-brand-card__text" th:text="#{msg.public.login.welcome.text}">
+                Gestión visual y documentación técnica de infraestructuras de CPD.
+            </p>
+
+            <div class="auth-brand-card__metrics">
+                <div class="auth-brand-card__metric">
+                    <i class="bi bi-hdd-rack" aria-hidden="true"></i>
+                    <div>
+                        <strong th:text="#{msg.sidebar.racks}">Racks</strong>
+                        <span th:text="#{heroSubtitle}">Gestión visual y documentación técnica de infraestructuras de CPD.</span>
+                    </div>
+                </div>
+
+                <div class="auth-brand-card__metric">
+                    <i class="bi bi-router" aria-hidden="true"></i>
+                    <div>
+                        <strong th:text="#{msg.sidebar.equipment}">Equipos</strong>
+                        <span th:text="#{cardControlText}">Estandariza el inventario del CPD.</span>
+                    </div>
+                </div>
+
+                <div class="auth-brand-card__metric">
+                    <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                    <div>
+                        <strong th:text="#{cardSecurity}">Seguridad</strong>
+                        <span th:text="#{cardSecurityText}">Permisos por rol y control de acceso.</span>
+                    </div>
+                </div>
+            </div>
+
+            <a class="btn btn-light auth-brand-card__cta"
+               th:href="@{/register}"
+               th:text="#{msg.public.login.register}">
+                REGISTRAR
+            </a>
+        </div>
+    </section>
+
+    <section class="auth-panel auth-panel--form">
+        <div class="auth-card">
+            <h1 class="auth-title" th:text="#{msg.public.login.title}">Iniciar sesión</h1>
+            <p class="auth-intro" th:text="#{heroSubtitle}">
+                Gestión visual y documentación técnica de infraestructuras de CPD.
+            </p>
+
+            <th:block th:replace="~{fragments/alerts :: flashMessages(true)}"></th:block>
+
+            <form class="auth-form" method="post" th:action="@{/login}" data-womhat-validate="true" data-disable-on-submit="true">
+
+                <div class="auth-field">
+                    <label class="form-label" for="loginUser" th:text="#{msg.public.login.email}">Correo electrónico</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+                        <input autocomplete="username"
+                               class="form-control"
+                               id="loginUser"
+                               name="username"
+                               required
+                               maxlength="100"
+                               type="email"
+                               th:placeholder="#{msg.public.login.email.placeholder}"
+                               th:classappend="${errorMessage != null} ? ' is-invalid' : ''"
+                               th:attr="aria-invalid=${errorMessage != null} ? 'true' : null, aria-describedby=${errorMessage != null} ? 'loginError' : null">
+                    </div>
+                </div>
+
+                <div class="auth-field">
+                    <div class="auth-actions">
+                        <label class="form-label mb-0" for="loginPass" th:text="#{msg.public.login.password}">Contraseña</label>
+                        <a class="auth-forgot"
+                           th:href="@{/auth/forgot-password}"
+                           th:text="#{msg.public.login.forgot}">
+                            ¿Has olvidado tu contraseña?
+                        </a>
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock" aria-hidden="true"></i></span>
+                        <input autocomplete="current-password"
+                               class="form-control"
+                               id="loginPass"
+                               name="password"
+                               required
+                               minlength="8"
+                               maxlength="72"
+                               type="password"
+                               th:placeholder="#{msg.public.login.password.placeholder}"
+                               th:classappend="${errorMessage != null} ? ' is-invalid' : ''"
+                               th:attr="aria-invalid=${errorMessage != null} ? 'true' : null, aria-describedby=${errorMessage != null} ? 'loginError' : null">
+                        <button class="btn auth-password-toggle"
+                                type="button"
+                                data-password-toggle="loginPass"
+                                th:aria-label="#{msg.public.password.toggle}"
+                                aria-label="Mostrar u ocultar contraseña">
+                            <i class="bi bi-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback d-block"
+                         id="loginError"
+                         th:if="${errorMessage != null}"
+                         th:text="${errorMessage}">
+                        Nombre de usuario o contraseña incorrectos.
+                    </div>
+                </div>
+
+                <button class="btn womhat-auth-btn" type="submit" th:text="#{msg.public.login.submit}">
+                    INICIAR SESIÓN
+                </button>
+
+                <div class="auth-sep" aria-hidden="true">
+                    <span th:text="#{msg.public.login.separator}">o</span>
+                </div>
+
+                <div class="auth-socials" th:attr="aria-label=#{msg.public.oauth.group}">
+                    <a class="auth-social"
+                       th:href="@{/oauth2/authorization/github}"
+                       th:aria-label="#{msg.public.oauth.github}">
+                        <img th:src="@{/assets/images/GitHub.svg}"
+                             th:alt="#{msg.public.oauth.github}"
+                             width="28">
+                    </a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es"
+      th:lang="${#locale.language}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT')}"></th:block>
+</head>
+
+<body class="womhat-body page-home page-public">
+
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="womhat-main">
+
+    <section class="home-hero home-hero--immersive" th:attr="aria-label=#{ariaHeroCarousel}">
+        <div id="homeHeroCarousel"
+             class="carousel slide home-hero__carousel-bg"
+             data-bs-ride="carousel"
+             data-bs-interval="4500">
+
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" th:attr="aria-label=#{ariaHeroCarousel}"></button>
+                <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="1" th:attr="aria-label=#{ariaHeroCarousel}"></button>
+                <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="2" th:attr="aria-label=#{ariaHeroCarousel}"></button>
+            </div>
+
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img th:src="@{/assets/images/hero-1.webp}" alt="" aria-hidden="true" loading="lazy" decoding="async">
+                </div>
+                <div class="carousel-item">
+                    <img th:src="@{/assets/images/hero-2.webp}" alt="" aria-hidden="true" loading="lazy" decoding="async">
+                </div>
+                <div class="carousel-item">
+                    <img th:src="@{/assets/images/hero-3.webp}" alt="" aria-hidden="true" loading="lazy" decoding="async">
+                </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden" th:text="#{msg.carousel.previous}">Anterior</span>
+            </button>
+
+            <button class="carousel-control-next" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden" th:text="#{msg.carousel.next}">Siguiente</span>
+            </button>
+        </div>
+
+        <div class="home-hero__overlay">
+            <div class="container">
+                <div class="home-hero__centerbox">
+                    <div class="home-hero__panel">
+                        <h1 class="home-hero__title">WoMHAT</h1>
+
+                        <p class="home-hero__subtitle" th:text="#{heroSubtitle}">
+                            Gestión visual y documentación técnica de infraestructuras de CPD.
+                        </p>
+
+                        <div class="home-hero__actions">
+                            <a class="btn btn-success"
+                               sec:authorize="!isAuthenticated()"
+                               th:href="@{/register}"
+                               th:text="#{heroCtaRegister}">
+                                Crear cuenta
+                            </a>
+
+                            <a class="btn btn-outline-light"
+                               sec:authorize="!isAuthenticated()"
+                               th:href="@{/login}"
+                               th:text="#{heroCtaSecondary}">
+                                Acceder
+                            </a>
+
+                            <a class="btn btn-success"
+                               sec:authorize="isAuthenticated()"
+                               th:href="@{/dashboard}"
+                               th:text="#{heroCtaDashboard}">
+                                Ir al dashboard
+                            </a>
+
+                            <a class="btn btn-outline-light"
+                               sec:authorize="isAuthenticated()"
+                               href="#services"
+                               th:text="#{heroCtaPrimary}">
+                                Ver cómo funciona
+                            </a>
+                        </div>
+
+                        <div class="home-hero__stats">
+                            <article class="home-stat">
+                                <span class="home-stat__label" th:text="#{cardSpeed}">VELOCIDAD</span>
+                                <span class="home-stat__value">01</span>
+                                <span class="home-stat__meta" th:text="#{cardSpeedText}">Documentación rápida y accesible.</span>
+                            </article>
+
+                            <article class="home-stat">
+                                <span class="home-stat__label" th:text="#{cardControl}">CONTROL</span>
+                                <span class="home-stat__value">02</span>
+                                <span class="home-stat__meta" th:text="#{cardControlText}">Estandariza el inventario del CPD.</span>
+                            </article>
+
+                            <article class="home-stat">
+                                <span class="home-stat__label" th:text="#{cardSecurity}">SEGURIDAD</span>
+                                <span class="home-stat__value">03</span>
+                                <span class="home-stat__meta" th:text="#{cardSecurityText}">Permisos por rol y control de acceso.</span>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="whatwedo home-section" id="whatwedo">
+        <div class="container">
+            <div class="home-section__head">
+                <h2 class="section-title" th:text="#{whatTitle}">Qué hacemos</h2>
+                <p class="home-section__desc" th:text="#{whatText}">
+                    WoMHAT simplifica la documentación del CPD con un mapeado de racks y equipos, historial de cambios y fichas técnicas.
+                </p>
+            </div>
+
+            <div class="feature-card mx-auto">
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-6 text-center text-lg-start">
+                        <div class="feature-title" th:utext="#{featureTitle}">Server<br>Capability</div>
+
+                        <p class="feature-text mt-3" th:text="#{featureText}">
+                            Mapeado + inventario + documentación exportable.
+                        </p>
+
+                        <div class="feature-bullets">
+                            <div class="bullet">
+                                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                                <span th:text="#{featureBullet1}">Historial de cambios</span>
+                            </div>
+                            <div class="bullet">
+                                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                                <span th:text="#{featureBullet2}">Permisos por rol</span>
+                            </div>
+                            <div class="bullet">
+                                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                                <span th:text="#{featureBullet3}">Acceso desde cualquier dispositivo</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 text-center">
+                        <img class="img-fluid feature-right"
+                             th:src="@{/assets/images/red.webp}"
+                             th:alt="#{altNetworkMap}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how home-section" id="howitworks">
+        <div class="container">
+            <div class="home-section__head">
+                <h2 class="section-title" th:text="#{howTitle}">Cómo funciona</h2>
+                <p class="home-section__desc" th:text="#{howDesc}">
+                    Un flujo sencillo para montar el mapa del CPD y mantenerlo actualizado.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12 col-md-4">
+                    <div class="step-card h-100">
+                        <div class="step-top">
+                            <div class="step-badge">1</div>
+                            <div class="step-icon"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i></div>
+                        </div>
+                        <h3 class="h5 mb-2" th:text="#{how1Title}">Mapea tu CPD</h3>
+                        <p class="mb-0 womhat-text-muted" th:text="#{how1Text}">Consigue racks y coloca tus equipos.</p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="step-card h-100">
+                        <div class="step-top">
+                            <div class="step-badge">2</div>
+                            <div class="step-icon"><i class="bi bi-journal-check" aria-hidden="true"></i></div>
+                        </div>
+                        <h3 class="h5 mb-2" th:text="#{how2Title}">Documenta cambios</h3>
+                        <p class="mb-0 womhat-text-muted" th:text="#{how2Text}">Registra notas y un historial visual.</p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="step-card h-100">
+                        <div class="step-top">
+                            <div class="step-badge">3</div>
+                            <div class="step-icon"><i class="bi bi-file-earmark-arrow-down" aria-hidden="true"></i></div>
+                        </div>
+                        <h3 class="h5 mb-2" th:text="#{how3Title}">Comparte y reporta</h3>
+                        <p class="mb-0 womhat-text-muted" th:text="#{how3Text}">Exporta y explica a tu equipo/superiores.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="services home-section" id="services">
+        <div class="container">
+            <div class="home-section__head">
+                <h2 class="section-title" th:text="#{servicesTitle}">Servicios clave</h2>
+                <p class="home-section__desc" th:text="#{servicesDesc}">
+                    Un enfoque pensado para técnicos: rápido, consistente y con buena trazabilidad.
+                </p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <article class="service-card h-100" data-search="velocidad rapidez rendimiento tiempo">
+                        <div class="service-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></div>
+                        <h3 class="service-title" th:text="#{cardSpeed}">VELOCIDAD</h3>
+                        <p class="service-text" th:text="#{cardSpeedText}">Documentación rápida y accesible.</p>
+                    </article>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <article class="service-card h-100" data-search="control precision inventario calidad">
+                        <div class="service-icon"><i class="bi bi-bullseye" aria-hidden="true"></i></div>
+                        <h3 class="service-title" th:text="#{cardControl}">CONTROL</h3>
+                        <p class="service-text" th:text="#{cardControlText}">Estandariza el inventario del CPD.</p>
+                    </article>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <article class="service-card h-100" data-search="innovacion ui ux moderno automatizacion">
+                        <div class="service-icon"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i></div>
+                        <h3 class="service-title" th:text="#{cardInnovation}">INNOVACIÓN</h3>
+                        <p class="service-text" th:text="#{cardInnovationText}">Interfaz moderna orientada a técnicos.</p>
+                    </article>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <article class="service-card h-100" data-search="mantenimiento historial cambios notas">
+                        <div class="service-icon"><i class="bi bi-gear-fill" aria-hidden="true"></i></div>
+                        <h3 class="service-title" th:text="#{cardMaint}">MANTENIMIENTO</h3>
+                        <p class="service-text" th:text="#{cardMaintText}">Notas y trazabilidad de modificaciones.</p>
+                    </article>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <article class="service-card h-100" data-search="seguridad roles permisos auditoria">
+                        <div class="service-icon"><i class="bi bi-shield-lock-fill" aria-hidden="true"></i></div>
+                        <h3 class="service-title" th:text="#{cardSecurity}">SEGURIDAD</h3>
+                        <p class="service-text" th:text="#{cardSecurityText}">Permisos por rol y control de acceso.</p>
+                    </article>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <article class="service-card h-100" data-search="accesibilidad responsive contraste wcag">
+                        <div class="service-icon"><i class="bi bi-universal-access" aria-hidden="true"></i></div>
+                        <h3 class="service-title" th:text="#{cardAccess}">ACCESIBILIDAD</h3>
+                        <p class="service-text" th:text="#{cardAccessText}">Responsive y usable en cualquier pantalla.</p>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <button class="back-to-top"
+            id="backToTop"
+            type="button"
+            th:attr="aria-label=#{ariaBackToTop}"
+            aria-label="Volver arriba">
+        <i class="bi bi-arrow-up" aria-hidden="true"></i>
+    </button>
+
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+
+</body>
+</html>
