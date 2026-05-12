@@ -1,0 +1,155 @@
+/* =============================================================================
+   WoMHAT · utils/_theme.scss
+   =============================================================================
+   Variables CSS para tema claro y oscuro.
+
+   Idea:
+   - Definimos colores como variables CSS: --bg, --text, --border, etc.
+   - El resto de SCSS utiliza SIEMPRE estas variables.
+   - Para el tema oscuro, simplemente sobreescribimos estas variables.
+============================================================================= */
+
+:root {
+  color-scheme: light;
+
+  /* Fondo general */
+  --bg: #ffffff;
+  --page-gradient:
+    radial-gradient(circle at top left, rgba(89, 46, 242, 0.08), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(41, 242, 128, 0.10), transparent 24%),
+    #ffffff;
+
+  /* Superficies */
+  --surface: #ffffff;
+  --surface-2: #f5f7fb;
+  --surface-3: #eef2f8;
+  --surface-raised: #ffffff;
+  --surface-soft: rgba(245, 247, 251, 0.88);
+  --surface-glass: rgba(255, 255, 255, 0.72);
+
+  /* Texto */
+  --text: #0f1420;
+  --text-2: rgba(15, 20, 32, 0.72);
+  --text-soft: rgba(15, 20, 32, 0.56);
+
+  /* Bordes / sombras */
+  --border: rgba(15, 20, 32, 0.12);
+  --shadow: 0 14px 32px rgba(15, 20, 32, 0.10);
+  --shadow-soft: 0 18px 40px rgba(15, 20, 32, 0.08);
+  --ring-accent: rgba(89, 46, 242, 0.18);
+
+  /* Header / footer */
+  --header-bg: #ffffff;
+  --header-text: #0f1420;
+
+  --footer-bg: #ffffff;
+  --footer-text: #0f1420;
+  --footer-border: rgba(15, 20, 32, 0.12);
+
+  /* Secciones suaves */
+  --section-soft: #dff1ff;
+
+  /* Acentos */
+  --accent: #592EF2;
+  --accent-2: #29F280;
+  --accent-soft: rgba(89, 46, 242, 0.10);
+  --accent-strong: rgba(89, 46, 242, 0.22);
+
+  /* Hero */
+  --hero-overlay: rgba(0, 0, 0, 0.5);
+  --hero-card-bg: rgba(11, 16, 32, 0.60);
+  --hero-card-border: rgba(255, 255, 255, 0.14);
+  --hero-card-shadow: 0 24px 55px rgba(0, 0, 0, 0.32);
+
+  /* Botones */
+  --btn-primary-bg: #2933F3;
+  --btn-primary-hover: #1f27c9;
+
+  /* Iconos / detalles */
+  --service-icon-color: rgba(15, 20, 32, 0.88);
+  --bullet-check-color: #0f766e;
+
+  /* Menús / pills / dropdowns */
+  --menu-bg: var(--surface);
+  --menu-item-hover: rgba(89, 46, 242, 0.08);
+
+  --pill-bg: rgba(15, 20, 32, 0.05);
+  --pill-bg-hover: rgba(89, 46, 242, 0.10);
+
+  /* Inputs */
+  --input-bg: var(--surface);
+  --input-readonly-bg: var(--surface-2);
+  --input-icon-bg: var(--surface-2);
+
+  /* Tablas */
+  --table-head-bg: var(--surface-2);
+
+  /* Skeletons */
+  --skeleton-base: rgba(15, 20, 32, 0.08);
+  --skeleton-shine: rgba(255, 255, 255, 0.65);
+  --skeleton-border: rgba(15, 20, 32, 0.08);
+}
+
+[data-bs-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0b1020;
+  --page-gradient:
+    radial-gradient(circle at top left, rgba(41, 51, 243, 0.18), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(41, 242, 128, 0.10), transparent 20%),
+    #0b1020;
+
+  --surface: #0f1420;
+  --surface-2: #141926;
+  --surface-3: #1b2233;
+  --surface-raised: #161c2b;
+  --surface-soft: rgba(20, 25, 38, 0.78);
+  --surface-glass: rgba(15, 20, 32, 0.72);
+
+  --text: rgba(255, 255, 255, 0.92);
+  --text-2: rgba(255, 255, 255, 0.70);
+  --text-soft: rgba(255, 255, 255, 0.54);
+
+  --border: rgba(255, 255, 255, 0.12);
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.65);
+  --shadow-soft: 0 20px 48px rgba(0, 0, 0, 0.42);
+  --ring-accent: rgba(41, 51, 243, 0.26);
+
+  --header-bg: #0f1420;
+  --header-text: rgba(255, 255, 255, 0.92);
+
+  --footer-bg: #0f1420;
+  --footer-text: rgba(255, 255, 255, 0.92);
+  --footer-border: rgba(255, 255, 255, 0.10);
+
+  --section-soft: #0f1420;
+
+  --accent: #2933F3;
+  --accent-2: #29F280;
+  --accent-soft: rgba(41, 51, 243, 0.16);
+  --accent-strong: rgba(41, 51, 243, 0.28);
+
+  --hero-overlay: rgba(0, 0, 0, 0.65);
+  --hero-card-bg: rgba(11, 16, 32, 0.74);
+  --hero-card-border: rgba(255, 255, 255, 0.10);
+  --hero-card-shadow: 0 26px 58px rgba(0, 0, 0, 0.54);
+
+  --service-icon-color: rgba(255, 255, 255, 0.92);
+  --bullet-check-color: #29F280;
+
+  --menu-bg: var(--surface);
+  --menu-item-hover: rgba(41, 51, 243, 0.18);
+
+  --pill-bg: rgba(255, 255, 255, 0.08);
+  --pill-bg-hover: rgba(41, 51, 243, 0.18);
+
+  --input-bg: var(--surface);
+  --input-readonly-bg: var(--surface-2);
+  --input-icon-bg: var(--surface-2);
+
+  --table-head-bg: var(--surface-2);
+
+  --skeleton-base: rgba(255, 255, 255, 0.08);
+  --skeleton-shine: rgba(255, 255, 255, 0.18);
+  --skeleton-border: rgba(255, 255, 255, 0.08);
+}

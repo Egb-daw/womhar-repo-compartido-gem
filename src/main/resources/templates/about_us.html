@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es" th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT · ' + #{msg.public.aboutUs.title})}"></th:block>
+</head>
+
+<body class="womhat-body page-about page-public">
+
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="womhat-main womhat-page-shell" id="contenido" tabindex="-1">
+    <section class="container py-5">
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6 text-start">
+                <div class="surface-panel surface-panel--raised about-story-card">
+
+                    <h1 class="display-4 fw-bold mb-3" th:text="#{aboutTitle}">
+                        Nuestra Historia
+                    </h1>
+
+                    <p class="lead mb-3" th:text="#{aboutLead}">
+                        WoMHAT nació para simplificar la gestión técnica en centros de datos.
+                    </p>
+
+                    <p class="mb-4" th:text="#{aboutMission}">
+                        Nuestra misión es proporcionar a los técnicos una herramienta interactiva
+                        que simplifique la documentación, el mantenimiento y la colaboración.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card about-card border-0 overflow-hidden media-skeleton is-pending js-media-skeleton" role="presentation">
+                    <img class="card-img-top"
+                         loading="lazy"
+                         decoding="async"
+                         th:src="@{/assets/images/about.webp}"
+                         th:alt="#{altAboutTeam}">
+                </div>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+
+</body>
+</html>

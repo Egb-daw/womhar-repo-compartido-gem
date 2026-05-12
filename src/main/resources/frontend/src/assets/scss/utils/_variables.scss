@@ -1,0 +1,26 @@
+/* =============================================================================
+   WoMHAT · utils/_variables.scss
+   =============================================================================
+   Variables Sass que afectan a Bootstrap ANTES de importarlo.
+
+   IMPORTANTE:
+   - Estas variables se leen cuando se importa: bootstrap/scss/bootstrap
+   - Si se ponen después, Bootstrap ya estaría generado y no cambiarían nada.
+============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Colores
+   - $primary afecta a botones .btn-primary, links, etc.
+   - $success, $danger, $info, $dark.
+----------------------------------------------------------------------------- */
+$primary: #592EF2;
+$success: #29F280;
+$danger:  #F21B1E;
+$info:    #2933F3;
+$dark:    #141926;
+
+/* -----------------------------------------------------------------------------
+   Tipografía
+   - Esta variable cambia la fuente base.
+----------------------------------------------------------------------------- */
+$font-family-sans-serif: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;

@@ -1,0 +1,79 @@
+<th:block th:fragment="flashMessages(autohideSuccess)"
+          xmlns:th="http://www.thymeleaf.org">
+
+    <div class="womhat-flash-messages"
+         aria-atomic="true"
+         aria-live="polite"
+         th:if="${successMessage != null or errorMessage != null or warningMessage != null or infoMessage != null}">
+
+        <div class="alert alert-success womhat-alert alert-dismissible fade show d-flex align-items-start gap-3"
+             role="alert"
+             th:if="${successMessage != null}"
+             th:attr="data-autohide=${autohideSuccess}">
+            <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" aria-hidden="true"></i>
+
+            <div class="flex-grow-1">
+                <div class="womhat-alert__title mb-1" th:text="#{msg.alert.success.label}">Éxito</div>
+                <div class="womhat-alert__body" th:text="${successMessage}">Operación realizada correctamente.</div>
+            </div>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    th:attr="aria-label=#{msg.alert.close}"
+                    aria-label="Cerrar alerta"></button>
+        </div>
+
+        <div class="alert alert-danger womhat-alert alert-dismissible fade show d-flex align-items-start gap-3"
+             role="alert"
+             th:if="${errorMessage != null}">
+            <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" aria-hidden="true"></i>
+
+            <div class="flex-grow-1">
+                <div class="womhat-alert__title mb-1" th:text="#{msg.alert.error.label}">Error</div>
+                <div class="womhat-alert__body" th:text="${errorMessage}">Se ha producido un error.</div>
+            </div>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    th:attr="aria-label=#{msg.alert.close}"
+                    aria-label="Cerrar alerta"></button>
+        </div>
+
+        <div class="alert alert-warning womhat-alert alert-dismissible fade show d-flex align-items-start gap-3"
+             role="alert"
+             th:if="${warningMessage != null}">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1" aria-hidden="true"></i>
+
+            <div class="flex-grow-1">
+                <div class="womhat-alert__title mb-1" th:text="#{msg.alert.warning.label}">Advertencia</div>
+                <div class="womhat-alert__body" th:text="${warningMessage}">Revisa la información introducida.</div>
+            </div>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    th:attr="aria-label=#{msg.alert.close}"
+                    aria-label="Cerrar alerta"></button>
+        </div>
+
+        <div class="alert alert-info womhat-alert alert-dismissible fade show d-flex align-items-start gap-3"
+             role="alert"
+             th:if="${infoMessage != null}">
+            <i class="bi bi-info-circle-fill flex-shrink-0 mt-1" aria-hidden="true"></i>
+
+            <div class="flex-grow-1">
+                <div class="womhat-alert__title mb-1" th:text="#{msg.alert.info.label}">Información</div>
+                <div class="womhat-alert__body" th:text="${infoMessage}">Información adicional.</div>
+            </div>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    th:attr="aria-label=#{msg.alert.close}"
+                    aria-label="Cerrar alerta"></button>
+        </div>
+
+    </div>
+</th:block>

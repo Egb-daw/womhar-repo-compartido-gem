@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.catalog.list.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-catalog-page">
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="womhat-main flex-grow-1">
+    <section class="container py-4 py-lg-5">
+        <th:block th:replace="~{fragments/alerts :: flashMessages(true)}"></th:block>
+
+        <div class="technical-detail-shell">
+            <section class="surface-panel surface-panel--raised technical-hero">
+                <div class="technical-hero__head">
+                    <div class="technical-hero__copy">
+                        <span class="womhat-kicker mb-3" th:text="#{msg.catalog.kicker}">
+                            Catálogo interno
+                        </span>
+                        <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                            <div>
+                                <h1 class="section-title technical-hero__title mb-2" th:text="#{msg.catalog.title}">
+                                    Catálogo interno de racks
+                                </h1>
+                                <p class="technical-hero__subtitle mb-0" th:text="#{msg.catalog.list.subtitle}">
+                                    Consulta fichas publicadas por administración y registra solicitudes reales de aprovisionamiento.
+                                </p>
+                            </div>
+                            <div class="technical-hero__actions">
+                                <a th:href="@{/catalog/orders}" class="btn btn-primary"><i class="bi bi-box-seam me-1"></i><span th:text="#{msg.catalog.list.action.orders}">Mis pedidos</span></a>
+                                <a th:href="@{/dashboard}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-1"></i><span th:text="#{msg.catalog.list.action.dashboard}">Mi panel</span></a>
+                            </div>
+                        </div>
+                        <ul class="womhat-tech-meta technical-hero__meta" th:if="${page != null}">
+                            <li>
+                                <i class="bi bi-hdd-rack"></i>
+                                <span class="fw-semibold" th:text="#{msg.catalog.list.meta.total}">Racks publicados</span>
+                                <span class="text-muted">·</span>
+                                <span th:text="${page.totalElements}">
+                                    0
+                                </span>
+                            </li>
+                            <li>
+                                <i class="bi bi-arrow-left-right"></i>
+                                <span class="fw-semibold" th:text="#{msg.catalog.sort.label}">Orden</span>
+                                <span class="text-muted">·</span>
+                                <span th:text="${sortLabel}">
+                                    Precio ascendente
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="crud-card technical-card">
+                <div class="crud-card-header technical-card__header">
+                    <div>
+                        <h2 class="technical-card__title mb-0" th:text="#{msg.catalog.list.filters.title}">Filtros y orden</h2>
+                    </div>
+                </div>
+                <div class="p-3 p-md-4">
+                    <form th:action="@{/catalog}" method="get" class="row g-3 align-items-end">
+                        <div class="col-12 col-lg-4">
+                            <label class="form-label" for="catalogQuery" th:text="#{msg.catalog.list.filter.search}">Búsqueda</label>
+                            <input id="catalogQuery" type="text" name="q" th:value="${query}" class="form-control" th:placeholder="#{msg.catalog.list.filter.search.placeholder}" placeholder="Modelo, función, grupo o referencia técnica">
+                        </div>
+                        <div class="col-12 col-md-4 col-lg-2">
+                            <label class="form-label" for="catalogStatus" th:text="#{msg.catalog.list.filter.status}">Estado</label>
+                            <select id="catalogStatus" name="status" class="form-select">
+                                <option th:value="${null}" th:text="#{msg.catalog.list.filter.status.all}">Todos</option>
+                                <option th:each="catalogStatus : ${catalogStatuses}" th:value="${catalogStatus}" th:selected="${statusFilter == catalogStatus}" th:text="${rackStatusLabels.get(catalogStatus)}">ACTIVE</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label class="form-label" for="catalogMinCapacity" th:text="#{msg.catalog.list.filter.minCapacity}">Capacidad mínima (U)</label>
+                            <input id="catalogMinCapacity" type="number" name="minCapacityU" th:value="${minCapacityUFilter}" class="form-control" min="1">
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label class="form-label" for="catalogMaxPrice" th:text="#{msg.catalog.list.filter.maxPrice}">Precio máximo</label>
+                            <input id="catalogMaxPrice" type="number" name="maxPrice" th:value="${maxPriceFilter}" class="form-control" step="0.01" min="0">
+                        </div>
+                        <div class="col-12 col-md-4 col-lg-2">
+                            <label class="form-label" for="catalogSort" th:text="#{msg.catalog.list.filter.sort}">Ordenar por</label>
+                            <select id="catalogSort" name="sort" class="form-select">
+                                <option value="catalogPrice,asc" th:selected="${sortParam == 'catalogPrice,asc'}" th:text="#{msg.catalog.list.filter.sort.priceAsc}">Precio: menor a mayor</option>
+                                <option value="catalogPrice,desc" th:selected="${sortParam == 'catalogPrice,desc'}" th:text="#{msg.catalog.list.filter.sort.priceDesc}">Precio: mayor a menor</option>
+                                <option value="capacityU,desc" th:selected="${sortParam == 'capacityU,desc'}" th:text="#{msg.catalog.list.filter.sort.capacityDesc}">Capacidad: mayor a menor</option>
+                                <option value="catalogStock,desc" th:selected="${sortParam == 'catalogStock,desc'}" th:text="#{msg.catalog.list.filter.sort.stockDesc}">Stock: mayor a menor</option>
+                                <option value="locationLabel,asc" th:selected="${sortParam == 'locationLabel,asc'}" th:text="#{msg.catalog.list.filter.sort.locationAsc}">Referencia interna: A-Z</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-lg-12 d-flex gap-2 justify-content-lg-end">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-funnel me-1"></i><span th:text="#{msg.catalog.list.filter.apply}">Filtrar</span></button>
+                            <a th:href="@{/catalog}" class="btn btn-outline-secondary" th:text="#{msg.catalog.list.filter.reset}">Limpiar</a>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="crud-card technical-card">
+                <div class="crud-card-header technical-card__header">
+                    <div>
+                        <h2 class="technical-card__title mb-0" th:text="#{msg.catalog.list.results.title}">Publicaciones activas</h2>
+                    </div>
+                    <span class="technical-counter" th:text="${page != null ? page.totalElements : 0}">0</span>
+                </div>
+
+                <div class="p-3 p-md-4" th:if="${page != null and !#lists.isEmpty(page.content)}">
+                    <div class="row g-4">
+                        <div class="col-12 col-md-6 col-xl-4" th:each="rack : ${page.content}">
+                            <article class="catalog-card h-100">
+                                <div class="catalog-card__head">
+                                    <div>
+                                        <h3 class="catalog-card__title" th:text="${rack.catalogDisplayName != null and !#strings.isEmpty(rack.catalogDisplayName) ? rack.catalogDisplayName : rack.locationLabel}">Rack</h3>
+                                        <p class="catalog-card__summary mb-0" th:text="${rack.catalogSummary != null and !#strings.isEmpty(rack.catalogSummary) ? rack.catalogSummary : rack.functionName}">
+                                            Resumen del rack
+                                        </p>
+                                    </div>
+                                    <span class="catalog-card__price" th:text="${rack.catalogPrice != null ? rack.catalogPrice + ' €' : #messages.msgOrNull('msg.catalog.common.noPrice')}">0 €</span>
+                                </div>
+
+                                <div class="catalog-card__grid">
+                                    <div class="catalog-card__metric"><span th:text="#{msg.catalog.list.card.capacity}">Capacidad</span><strong th:text="${rack.capacityU != null ? rack.capacityU + 'U' : '-'}">42U</strong></div>
+                                    <div class="catalog-card__metric"><span th:text="#{msg.catalog.list.card.stock}">Disponibilidad</span><strong th:text="${rack.catalogStock != null and rack.catalogStock > 0} ? #{msg.catalog.list.card.stock.available} : #{msg.catalog.list.card.stock.unavailable}">Disponible</strong></div>
+                                    <div class="catalog-card__metric"><span th:text="#{msg.catalog.list.filter.status}">Estado</span><strong th:text="${rack.status != null ? rackStatusLabels.get(rack.status) : '-'}">ACTIVE</strong></div>
+                                    <div class="catalog-card__metric"><span th:text="#{msg.catalog.list.card.equipment}">Equipos</span><strong th:text="${rack.equipmentCount != null ? rack.equipmentCount : 0}">0</strong></div>
+                                </div>
+
+                                <div class="catalog-card__meta">
+                                    <div><span class="fw-semibold" th:text="#{msg.catalog.list.card.internalReference}">Referencia interna</span><span>: </span><span th:text="${rack.locationLabel != null ? rack.locationLabel : '-'}">Rack-01</span></div>
+                                    <div><span class="fw-semibold" th:text="#{msg.catalog.list.card.location}">Ubicación técnica</span><span>: </span><span th:text="${(rack.dataCenterName != null ? rack.dataCenterName : (rack.dataCenterCode != null ? rack.dataCenterCode : '-')) + (rack.roomName != null ? ' · ' + rack.roomName : '')}">CPD · Sala</span></div>
+                                    <div><span class="fw-semibold" th:text="#{msg.catalog.list.card.group}">Grupo</span><span>: </span><span th:text="${rack.groupName != null and !#strings.isEmpty(rack.groupName) ? rack.groupName : '-'}">Grupo</span></div>
+                                </div>
+
+                                <div class="catalog-card__actions">
+                                    <a th:href="@{/catalog/detail(id=${rack.id})}" class="btn btn-primary w-100" th:text="#{msg.catalog.list.card.view}">Ver ficha</a>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4" th:if="${page == null or #lists.isEmpty(page.content)}">
+                    <div class="empty-state text-center">
+                        <i class="bi bi-search display-5 d-block mb-3"></i>
+                        <h3 class="h5" th:text="#{msg.catalog.list.empty.title}">No hay racks publicados con esos filtros</h3>
+                        <p class="text-muted mb-3" th:text="#{msg.catalog.list.empty.subtitle}">Prueba otra búsqueda o limpia los filtros aplicados.</p>
+                        <a th:href="@{/catalog}" class="btn btn-outline-primary" th:text="#{msg.catalog.list.empty.action}">Ver catálogo completo</a>
+                    </div>
+                </div>
+
+                <div class="crud-toolbar" th:if="${page != null and page.totalPages > 1}">
+                    <nav class="ms-auto">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/catalog(page=${page.number - 1}, q=${query}, status=${statusFilter}, minCapacityU=${minCapacityUFilter}, maxPrice=${maxPriceFilter}, sort=${sortParam})}"
+                                   th:attr="aria-label=#{msg.pagination.previous}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? 'active'">
+                                <a class="page-link" th:text="${i + 1}" th:href="@{/catalog(page=${i}, q=${query}, status=${statusFilter}, minCapacityU=${minCapacityUFilter}, maxPrice=${maxPriceFilter}, sort=${sortParam})}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/catalog(page=${page.number + 1}, q=${query}, status=${statusFilter}, minCapacityU=${minCapacityUFilter}, maxPrice=${maxPriceFilter}, sort=${sortParam})}"
+                                   th:attr="aria-label=#{msg.pagination.next}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </section>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es" th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT · ' + #{msg.public.contact.title})}"></th:block>
+</head>
+
+<body class="womhat-body page-contact page-public">
+
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="womhat-main">
+    <section class="container py-5">
+        <div class="contact-shell mx-auto">
+            <div class="contact-card">
+                <h1 class="contact-public__title mb-4" th:text="#{msg.public.contact.title}">Contacto</h1>
+                <p class="text-body-secondary mb-4" th:text="#{msg.public.contact.help}">
+                    Todos los campos marcados como obligatorios deben completarse antes de enviar.
+                </p>
+                <form class="row g-3"
+                      method="post"
+                      th:action="@{/contact}"
+                      th:object="${contactForm}"
+                      data-womhat-validate="true"
+                      data-disable-on-submit="true">
+                    <div class="col-12">
+                        <div class="alert alert-danger mb-0"
+                             th:if="${#fields.hasAnyErrors()}"
+                             th:text="#{msg.form.validation.review}">
+                            Revisa los campos marcados antes de continuar.
+                        </div>
+                    </div>
+
+                    <div class="col-12"
+                         th:if="${successMessage != null or errorMessage != null or warningMessage != null or infoMessage != null}">
+                        <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="email" th:text="#{msg.public.contact.email}">Correo electrónico (obligatorio)</label>
+                        <input aria-describedby="emailHelp"
+                               autocomplete="email"
+                               class="form-control"
+                               id="email"
+                               required
+                               maxlength="120"
+                               th:field="*{email}"
+                               th:placeholder="#{msg.public.contact.email.placeholder}"
+                               th:classappend="${#fields.hasErrors('email')} ? ' is-invalid' : ''"
+                               th:attr="aria-invalid=${#fields.hasErrors('email')} ? 'true' : null, aria-describedby=${#fields.hasErrors('email')} ? 'emailHelp emailError' : 'emailHelp'"
+                               type="email">
+                        <div class="form-text" id="emailHelp" th:text="#{msg.public.contact.email.help}">
+                            Te responderemos a este correo.
+                        </div>
+                        <div class="invalid-feedback d-block" id="emailError" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="nombre" th:text="#{msg.public.contact.name}">Nombre (obligatorio)</label>
+                        <input autocomplete="name"
+                               class="form-control"
+                               id="nombre"
+                               required
+                               maxlength="100"
+                               th:field="*{nombre}"
+                               th:placeholder="#{msg.public.contact.name.placeholder}"
+                               th:classappend="${#fields.hasErrors('nombre')} ? ' is-invalid' : ''"
+                               th:attr="aria-invalid=${#fields.hasErrors('nombre')} ? 'true' : null, aria-describedby=${#fields.hasErrors('nombre')} ? 'nombreError' : null"
+                               type="text">
+                        <div class="invalid-feedback d-block" id="nombreError" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="telefono" th:text="#{msg.public.contact.phone}">Teléfono</label>
+                        <input autocomplete="tel"
+                               class="form-control"
+                               id="telefono"
+                               maxlength="30"
+                               pattern="^[0-9+()\\s-]*$"
+                               th:field="*{telefono}"
+                               th:placeholder="#{msg.public.contact.phone.placeholder}"
+                               th:classappend="${#fields.hasErrors('telefono')} ? ' is-invalid' : ''"
+                               th:attr="aria-invalid=${#fields.hasErrors('telefono')} ? 'true' : null, aria-describedby=${#fields.hasErrors('telefono')} ? 'telefonoError' : null"
+                               type="tel">
+                        <div class="invalid-feedback d-block" id="telefonoError" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="motivo" th:text="#{msg.public.contact.reason}">Motivo</label>
+                        <select class="form-select"
+                                id="motivo"
+                                th:field="*{motivo}"
+                                th:classappend="${#fields.hasErrors('motivo')} ? ' is-invalid' : ''"
+                                th:attr="aria-invalid=${#fields.hasErrors('motivo')} ? 'true' : null, aria-describedby=${#fields.hasErrors('motivo')} ? 'motivoError' : null"
+                                required>
+                            <option value="info" th:text="#{msg.public.contact.reason.info}">Información</option>
+                            <option value="catalogo" th:text="#{msg.public.contact.reason.catalog}">Catálogo y pedidos</option>
+                            <option value="soporte" th:text="#{msg.public.contact.reason.support}">Soporte técnico</option>
+                            <option value="incidencia" th:text="#{msg.public.contact.reason.incident}">Incidencia</option>
+                            <option value="otros" th:text="#{msg.public.contact.reason.other}">Otros</option>
+                        </select>
+                        <div class="invalid-feedback d-block" id="motivoError" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" for="mensaje" th:text="#{msg.public.contact.message}">Mensaje (obligatorio)</label>
+                        <textarea class="form-control"
+                                  id="mensaje"
+                                  required
+                                  rows="4"
+                                  minlength="10"
+                                  maxlength="1000"
+                                  th:field="*{mensaje}"
+                                  th:placeholder="#{msg.public.contact.message.placeholder}"
+                                  th:classappend="${#fields.hasErrors('mensaje')} ? ' is-invalid' : ''"
+                                  th:attr="aria-invalid=${#fields.hasErrors('mensaje')} ? 'true' : null, aria-describedby=${#fields.hasErrors('mensaje')} ? 'mensajeError' : null"></textarea>
+                        <div class="invalid-feedback d-block" id="mensajeError" th:if="${#fields.hasErrors('mensaje')}" th:errors="*{mensaje}"></div>
+                    </div>
+
+                    <fieldset class="col-12">
+                        <legend class="form-label mb-2" th:text="#{msg.public.contact.preference}">Preferencia de contacto</legend>
+
+                        <div class="form-check">
+                            <input class="form-check-input" id="prefEmail" th:field="*{pref}" type="radio" value="email">
+                            <label class="form-check-label" for="prefEmail" th:text="#{msg.public.contact.preference.email}">Correo electrónico</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" id="prefTel" th:field="*{pref}" type="radio" value="tel">
+                            <label class="form-check-label" for="prefTel" th:text="#{msg.public.contact.preference.phone}">Teléfono</label>
+                        </div>
+                    </fieldset>
+
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   id="terms"
+                                   required
+                                   th:field="*{terms}"
+                                   th:classappend="${#fields.hasErrors('terms')} ? ' is-invalid' : ''"
+                                   th:attr="aria-invalid=${#fields.hasErrors('terms')} ? 'true' : null, aria-describedby=${#fields.hasErrors('terms')} ? 'termsError' : null"
+                                   type="checkbox">
+                            <label class="form-check-label" for="terms" th:text="#{msg.public.contact.terms}">
+                                Acepto la política de privacidad (obligatorio)
+                            </label>
+                        </div>
+                        <div class="invalid-feedback d-block" id="termsError" th:if="${#fields.hasErrors('terms')}" th:errors="*{terms}"></div>
+                    </div>
+
+                    <div class="col-12 d-flex flex-wrap gap-2">
+                        <button class="btn btn-primary" th:text="#{msg.public.contact.submit}" type="submit">Enviar</button>
+                        <button class="btn btn-outline-secondary" th:text="#{msg.public.contact.reset}" type="reset">Limpiar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+
+</body>
+</html>

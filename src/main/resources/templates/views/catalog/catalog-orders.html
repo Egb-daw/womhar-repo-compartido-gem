@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.catalog.orders.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-catalog-page">
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="womhat-main flex-grow-1">
+    <section class="container py-4 py-lg-5">
+        <th:block th:replace="~{fragments/alerts :: flashMessages(true)}"></th:block>
+
+        <div class="technical-detail-shell">
+            <section class="surface-panel surface-panel--raised technical-hero">
+                <div class="technical-hero__head">
+                    <div class="technical-hero__copy">
+                        <span class="womhat-kicker mb-3" th:text="#{msg.catalog.orders.kicker}">PEDIDOS INTERNOS</span>
+                        <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                            <div>
+                                <h1 class="section-title technical-hero__title mb-2" th:text="${adminOrders} ? #{msg.catalog.orders.title.admin} : #{msg.catalog.orders.title.user}">Mis pedidos</h1>
+                                <p class="technical-hero__subtitle mb-0" th:text="${adminOrders} ? #{msg.catalog.orders.subtitle.admin} : #{msg.catalog.orders.subtitle.user}">
+                                    Histórico personal de solicitudes realizadas desde el catálogo.
+                                </p>
+                            </div>
+                            <div class="technical-hero__actions">
+                                <a th:href="@{/catalog}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i><span th:text="#{msg.catalog.orders.action.back}">Volver al catálogo</span></a>
+                                <a th:if="${adminOrders}" th:href="@{/dashboard}" class="btn btn-outline-primary"><i class="bi bi-speedometer2 me-1"></i><span th:text="#{msg.catalog.orders.action.dashboard}">Dashboard</span></a>
+                            </div>
+                        </div>
+                        <ul class="womhat-tech-meta technical-hero__meta" th:if="${page != null}">
+                            <li><i class="bi bi-box-seam"></i><span class="fw-semibold" th:text="#{msg.catalog.orders.meta.total}">Total</span><span class="text-muted">·</span><span th:text="${page.totalElements}">0</span></li>
+                            <li><i class="bi bi-arrow-left-right"></i><span class="fw-semibold" th:text="#{msg.catalog.orders.meta.sort}">Orden</span><span class="text-muted">·</span><span th:text="${sortLabel}">Más recientes primero</span></li>
+                        </ul>
+                        <p class="text-muted small mb-0 mt-3" th:text="${adminOrders} ? #{msg.catalog.orders.help.admin} : #{msg.catalog.orders.help.user}">
+                            Cuando se completa un pedido, WoMHAT habilita el acceso operativo al rack solicitado.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="crud-card technical-card">
+                <div class="crud-card-header technical-card__header">
+                    <div><h2 class="technical-card__title mb-0" th:text="${adminOrders} ? #{msg.catalog.orders.section.admin} : #{msg.catalog.orders.section.user}">Pedidos registrados</h2></div>
+                    <span class="technical-counter" th:text="${page != null ? page.totalElements : 0}">0</span>
+                </div>
+
+                <div class="table-responsive technical-table-shell" th:if="${page != null and !#lists.isEmpty(page.content)}">
+                    <table class="table table-hover table-striped mb-0 align-middle">
+                        <thead class="table-dark">
+                        <tr>
+                            <th th:text="#{msg.catalog.orders.table.id}">ID</th>
+                            <th th:if="${adminOrders}" th:text="#{msg.catalog.orders.table.requester}">Solicitante</th>
+                            <th th:text="#{msg.catalog.orders.table.rack}">Rack</th>
+                            <th th:text="#{msg.catalog.orders.table.summary}">Resumen</th>
+                            <th th:text="#{msg.catalog.orders.table.quantity}">Cantidad</th>
+                            <th th:text="#{msg.catalog.orders.table.unitPrice}">Precio unitario</th>
+                            <th th:text="#{msg.catalog.orders.table.total}">Total</th>
+                            <th th:text="#{msg.catalog.orders.table.status}">Estado</th>
+                            <th th:text="#{msg.catalog.orders.table.createdAt}">Fecha</th>
+                            <th th:text="#{msg.catalog.orders.table.notes}">Notas</th>
+                            <th th:text="#{msg.catalog.orders.table.actions}">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="order : ${page.content}">
+                            <td th:text="${order.id}">1</td>
+                            <td th:if="${adminOrders}" th:text="${order.requesterEmail != null ? order.requesterEmail : '-'}">user@app.local</td>
+                            <td>
+                                <a th:if="${order.status != null and order.status.name() == 'FULFILLED'}"
+                                   th:href="@{/racks/detail(id=${order.rackId})}"
+                                   th:text="${order.rackDisplayName != null and !#strings.isEmpty(order.rackDisplayName) ? order.rackDisplayName : order.rackLocationLabel}">Rack</a>
+                                <a th:unless="${order.status != null and order.status.name() == 'FULFILLED'}"
+                                   th:href="@{/catalog/detail(id=${order.rackId})}"
+                                   th:text="${order.rackDisplayName != null and !#strings.isEmpty(order.rackDisplayName) ? order.rackDisplayName : order.rackLocationLabel}">Rack</a>
+                                <div class="small text-muted mt-1" th:text="#{msg.catalog.orders.table.internalReference(${order.rackLocationLabel != null ? order.rackLocationLabel : '-'})}">Ref. interna: RACK-01</div>
+                            </td>
+                            <td th:text="${order.rackSummary != null and !#strings.isEmpty(order.rackSummary) ? order.rackSummary : '-'}">Resumen</td>
+                            <td th:text="${order.quantity != null ? order.quantity : 0}">1</td>
+                            <td th:text="${order.unitPrice != null ? order.unitPrice + ' €' : '-'}">100 €</td>
+                            <td th:text="${order.totalPrice != null ? order.totalPrice + ' €' : '-'}">100 €</td>
+                            <td>
+                                <span class="badge" th:classappend="${order.status != null and order.status.name() == 'PLACED' ? ' text-bg-warning' : (order.status != null and order.status.name() == 'FULFILLED' ? ' text-bg-success' : ' text-bg-secondary')}" th:text="${order.status != null ? orderStatusLabels.get(order.status) : '-'}">PLACED</span>
+                            </td>
+                            <td th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</td>
+                            <td>
+                                <div th:if="${order.notes != null and !#strings.isEmpty(order.notes)}" th:text="${order.notes}">Nota</div>
+                                <div th:if="${order.status != null and order.status.name() == 'FULFILLED'}" class="small text-success mt-1" th:text="${adminOrders} ? #{msg.catalog.orders.note.fulfilled.admin} : #{msg.catalog.orders.note.fulfilled.user}">Ya puedes trabajar sobre el rack solicitado.</div>
+                                <span th:if="${(order.notes == null or #strings.isEmpty(order.notes)) and (order.status == null or order.status.name() != 'FULFILLED')}" th:text="'-'">-</span>
+                            </td>
+                            <td class="text-nowrap">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <form th:if="${order.status != null and order.status.name() == 'PLACED'}" th:action="@{/catalog/orders/cancel}" method="post" class="m-0">
+                                        <input type="hidden" name="orderId" th:value="${order.id}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" th:text="#{msg.catalog.orders.action.cancel}">Cancelar</button>
+                                    </form>
+                                    <form th:if="${adminOrders and order.status != null and order.status.name() == 'PLACED'}" th:action="@{/catalog/orders/fulfill}" method="post" class="m-0">
+                                        <input type="hidden" name="orderId" th:value="${order.id}">
+                                        <button type="submit" class="btn btn-sm btn-success" th:text="#{msg.catalog.orders.action.fulfill}">Marcar como completado</button>
+                                    </form>
+                                    <span th:if="${order.status == null or order.status.name() != 'PLACED'}" class="text-muted small" th:text="#{msg.catalog.orders.action.none}">Sin acciones</span>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="p-4" th:if="${page == null or #lists.isEmpty(page.content)}">
+                    <div class="empty-state text-center">
+                        <i class="bi bi-box-seam display-6 d-block mb-3"></i>
+                        <h3 class="h5" th:text="${adminOrders} ? #{msg.catalog.orders.empty.title.admin} : #{msg.catalog.orders.empty.title.user}">Todavía no has registrado pedidos</h3>
+                        <p class="text-muted mb-3" th:text="${adminOrders} ? #{msg.catalog.orders.empty.subtitle.admin} : #{msg.catalog.orders.empty.subtitle.user}">Cuando solicites racks desde el catálogo, aparecerán aquí.</p>
+                        <a th:href="@{/catalog}" class="btn btn-outline-primary" th:text="#{msg.catalog.orders.empty.action}">Ir al catálogo</a>
+                    </div>
+                </div>
+
+                <div class="crud-toolbar" th:if="${page != null and page.totalPages > 1}">
+                    <nav class="ms-auto">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                                <a class="page-link" th:href="@{/catalog/orders(page=${page.number - 1}, sort=${sortParam})}"><i class="bi bi-chevron-left"></i></a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? 'active'">
+                                <a class="page-link" th:text="${i + 1}" th:href="@{/catalog/orders(page=${i}, sort=${sortParam})}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                                <a class="page-link" th:href="@{/catalog/orders(page=${page.number + 1}, sort=${sortParam})}"><i class="bi bi-chevron-right"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </section>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

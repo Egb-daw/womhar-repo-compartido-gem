@@ -1,0 +1,124 @@
+/* =============================================================================
+   WoMHAT · components/_skeleton.scss
+   =============================================================================
+   Skeleton loaders reutilizables y estados de carga opt-in.
+============================================================================= */
+
+@keyframes womhat-skeleton-shimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.skeleton,
+.skeleton-line,
+.skeleton-block,
+.skeleton-circle {
+  position: relative;
+  overflow: hidden;
+  background: var(--skeleton-base);
+  border: 1px solid var(--skeleton-border);
+}
+
+.skeleton::after,
+.skeleton-line::after,
+.skeleton-block::after,
+.skeleton-circle::after,
+.media-skeleton.is-pending::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--skeleton-shine) 45%,
+    transparent 100%
+  );
+  transform: translateX(-120%);
+  animation: womhat-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-line {
+  display: block;
+  min-height: 0.95rem;
+  border-radius: 999px;
+}
+
+.skeleton-line--title {
+  min-height: 1.25rem;
+}
+
+.skeleton-line--sm {
+  min-height: 0.72rem;
+}
+
+.skeleton-line--lg {
+  min-height: 1.4rem;
+}
+
+.skeleton-block {
+  display: block;
+  min-height: 5rem;
+  border-radius: 1rem;
+}
+
+.skeleton-circle {
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+}
+
+.skeleton-stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.skeleton-card {
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.media-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.media-skeleton > img {
+  display: block;
+  width: 100%;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 0.3s ease, transform 0.4s ease;
+}
+
+.media-skeleton.is-loaded > img {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.media-skeleton.is-loaded::after {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after,
+  .skeleton-line::after,
+  .skeleton-block::after,
+  .skeleton-circle::after,
+  .media-skeleton.is-pending::after {
+    animation: none;
+  }
+
+  .media-skeleton > img {
+    transition: none;
+  }
+}

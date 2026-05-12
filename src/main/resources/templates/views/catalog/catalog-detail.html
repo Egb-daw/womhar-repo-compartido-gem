@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.catalog.detail.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-catalog-page">
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="womhat-main flex-grow-1">
+    <section class="container py-4 py-lg-5">
+        <th:block th:replace="~{fragments/alerts :: flashMessages(true)}"></th:block>
+
+        <div class="technical-detail-shell">
+            <section class="surface-panel surface-panel--raised technical-hero">
+                <div class="technical-hero__head">
+                    <div class="technical-hero__copy">
+                        <span class="womhat-kicker mb-3" th:text="#{msg.catalog.kicker}">FICHA DE CATÁLOGO</span>
+                        <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                            <div>
+                                <h1 class="section-title technical-hero__title mb-2" th:text="${rack.catalogDisplayName != null and !#strings.isEmpty(rack.catalogDisplayName) ? rack.catalogDisplayName : rack.locationLabel}">Rack</h1>
+                                <p class="technical-hero__subtitle mb-0" th:text="${rack.catalogSummary != null and !#strings.isEmpty(rack.catalogSummary) ? rack.catalogSummary : rack.functionName}">Resumen</p>
+                            </div>
+                            <div class="technical-hero__actions d-flex gap-2 flex-wrap">
+                                <a th:href="@{/catalog}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i><span th:text="#{msg.catalog.detail.action.back}">Volver al catálogo</span></a>
+                                <a th:href="@{/catalog/orders}" class="btn btn-outline-primary"><i class="bi bi-box-seam me-1"></i><span th:text="#{msg.catalog.detail.action.orders}">Mis pedidos</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="technical-quick-grid">
+                    <article class="technical-quick-card"><span class="technical-quick-card__label" th:text="#{msg.catalog.detail.quick.price}">Precio</span><strong class="technical-quick-card__value" th:text="${rack.catalogPrice != null ? rack.catalogPrice + ' €' : #messages.msgOrNull('msg.catalog.common.noPrice')}">0 €</strong><span class="technical-quick-card__meta" th:text="#{msg.catalog.detail.quick.price.meta}">Precio unitario del catálogo</span></article>
+                    <article class="technical-quick-card"><span class="technical-quick-card__label" th:text="#{msg.catalog.detail.quick.stock}">Stock</span><strong class="technical-quick-card__value" th:text="${rack.catalogStock != null ? rack.catalogStock : 0}">0</strong><span class="technical-quick-card__meta" th:text="#{msg.catalog.detail.quick.stock.meta}">Unidades disponibles para pedido interno</span></article>
+                    <article class="technical-quick-card"><span class="technical-quick-card__label" th:text="#{msg.catalog.detail.quick.occupancy}">Ocupación</span><strong class="technical-quick-card__value" th:text="${rack.occupancyPercent != null ? rack.occupancyPercent + '%' : '0%'}">0%</strong><span class="technical-quick-card__meta" th:text="${(rack.occupiedU != null ? rack.occupiedU : 0) + 'U / ' + (rack.capacityU != null ? rack.capacityU : 0) + 'U'}">0U / 0U</span></article>
+                    <article class="technical-quick-card"><span class="technical-quick-card__label" th:text="#{msg.catalog.detail.quick.equipment}">Equipos documentados</span><strong class="technical-quick-card__value" th:text="${rack.equipmentCount != null ? rack.equipmentCount : 0}">0</strong><span class="technical-quick-card__meta" th:text="${rack.status != null ? rackStatusLabels.get(rack.status) : '-'}">ACTIVE</span></article>
+                </div>
+            </section>
+
+            <div class="row g-4">
+                <div class="col-12 col-xl-7">
+                    <section class="crud-card technical-card h-100">
+                        <div class="crud-card-header technical-card__header"><div><h2 class="technical-card__title mb-0" th:text="#{msg.catalog.detail.section.data}">Datos del rack</h2></div></div>
+                        <div class="p-3 p-md-4">
+                            <div class="table-responsive">
+                                <table class="table table-borderless align-middle technical-data-table">
+                                    <tbody>
+                                    <tr><th th:text="#{msg.catalog.detail.field.id}">ID</th><td th:text="${rack.id}">1</td></tr>
+                                    <tr><th th:text="#{msg.catalog.detail.field.model}">Modelo</th><td th:text="${rack.catalogDisplayName != null and !#strings.isEmpty(rack.catalogDisplayName) ? rack.catalogDisplayName : '-'}">Rack Red 42U 600x1000</td></tr>
+                                    <tr><th th:text="#{msg.catalog.detail.field.internalReference}">Referencia interna</th><td th:text="${rack.locationLabel != null and !#strings.isEmpty(rack.locationLabel) ? rack.locationLabel : '-'}">RACK-INT-01</td></tr>
+                                    <tr><th th:text="#{msg.catalog.detail.field.location}">Ubicación técnica</th><td th:text="${(rack.dataCenterName != null ? rack.dataCenterName : (rack.dataCenterCode != null ? rack.dataCenterCode : '-')) + (rack.roomName != null ? ' · ' + rack.roomName : '') + (rack.floor != null ? ' · ' + rack.floor : '')}">CPD · Sala · Planta</td></tr>
+                                    <tr><th th:text="#{msg.catalog.detail.field.function}">Función</th><td th:text="${rack.functionName != null ? rack.functionName : '-'}">Función</td></tr>
+                                    <tr><th th:text="#{msg.catalog.detail.field.group}">Grupo</th><td th:text="${rack.groupName != null and !#strings.isEmpty(rack.groupName) ? rack.groupName : '-'}">Grupo</td></tr>
+                                    <tr><th th:text="#{msg.catalog.detail.field.dimension}">Dimensión</th><td th:text="${rack.dimension != null and !#strings.isEmpty(rack.dimension) ? rack.dimension : '-'}">Dimensión</td></tr>
+                                    <tr><th th:text="#{msg.catalog.detail.field.position}">Posición</th><td th:text="${(rack.positionX != null ? rack.positionX : 0) + ', ' + (rack.positionY != null ? rack.positionY : 0)}">0,0</td></tr>
+                                    <tr><th th:text="#{msg.catalog.detail.field.status}">Estado</th><td th:text="${rack.status != null ? rackStatusLabels.get(rack.status) : '-'}">ACTIVE</td></tr>
+                                    <tr><th th:text="#{msg.catalog.detail.field.freeU}">U libres</th><td th:text="${rack.freeU != null ? rack.freeU + 'U' : '0U'}">0U</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-12 col-xl-5">
+                    <section class="crud-card technical-card h-100">
+                        <div class="crud-card-header technical-card__header"><div><h2 class="technical-card__title mb-0" th:text="#{msg.catalog.detail.order.title}">Registrar pedido interno</h2></div></div>
+                        <div class="p-3 p-md-4">
+                            <p class="small text-muted mb-3" th:text="#{msg.catalog.detail.order.subtitle}">Esta solicitud queda registrada dentro de WoMHAT como pedido interno. No hay pago online ni checkout externo.</p>
+                            <form th:action="@{/catalog/orders}"
+                                  th:object="${orderForm}"
+                                  method="post"
+                                  class="d-flex flex-column gap-3 js-catalog-order-form"
+                                  data-womhat-validate="true"
+                                  data-disable-on-submit="true"
+                                  th:attr="data-unit-price=${rack.catalogPrice},data-currency=#{msg.catalog.currency}">
+                                <div class="alert alert-danger mb-0"
+                                     th:if="${#fields.hasAnyErrors()}"
+                                     th:text="#{msg.form.validation.review}">
+                                    Revisa los campos marcados antes de continuar.
+                                </div>
+                                <input type="hidden" th:field="*{rackId}"/>
+                                <input type="hidden" th:field="*{quantity}"/>
+                                <div>
+                                    <label class="form-label" th:text="#{msg.catalog.detail.order.field.quantity}">Cantidad</label>
+                                    <div class="form-control-plaintext fw-semibold">1</div>
+                                    <div class="form-text"
+                                         id="quantityHelp"
+                                         th:text="#{msg.catalog.detail.order.field.quantity.help.fixed}">
+                                        Cada pedido asigna una sola unidad física del rack.
+                                    </div>
+                                    <div class="invalid-feedback d-block"
+                                         id="quantityError"
+                                         th:if="${#fields.hasErrors('quantity')}"
+                                         th:errors="*{quantity}"></div>
+                                </div>
+                                <div>
+                                    <label class="form-label" for="notes" th:text="#{msg.catalog.detail.order.field.notes}">Notas</label>
+                                    <textarea id="notes"
+                                              class="form-control"
+                                              th:field="*{notes}"
+                                              rows="4"
+                                              maxlength="500"
+                                              th:placeholder="#{msg.catalog.detail.order.field.notes.placeholder}"
+                                              th:classappend="${#fields.hasErrors('notes')} ? ' is-invalid' : ''"
+                                              th:attr="aria-invalid=${#fields.hasErrors('notes')} ? 'true' : null, aria-describedby=${#fields.hasErrors('notes')} ? 'notesHelp notesError' : 'notesHelp'"
+                                              placeholder="Describe el motivo o la necesidad operativa"></textarea>
+                                    <div class="form-text" id="notesHelp" th:text="#{msg.catalog.detail.order.field.notes.help}">
+                                        Añade contexto operativo si necesitas que administración revise el pedido.
+                                    </div>
+                                    <div class="invalid-feedback d-block"
+                                         id="notesError"
+                                         th:if="${#fields.hasErrors('notes')}"
+                                         th:errors="*{notes}"></div>
+                                </div>
+                                <div class="small text-muted">
+                                    <div><span class="fw-semibold" th:text="#{msg.catalog.detail.order.preview.quantity}">Cantidad</span><span>: </span><span id="catalogOrderQuantity">1</span></div>
+                                    <div><span class="fw-semibold" th:text="#{msg.catalog.detail.order.preview.unitPrice}">Precio unitario</span><span>: </span><span th:text="${rack.catalogPrice != null ? rack.catalogPrice + ' €' : #messages.msgOrNull('msg.catalog.common.noPrice')}">0 €</span></div>
+                                    <div><span class="fw-semibold" th:text="#{msg.catalog.detail.order.preview.estimatedTotal}">Total estimado</span><span>: </span><span id="catalogEstimatedTotal" th:text="${rack.catalogPrice != null ? rack.catalogPrice + ' €' : '—'}">—</span></div>
+                                    <div><span class="fw-semibold" th:text="#{msg.catalog.detail.quick.stock}">Disponibilidad</span><span>: </span><span th:text="${rack.catalogStock != null and rack.catalogStock > 0} ? #{msg.catalog.list.card.stock.available} : #{msg.catalog.list.card.stock.unavailable}">Disponible</span></div>
+                                </div>
+                                <div th:if="${rack.catalogStock == null or rack.catalogStock <= 0}" class="alert alert-warning mb-0" th:text="#{msg.catalog.detail.order.warning.stock}">Este rack no tiene stock disponible ahora mismo.</div>
+                                <div th:if="${rack.status == null or rack.status.name() != 'ACTIVE'}" class="alert alert-warning mb-0" th:text="#{msg.catalog.detail.order.warning.status}">Este rack no está en estado operativo para pedidos.</div>
+                                <button type="submit" class="btn btn-primary" th:disabled="${rack.catalogStock == null or rack.catalogStock <= 0 or rack.status == null or rack.status.name() != 'ACTIVE'}">
+                                    <i class="bi bi-send me-1"></i><span th:text="#{msg.catalog.detail.order.submit}">Registrar pedido</span>
+                                </button>
+                            </form>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <section class="crud-card technical-card mt-4">
+                <div class="crud-card-header technical-card__header">
+                    <div><h2 class="technical-card__title mb-0" th:text="#{msg.catalog.detail.equipment.title}">Equipos incluidos</h2></div>
+                    <span class="technical-counter" th:text="${rack.equipmentCount != null ? rack.equipmentCount : 0}">0</span>
+                </div>
+                <div class="table-responsive technical-table-shell" th:if="${rack.equipments != null and !#lists.isEmpty(rack.equipments)}">
+                    <table class="table table-hover table-striped mb-0 align-middle">
+                        <thead class="table-dark">
+                        <tr><th th:text="#{msg.equipment.field.name}">Nombre</th><th th:text="#{msg.equipment.field.type}">Tipo</th><th th:text="#{msg.catalog.detail.equipment.card.serial}">Serie</th><th th:text="#{msg.catalog.detail.equipment.card.position}">Posición U</th><th th:text="#{msg.catalog.detail.equipment.card.height}">Altura U</th><th th:text="#{msg.catalog.detail.field.status}">Estado</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="equipment : ${rack.equipments}">
+                            <td th:text="${equipment.name != null ? equipment.name : '-'}">Equipo</td>
+                            <td th:text="${equipment.type != null ? equipment.type : '-'}">SERVER</td>
+                            <td th:text="${equipment.serialNumber != null ? equipment.serialNumber : '-'}">SERIE</td>
+                            <td th:text="${equipment.slotPositionU != null ? equipment.slotPositionU : '-'}">1</td>
+                            <td th:text="${equipment.slotHeightU != null ? equipment.slotHeightU : '-'}">2</td>
+                            <td th:text="${equipment.status != null ? equipmentStatusLabels.get(equipment.status) : '-'}">ACTIVE</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4" th:if="${rack.equipments == null or #lists.isEmpty(rack.equipments)}">
+                    <div class="empty-state text-center">
+                        <i class="bi bi-inboxes display-6 d-block mb-3"></i>
+                        <h3 class="h5" th:text="#{msg.catalog.detail.equipment.empty.title}">No hay equipos documentados en este rack</h3>
+                        <p class="text-muted mb-0" th:text="#{msg.catalog.detail.equipment.empty.subtitle}">La ficha del catálogo sigue disponible, pero aún no hay inventario asociado visible aquí.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
