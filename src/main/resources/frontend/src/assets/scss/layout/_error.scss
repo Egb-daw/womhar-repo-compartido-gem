@@ -1,0 +1,109 @@
+.womhat-error-page .error-shell {
+  display: grid;
+  place-items: center;
+  flex: 1 0 auto;
+}
+
+.womhat-error-page .error-card {
+  width: min(760px, 100%);
+  padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, var(--surface-glass), var(--surface-raised));
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: 1rem;
+}
+
+.womhat-error-page .error-code-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: fit-content;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.womhat-error-page .error-code-wrap i {
+  color: var(--accent);
+  font-size: 1.05rem;
+}
+
+.womhat-error-page .error-code {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.womhat-error-page .error-title {
+  margin: 0;
+  color: var(--text);
+  font-family: "Raleway", sans-serif;
+  font-size: clamp(1.45rem, 1.2rem + 0.9vw, 2rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.womhat-error-page .error-tip {
+  color: var(--text-2);
+  line-height: 1.65;
+}
+
+.womhat-error-page .error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.womhat-error-page .error-actions .btn {
+  min-height: 44px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.womhat-error-page .error-meta {
+  margin-top: 0.25rem;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 0.85rem 1rem;
+}
+
+.womhat-error-page .error-meta-title {
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.womhat-error-page .error-meta-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.womhat-error-page .error-meta-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+.womhat-error-page .error-meta-list code {
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.15rem 0.45rem;
+  word-break: break-word;
+}
+
+@media (max-width: 575.98px) {
+  .womhat-error-page .error-actions .btn {
+    width: 100%;
+  }
+}

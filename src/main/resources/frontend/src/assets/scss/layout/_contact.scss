@@ -1,0 +1,62 @@
+.page-contact .contact-shell {
+  width: min(860px, 100%);
+}
+
+.page-contact .contact-card {
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: linear-gradient(180deg, var(--surface-glass), var(--surface-raised));
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+  padding: clamp(1.35rem, 2vw, 2rem);
+}
+
+.page-contact .contact-public__title {
+  margin: 0;
+  color: var(--text);
+  font-family: "Raleway", sans-serif;
+  font-size: clamp(2rem, 1.7rem + 0.8vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.page-contact .contact-card .form-label {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.page-contact .contact-card .form-control,
+.page-contact .contact-card .form-select {
+  min-height: 48px;
+  border-radius: 14px;
+  border-color: var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.page-contact .contact-card textarea.form-control {
+  min-height: 140px;
+}
+
+.page-contact .contact-card .form-control:focus,
+.page-contact .contact-card .form-select:focus,
+.page-contact .contact-card .form-check-input:focus {
+  border-color: rgba(89, 46, 242, 0.35);
+  box-shadow: 0 0 0 0.22rem var(--ring-accent);
+}
+
+.page-contact .contact-card .btn {
+  min-height: 46px;
+  border-radius: 14px;
+  font-weight: 800;
+}
+
+@media (max-width: 575.98px) {
+  .page-contact .contact-card .col-12.d-flex.flex-wrap.gap-2 {
+    flex-direction: column;
+  }
+
+  .page-contact .contact-card .col-12.d-flex.flex-wrap.gap-2 .btn {
+    width: 100%;
+  }
+}

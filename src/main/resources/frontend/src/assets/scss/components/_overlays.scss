@@ -1,0 +1,50 @@
+/* =============================================================================
+   WoMHAT · components/_overlays.scss
+   =============================================================================
+   Elementos flotantes / overlays:
+   - Botón “Back to top”
+   - Barra de progreso superior
+============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Botón Back to top
+----------------------------------------------------------------------------- */
+.back-to-top {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 9999;
+}
+
+.back-to-top.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* -----------------------------------------------------------------------------
+   Barra de progreso
+----------------------------------------------------------------------------- */
+.womhat-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  z-index: 99999;
+}
