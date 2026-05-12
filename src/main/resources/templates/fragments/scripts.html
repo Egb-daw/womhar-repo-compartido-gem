@@ -1,0 +1,7 @@
+<th:block th:fragment="scripts"
+          xmlns:th="http://www.thymeleaf.org">
+
+    <script defer
+            th:src="@{/assets/js/main.js(v=${assetVersion})}"
+            src="/assets/js/main.js?v=dev"></script>
+</th:block>

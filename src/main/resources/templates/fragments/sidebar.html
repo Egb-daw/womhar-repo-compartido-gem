@@ -1,0 +1,165 @@
+<nav th:fragment="sidebar(active)"
+     xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     class="womhat-sidebar">
+
+  <aside class="womhat-sidebar__panel" th:if="${adminAccess}" sec:authorize="hasRole('ADMIN')">
+    <div class="womhat-sidebar__head">
+      <span class="womhat-sidebar__eyebrow">WoMHAT</span>
+      <h2 class="womhat-sidebar__title" th:text="#{msg.sidebar.admin.title}">Admin workspace</h2>
+      <p class="womhat-sidebar__meta" th:text="#{msg.sidebar.admin.meta}">Infraestructura, inventario y operación técnica.</p>
+    </div>
+
+    <div class="womhat-sidebar__nav">
+      <a class="sidebar-link"
+         th:href="@{/dashboard}"
+         th:classappend="${active} == 'dashboard' ? ' active' : ''">
+        <i class="bi bi-speedometer2"></i>
+        <span th:text="#{msg.sidebar.dashboard}">Dashboard</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/data-centers}"
+         th:classappend="${active} == 'data-centers' ? ' active' : ''">
+        <i class="bi bi-building"></i>
+        <span th:text="#{msg.sidebar.dataCenters}">CPDs</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/rooms}"
+         th:classappend="${active} == 'rooms' ? ' active' : ''">
+        <i class="bi bi-door-open"></i>
+        <span th:text="#{msg.sidebar.rooms}">Salas</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/racks}"
+         th:classappend="${active} == 'racks' ? ' active' : ''">
+        <i class="bi bi-hdd-rack"></i>
+        <span th:text="#{msg.sidebar.racks}">Racks</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/equipment}"
+         th:classappend="${active} == 'equipment' ? ' active' : ''">
+        <i class="bi bi-router"></i>
+        <span th:text="#{msg.sidebar.equipment}">Equipos</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/catalog}"
+         th:classappend="${active} == 'catalog' ? ' active' : ''">
+        <i class="bi bi-grid-1x2"></i>
+        <span th:text="#{msg.sidebar.catalog}">Catálogo interno</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/catalog/orders}"
+         th:classappend="${active} == 'orders' ? ' active' : ''">
+        <i class="bi bi-receipt"></i>
+        <span th:text="#{msg.sidebar.orders.admin}">Pedidos internos</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/maintenance/work-orders}"
+         th:classappend="${active} == 'maintenance' ? ' active' : ''">
+        <i class="bi bi-tools"></i>
+        <span th:text="#{msg.sidebar.maintenance}">Mantenimiento</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/users}"
+         th:classappend="${active} == 'users' ? ' active' : ''">
+        <i class="bi bi-people"></i>
+        <span th:text="#{msg.sidebar.usersPermissions}">Usuarios y permisos</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/profile/edit}"
+         th:classappend="${active} == 'profile' ? ' active' : ''">
+        <i class="bi bi-person-circle"></i>
+        <span th:text="#{msg.sidebar.profile}">Perfil</span>
+      </a>
+    </div>
+  </aside>
+
+  <aside class="womhat-sidebar__panel" th:if="${customerAccess and !adminAccess}" sec:authorize="hasRole('USER') and !hasRole('ADMIN')">
+    <div class="womhat-sidebar__head">
+      <span class="womhat-sidebar__eyebrow">WoMHAT</span>
+      <h2 class="womhat-sidebar__title" th:text="#{msg.sidebar.user.title}">User workspace</h2>
+      <p class="womhat-sidebar__meta" th:text="#{msg.sidebar.user.meta}">Acceso a recursos permitidos, catálogo y pedidos internos.</p>
+    </div>
+
+    <div class="womhat-sidebar__nav">
+      <a class="sidebar-link"
+         th:href="@{/dashboard}"
+         th:classappend="${active} == 'dashboard' ? ' active' : ''">
+        <i class="bi bi-speedometer2"></i>
+        <span th:text="#{msg.sidebar.dashboard}">Dashboard</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/catalog}"
+         th:classappend="${active} == 'catalog' ? ' active' : ''">
+        <i class="bi bi-grid-1x2"></i>
+        <span th:text="#{msg.sidebar.catalog}">Catálogo interno</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/catalog/orders}"
+         th:classappend="${active} == 'orders' ? ' active' : ''">
+        <i class="bi bi-receipt"></i>
+        <span th:text="#{msg.sidebar.orders}">Mis pedidos</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/racks}"
+         th:classappend="${active} == 'racks' ? ' active' : ''">
+        <i class="bi bi-hdd-rack"></i>
+        <span th:text="#{msg.sidebar.racks}">Racks</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/equipment}"
+         th:classappend="${active} == 'equipment' ? ' active' : ''">
+        <i class="bi bi-router"></i>
+        <span th:text="#{msg.sidebar.equipment}">Equipos</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/maintenance/work-orders}"
+         th:classappend="${active} == 'maintenance' ? ' active' : ''">
+        <i class="bi bi-tools"></i>
+        <span th:text="#{msg.sidebar.maintenance}">Mantenimiento</span>
+      </a>
+
+      <a class="sidebar-link"
+         th:href="@{/profile/edit}"
+         th:classappend="${active} == 'profile' ? ' active' : ''">
+        <i class="bi bi-person-circle"></i>
+        <span th:text="#{msg.sidebar.profile}">Perfil</span>
+      </a>
+    </div>
+
+    <div class="womhat-sidebar__footer">
+      <div class="womhat-sidebar__stats">
+        <div class="womhat-sidebar__stat">
+          <span th:text="#{msg.sidebar.racks}">Racks</span>
+          <strong th:text="${accessibleRackCount}">0</strong>
+        </div>
+        <div class="womhat-sidebar__stat">
+          <span th:text="#{msg.sidebar.orders}">Pedidos</span>
+          <strong th:text="${customerOrderCount}">0</strong>
+        </div>
+        <div class="womhat-sidebar__stat">
+          <span th:text="#{msg.sidebar.stats.placed}">Placed</span>
+          <strong th:text="${customerPlacedOrderCount}">0</strong>
+        </div>
+        <div class="womhat-sidebar__stat">
+          <span th:text="#{msg.sidebar.stats.fulfilled}">Fulfilled</span>
+          <strong th:text="${customerFulfilledOrderCount}">0</strong>
+        </div>
+      </div>
+    </div>
+  </aside>
+</nav>

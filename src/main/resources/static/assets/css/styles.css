@@ -1,0 +1,393 @@
+/*styles.css*/
+:root {
+    --primary: #2563eb;
+    --bg-panel: #ffffff;
+    --border: #d1d5db;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --default-color: #4CAF50;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --empty-bg: #f3f4f6;
+    --slot-height: 50px;
+    /* Altura de cada unidad U */
+    --slot-width: 100%;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: #f0f2f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Header --- */
+header {
+    background: var(--bg-panel);
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+input[type="number"] {
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 70px;
+}
+
+.btn-gen {
+    padding: 8px 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-gen:hover {
+    background: #1d4ed8;
+}
+
+/* --- Layout Principal --- */
+.main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* --- Panel Izquierdo: Cuadrícula Principal --- */
+.grid-panel {
+    flex: 1;
+    background: #e5e7eb;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto;
+}
+
+#gridContainer {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.grid-item {
+    background-color: var(--default-color);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    aspect-ratio: 1 / 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 3px solid transparent;
+    text-align: center;
+    padding: 5px;
+    user-select: none;
+}
+
+.grid-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.grid-item.selected {
+    border-color: var(--primary);
+    transform: scale(0.98);
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+.grid-item.empty {
+    background-color: var(--empty-bg);
+    color: var(--text-muted);
+    border: 2px dashed #cbd5e1;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: normal;
+    box-shadow: none;
+}
+
+/* --- Panel Derecho: Formulario y Equipos --- */
+.form-panel {
+    width: 50%;
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.form-header {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    margin-top: 50px;
+    font-style: italic;
+}
+
+/* --- Botones de Acción --- */
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    transition: background 0.2s;
+}
+
+.btn-primary {
+    background: var(--primary);
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-create {
+    background: #10b981;
+}
+
+.btn-create:hover {
+    background: #059669;
+}
+
+.btn-reset {
+    background: var(--warning);
+}
+
+.btn-reset:hover {
+    background: #d97706;
+}
+
+.btn-delete {
+    background: var(--danger);
+}
+
+.btn-delete:hover {
+    background: #dc262b;
+}
+
+.btn-cancel {
+    background: #e5e7eb;
+    color: var(--text-main);
+}
+
+.btn-cancel:hover {
+    background: #d1d5db;
+}
+
+/* --- SECCIÓN DE EQUIPOS (NUEVO ESTILO VERTICAL) --- */
+.equipment-section {
+    margin-top: 25px;
+    border-top: 2px solid var(--border);
+    padding-top: 15px;
+    display: none;
+    /* Oculto por defecto */
+}
+
+.equipment-section.visible {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.equipment-section h3 {
+    margin-top: 0;
+    color: var(--text-main);
+    font-size: 1.1rem;
+}
+
+.eq-caption {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+/* Contenedor de la cuadrícula vertical de U */
+.equipment-grid {
+    display: flex;
+    flex-direction: column-reverse;
+    /* Para que el U1 esté abajo o arriba según preferencia, aquí abajo es común en racks */
+    gap: 2px;
+    max-height: 1000px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    background: #f9fafb;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+/* Estilo de cada ranura (Slot U) */
+.eq-slot {
+    height: var(--slot-height);
+    width: 100%;
+    background-color: var(--empty-bg);
+    border: 1px dashed #cbd5e1;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    position: relative;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.eq-slot:hover {
+    background-color: #e5e7eb;
+}
+
+/* Estado Ocupado */
+.eq-slot.occupied {
+    background-color: var(--default-color);
+    /* Color por defecto o del equipo */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: white;
+    font-weight: bold;
+    border-left: 4px solid rgba(0, 0, 0, 0.2);
+}
+
+.eq-slot.occupied:hover {
+    filter: brightness(1.1);
+}
+
+.eq-slot-number {
+    position: absolute;
+    right: 8px;
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+.eq-slot-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 20px;
+}
+
+/* Botón añadir */
+.btn-add-eq {
+    background: #f3f4f6;
+    border: 1px dashed #9ca3af;
+    color: #4b5563;
+}
+
+.btn-add-eq:hover {
+    background: #e5e7eb;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* --- Modal --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}

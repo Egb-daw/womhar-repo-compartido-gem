@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.user-detail.pageTitle})}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-user-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 user-detail-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2" th:text="${user.email}">
+                                        admin@womhat.com
+                                    </h1>
+                                    <p class="technical-hero__subtitle mb-0" th:text="#{msg.user-detail.subtitle}">
+                                        Estado de cuenta, perfil asociado y accesos documentados del usuario.
+                                    </p>
+                                </div>
+
+                                <div class="technical-hero__actions">
+                                    <a class="btn btn-primary" th:href="@{/users/edit(id=${user.id})}">
+                                        <i class="bi bi-pencil me-1"></i>
+                                        <span th:text="#{msg.common.edit}">Editar</span>
+                                    </a>
+                                    <a class="btn btn-outline-secondary" th:href="@{/users}">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        <span th:text="#{msg.user-detail.action.back}">Volver al listado</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li>
+                                    <i class="bi bi-person-badge"></i>
+                                    <span class="fw-semibold" th:text="#{msg.user-detail.field.id}">ID</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${user.id}">1</span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-shield-lock"></i>
+                                    <span class="fw-semibold" th:text="#{msg.form.meta.scope}">Ámbito</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="#{msg.form.scope.identity}">Identidad y acceso</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="technical-quick-grid">
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.user-detail.field.roles}">Roles</span>
+                            <strong class="technical-quick-card__value" th:text="${user.roles != null ? user.roles.size() : 0}">0</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.form.scope.identity}">Identidad y acceso</span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.user-detail.section.rackAccess}">Accesos a racks</span>
+                            <strong class="technical-quick-card__value" th:text="${user.rackAccessList != null ? user.rackAccessList.size() : 0}">0</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.user-detail.action.viewRack}">Ver rack</span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.user-detail.field.failedLoginAttempts}">Intentos fallidos</span>
+                            <strong class="technical-quick-card__value" th:text="${user.failedLoginAttempts != null ? user.failedLoginAttempts : 0}">0</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.user-detail.field.nonlocked}">Cuenta no bloqueada</span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.user-detail.field.passwordExpiresAt}">Caducidad de la contraseña</span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${user.passwordExpiresAt != null ? #temporals.format(user.passwordExpiresAt, 'dd/MM/yyyy') : '-'}">
+                                -
+                            </strong>
+                            <span class="technical-quick-card__meta"
+                                  th:text="${user.lastPasswordChange != null ? #temporals.format(user.lastPasswordChange, 'dd/MM/yyyy HH:mm') : '-'}">
+                                -
+                            </span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div>
+                            <h2 class="technical-card__title mb-0" th:text="#{msg.user-detail.section.userData}">
+                                Datos del usuario
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="p-3 p-md-4">
+                        <div class="technical-split">
+                            <div class="surface-panel p-3">
+                                <div class="small text-muted mb-3" th:text="#{msg.user-detail.section.account}">
+                                    Estado general de cuenta
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table technical-data-table technical-data-table--compact">
+                                        <tbody>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.id}">ID</th>
+                                            <td th:text="${user.id}">1</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.email}">Correo electrónico</th>
+                                            <td th:text="${user.email}">admin@womhat.com</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.active}">Cuenta activa</th>
+                                            <td th:text="${user.active} ? #{msg.common.yes} : #{msg.common.no}">Sí</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.emailVerified}">Correo electrónico verificado</th>
+                                            <td th:text="${user.emailVerified} ? #{msg.common.yes} : #{msg.common.no}">Sí</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.roles}">Roles</th>
+                                            <td>
+                                                <div class="d-flex flex-wrap gap-2" th:if="${user.roles != null and !#sets.isEmpty(user.roles)}">
+                                                    <span th:each="role : ${user.roles}"
+                                                          class="technical-chip"
+                                                          th:text="${#strings.replace(role, 'ROLE_', '')}">
+                                                        ADMIN
+                                                    </span>
+                                                </div>
+                                                <span class="text-muted"
+                                                      th:if="${user.roles == null or #sets.isEmpty(user.roles)}"
+                                                      th:text="#{msg.user-detail.field.roles.empty}">
+                                                    El usuario no tiene roles asignados
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="surface-panel p-3">
+                                <div class="small text-muted mb-3" th:text="#{msg.user-detail.section.security}">
+                                    Seguridad y control de acceso
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table technical-data-table technical-data-table--compact">
+                                        <tbody>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.nonlocked}">Cuenta no bloqueada</th>
+                                            <td th:text="${user.accountNonLocked} ? #{msg.common.yes} : #{msg.common.no}">Sí</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.failedLoginAttempts}">Intentos fallidos de inicio de sesión</th>
+                                            <td th:text="${user.failedLoginAttempts != null ? user.failedLoginAttempts : 0}">0</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.mustChangePassword}">Debe cambiar la contraseña</th>
+                                            <td th:text="${user.mustChangePassword} ? #{msg.common.yes} : #{msg.common.no}">No</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.lastPasswordChange}">Último cambio de contraseña</th>
+                                            <td th:text="${user.lastPasswordChange != null ? #temporals.format(user.lastPasswordChange, 'dd/MM/yyyy HH:mm:ss') : '-'}">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.user-detail.field.passwordExpiresAt}">Caducidad de la contraseña</th>
+                                            <td th:text="${user.passwordExpiresAt != null ? #temporals.format(user.passwordExpiresAt, 'dd/MM/yyyy HH:mm:ss') : '-'}">-</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="row g-4">
+                    <div class="col-12 col-xl-5">
+                        <section class="crud-card technical-card h-100">
+                            <div class="crud-card-header technical-card__header">
+                                <div>
+                                    <h2 class="technical-card__title mb-0" th:text="#{msg.user-detail.section.profileData}">
+                                        Perfil del usuario
+                                    </h2>
+                                </div>
+                            </div>
+
+                            <div class="p-3 p-md-4">
+                                <div th:if="${user.profile == null}" class="empty-state">
+                                    <i class="bi bi-person-vcard fs-2 d-block mb-2"></i>
+                                    <span th:text="#{msg.user-detail.profile.empty}">
+                                        Este usuario no tiene perfil asociado.
+                                    </span>
+                                </div>
+
+                                <div th:if="${user.profile != null}">
+                                    <div class="d-flex flex-column align-items-center align-items-md-start gap-3">
+                                        <img th:src="${user.profile.profileImage != null and !#strings.isEmpty(user.profile.profileImage) ? user.profile.profileImage : '/assets/images/Perfil.svg'}"
+                                             th:alt="#{msg.user-detail.profile.field.profileImage}"
+                                             class="img-thumbnail rounded-circle profile-avatar-preview"/>
+
+                                        <div class="w-100 row g-3">
+                                            <div class="col-12 col-md-6">
+                                                <div class="surface-panel p-3 h-100">
+                                                    <div class="small text-muted mb-1" th:text="#{msg.user-detail.profile.field.firstName}">Nombre</div>
+                                                    <div class="fw-semibold" th:text="${user.profile.firstName != null and !#strings.isEmpty(user.profile.firstName) ? user.profile.firstName : '-'}">-</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-md-6">
+                                                <div class="surface-panel p-3 h-100">
+                                                    <div class="small text-muted mb-1" th:text="#{msg.user-detail.profile.field.lastName}">Apellidos</div>
+                                                    <div class="fw-semibold" th:text="${user.profile.lastName != null and !#strings.isEmpty(user.profile.lastName) ? user.profile.lastName : '-'}">-</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-md-6">
+                                                <div class="surface-panel p-3 h-100">
+                                                    <div class="small text-muted mb-1" th:text="#{msg.user-detail.profile.field.phoneNumber}">Teléfono</div>
+                                                    <div class="fw-semibold" th:text="${user.profile.phoneNumber != null and !#strings.isEmpty(user.profile.phoneNumber) ? user.profile.phoneNumber : '-'}">-</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-md-6">
+                                                <div class="surface-panel p-3 h-100">
+                                                    <div class="small text-muted mb-1" th:text="#{msg.user-detail.profile.field.locale}">Idioma preferido</div>
+                                                    <div class="fw-semibold" th:text="${user.profile.locale != null and !#strings.isEmpty(user.profile.locale) ? user.profile.locale : '-'}">-</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="surface-panel p-3 h-100">
+                                                    <div class="small text-muted mb-1" th:text="#{msg.user-detail.profile.field.bio}">Biografía</div>
+                                                    <div th:text="${user.profile.bio != null and !#strings.isEmpty(user.profile.bio) ? user.profile.bio : '-'}">-</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="col-12 col-xl-7">
+                        <section class="crud-card technical-card h-100">
+                            <div class="crud-card-header technical-card__header">
+                                <div>
+                                    <h2 class="technical-card__title mb-0" th:text="#{msg.user-detail.section.rackAccess}">
+                                        Accesos a racks
+                                    </h2>
+                                </div>
+                                <span class="technical-counter" th:text="${user.rackAccessList != null ? user.rackAccessList.size() : 0}">0</span>
+                            </div>
+
+                            <div class="table-responsive technical-table-shell"
+                                 th:if="${user.rackAccessList != null and !#lists.isEmpty(user.rackAccessList)}">
+                                <table class="table table-hover table-striped mb-0 align-middle">
+                                    <thead class="table-dark">
+                                    <tr>
+                                        <th th:text="#{msg.user-detail.rackAccess.rack}">Rack</th>
+                                        <th th:text="#{msg.user-detail.rackAccess.permission}">Permiso</th>
+                                        <th th:text="#{msg.user-detail.rackAccess.actions}">Acciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="access : ${user.rackAccessList}">
+                                        <td th:text="${access.rackLocationLabel}">Rack A01</td>
+
+                                        <td>
+                                            <span class="technical-chip"
+                                                  th:text="${access.permission != null and access.permission.name() == 'ADMIN'} ? #{msg.user-detail.rackAccess.permission.admin}
+                                                          : (${access.permission != null and access.permission.name() == 'WRITE'} ? #{msg.user-detail.rackAccess.permission.write}
+                                                          : #{msg.user-detail.rackAccess.permission.read})">
+                                                Lectura
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <a th:if="${access.rackId != null}"
+                                               th:href="@{/racks/detail(id=${access.rackId})}"
+                                               class="btn btn-outline-secondary btn-sm">
+                                                <span th:text="#{msg.user-detail.action.viewRack}">Ver rack</span>
+                                            </a>
+
+                                            <button th:if="${access.rackId == null}"
+                                                    type="button"
+                                                    class="btn btn-outline-secondary btn-sm"
+                                                    disabled>
+                                                <span th:text="#{msg.user-detail.rackAccess.unavailable}">Pendiente</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="empty-state"
+                                 th:if="${user.rackAccessList == null or #lists.isEmpty(user.rackAccessList)}">
+                                <i class="bi bi-shield-lock fs-2 d-block mb-2"></i>
+                                <span th:text="#{msg.user-detail.rackAccess.empty}">
+                                    Este usuario no tiene accesos específicos a racks.
+                                </span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

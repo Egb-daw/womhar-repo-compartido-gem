@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale}">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT · User Form')}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-user-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 user-form-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2"
+                                        th:text="${user.id == null} ? #{msg.user-form.title.new} : #{msg.user-form.title.edit}">
+                                        Nuevo Usuario
+                                    </h1>
+                                    <p class="technical-hero__subtitle mb-0"
+                                       th:text="#{msg.user-form.subtitle}">
+                                        Configura acceso, estado de cuenta y permisos operativos de forma coherente.
+                                    </p>
+                                </div>
+
+                                <div class="technical-hero__actions">
+                                    <a th:href="@{/users}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        <span th:text="#{msg.user-form.back}">Volver al listado</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li>
+                                    <i class="bi bi-shield-lock"></i>
+                                    <span class="fw-semibold" th:text="#{msg.form.meta.scope}">Ámbito</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="#{msg.form.scope.identity}">Identidad y acceso</span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span class="fw-semibold" th:text="#{msg.form.meta.mode}">Modo</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${user.id == null} ? #{msg.form.mode.create} : #{msg.form.mode.edit}">Alta</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <form th:action="${user.id == null} ? @{/users/insert} : @{/users/update}"
+                      th:object="${user}"
+                      method="post"
+                      data-womhat-validate="true"
+                      data-disable-on-submit="true">
+                    <input type="hidden" th:field="*{id}"/>
+
+                    <div class="alert alert-danger mb-4"
+                         th:if="${#fields.hasAnyErrors()}"
+                         th:text="#{msg.form.validation.review}">
+                        Revisa los campos marcados antes de continuar.
+                    </div>
+
+                    <section class="crud-card technical-card">
+                        <div class="crud-card-header technical-card__header">
+                            <div>
+                                <h2 class="technical-card__title mb-1" th:text="#{msg.user-form.section.identity}">
+                                    Identidad y credenciales
+                                </h2>
+                                <p class="mb-0 text-muted" th:text="#{msg.form.scope.identity}">
+                                    Identidad y acceso
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 p-md-4">
+                            <div class="row g-3">
+                                <div class="col-12 col-lg-6">
+                                    <label for="email" class="form-label" th:text="#{msg.user-form.email}">Correo electrónico</label>
+                                    <input type="email"
+                                           th:field="*{email}"
+                                           id="email"
+                                           class="form-control"
+                                           required
+                                           maxlength="100"
+                                           th:classappend="${#fields.hasErrors('email')} ? ' is-invalid' : ''"/>
+                                    <div class="form-text" th:text="#{msg.user-form.email.help}">
+                                        Este correo define la identidad de acceso del usuario en la plataforma.
+                                    </div>
+                                    <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback d-block" th:errors="*{email}"></div>
+                                </div>
+
+                                <div class="col-12 col-lg-6">
+                                    <label for="password" class="form-label" th:text="#{msg.user-form.password}">Contraseña</label>
+                                    <input type="password"
+                                           th:field="*{password}"
+                                           id="password"
+                                           class="form-control"
+                                           minlength="8"
+                                           maxlength="72"
+                                           th:attr="required=${user.id == null} ? 'required' : null"
+                                           th:classappend="${#fields.hasErrors('password')} ? ' is-invalid' : ''"/>
+                                    <div class="form-text"
+                                         th:text="${user.id == null} ? #{msg.user-form.password.help.create} : #{msg.user-form.password.help.edit}">
+                                        La contraseña inicial debe tener entre 8 y 72 caracteres.
+                                    </div>
+                                    <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback d-block" th:errors="*{password}"></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="roles" class="form-label" th:text="#{msg.user-form.roles}">Roles</label>
+                                    <select id="roles"
+                                            class="form-select"
+                                            size="6"
+                                            multiple
+                                            required
+                                            th:field="*{roleIds}"
+                                            th:classappend="${#fields.hasErrors('roleIds')} ? ' is-invalid' : ''">
+                                        <option th:each="role : ${allRoles}"
+                                                th:value="${role.id}"
+                                                th:text="${role.displayName} + ' (' + role.name + ')'">
+                                            ROLE_ADMIN
+                                        </option>
+                                    </select>
+                                    <div class="form-text" th:text="#{msg.user-form.roles.help}">
+                                        Seleccione uno o varios roles para este usuario.
+                                    </div>
+                                    <div th:if="${#fields.hasErrors('roleIds')}" class="invalid-feedback d-block" th:errors="*{roleIds}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="crud-card technical-card mt-4">
+                        <div class="crud-card-header technical-card__header">
+                            <div>
+                                <h2 class="technical-card__title mb-1" th:text="#{msg.user-form.section.security}">
+                                    Seguridad y estado de cuenta
+                                </h2>
+                                <p class="mb-0 text-muted" th:text="#{msg.form.scope.identity}">
+                                    Identidad y acceso
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 p-md-4">
+                            <div class="row g-3">
+                                <div class="col-12 col-lg-6">
+                                    <label for="lastPasswordChange" class="form-label" th:text="#{msg.user-form.lastPasswordChange}">Último cambio de contraseña</label>
+                                    <input type="datetime-local"
+                                           id="lastPasswordChange"
+                                           class="form-control"
+                                           step="1"
+                                           th:field="*{lastPasswordChange}"
+                                           th:classappend="${#fields.hasErrors('lastPasswordChange')} ? ' is-invalid' : ''"/>
+                                    <div class="form-text" th:text="#{msg.user-form.lastPasswordChange.help}">
+                                        La caducidad de la contraseña se recalcula automáticamente a partir de esta fecha.
+                                    </div>
+                                    <div th:if="${#fields.hasErrors('lastPasswordChange')}" class="invalid-feedback d-block" th:errors="*{lastPasswordChange}"></div>
+                                </div>
+
+                                <div class="col-12 col-lg-6">
+                                    <label for="failedLoginAttempts" class="form-label" th:text="#{msg.user-form.failed}">Intentos fallidos de login</label>
+                                    <input type="number"
+                                           th:field="*{failedLoginAttempts}"
+                                           id="failedLoginAttempts"
+                                           class="form-control"
+                                           min="0"
+                                           th:classappend="${#fields.hasErrors('failedLoginAttempts')} ? ' is-invalid' : ''"/>
+                                    <div class="form-text" th:text="#{msg.user-form.failed.help}">
+                                        Útil para reflejar bloqueos, incidencias o revisiones manuales de acceso.
+                                    </div>
+                                    <div th:if="${#fields.hasErrors('failedLoginAttempts')}" class="invalid-feedback d-block" th:errors="*{failedLoginAttempts}"></div>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-xl-3">
+                                    <div class="surface-panel p-3 h-100">
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" id="active" th:field="*{active}">
+                                            <label class="form-check-label fw-semibold" for="active" th:text="#{msg.user-form.active}">
+                                                Cuenta activa
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-xl-3">
+                                    <div class="surface-panel p-3 h-100">
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" id="accountNonLocked" th:field="*{accountNonLocked}">
+                                            <label class="form-check-label fw-semibold" for="accountNonLocked" th:text="#{msg.user-form.nonlocked}">
+                                                Cuenta no bloqueada
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-xl-3">
+                                    <div class="surface-panel p-3 h-100">
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" id="emailVerified" th:field="*{emailVerified}">
+                                            <label class="form-check-label fw-semibold" for="emailVerified" th:text="#{msg.user-form.emailVerified}">
+                                                Correo electrónico verificado
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-xl-3">
+                                    <div class="surface-panel p-3 h-100">
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" id="mustChangePassword" th:field="*{mustChangePassword}">
+                                            <label class="form-check-label fw-semibold" for="mustChangePassword" th:text="#{msg.user-form.mustChange}">
+                                                Debe cambiar la contraseña
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end mt-4">
+                        <a th:href="@{/users}" class="btn btn-outline-secondary" th:text="#{msg.user-form.back}">
+                            Volver al listado
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>
+                            <span th:text="${user.id == null} ? #{msg.user-form.create} : #{msg.user-form.update}">
+                                Guardar
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

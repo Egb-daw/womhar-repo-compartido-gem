@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale}">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT · Users')}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-user-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 user-list-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(true)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2"
+                                        th:text="#{msg.user-list.title}">
+                                        Listado de Usuarios
+                                    </h1>
+                                    <p class="technical-hero__subtitle mb-0"
+                                       th:text="#{msg.user-list.subtitle}">
+                                        Control visual de identidades, estado de cuenta y acceso operativo.
+                                    </p>
+                                </div>
+
+                                <div class="technical-hero__actions">
+                                    <a th:href="@{/users/new}" class="btn btn-success">
+                                        <i class="bi bi-plus-lg me-1"></i>
+                                        <span th:text="#{msg.user-list.add}">Agregar Nuevo Usuario</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <ul class="womhat-tech-meta technical-hero__meta" th:if="${page != null}">
+                                <li>
+                                    <i class="bi bi-people"></i>
+                                    <span class="fw-semibold" th:text="#{msg.list.meta.flow}">Flujo</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="#{msg.user-list.meta.flowValue}">Identidad y control de acceso</span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-arrow-left-right"></i>
+                                    <span class="fw-semibold" th:text="#{msg.list.meta.sort}">Orden</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${sortParam != null ? sortParam : 'email,asc'}">email,asc</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="technical-quick-grid" th:if="${page != null}">
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.list.metric.total}">Total</span>
+                            <strong class="technical-quick-card__value" th:text="${page.totalElements}">0</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.user-list.title}">Usuarios</span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.list.metric.visible}">Visibles</span>
+                            <strong class="technical-quick-card__value" th:text="${page.numberOfElements}">0</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.list.metric.currentPage}">Página actual</span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.list.metric.pages}">Páginas</span>
+                            <strong class="technical-quick-card__value" th:text="${page.totalPages}">0</strong>
+                            <span class="technical-quick-card__meta" th:text="${'Página ' + (page.number + 1)}">Página 1</span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.list.metric.pageSize}">Límite</span>
+                            <strong class="technical-quick-card__value" th:text="${page.size}">10</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.list.metric.pageSizeValue}">Registros por página</span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div>
+                            <h2 class="technical-card__title mb-0" th:text="#{msg.user-list.title}">
+                                Listado de Usuarios
+                            </h2>
+                        </div>
+
+                        <span class="technical-counter" th:text="${page != null ? page.totalElements : 0}">0</span>
+                    </div>
+
+                    <div class="crud-toolbar" th:if="${page != null}">
+                        <div class="small text-muted">
+                            <span th:text="#{msg.pagination.info(${page.number + 1}, ${page.totalPages}, ${page.totalElements})}">
+                                Página 1 de 1 (0 registros en total)
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive technical-table-shell"
+                         th:if="${page != null and !#lists.isEmpty(page.content)}">
+                        <table class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="table-dark">
+                            <tr>
+                                <th th:with="
+                                    order=${page.sort.getOrderFor('email')},
+                                    dir=${order != null ? order.direction.name().toLowerCase() : 'asc'},
+                                    nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
+                                    <a class="text-white text-decoration-none"
+                                       th:href="@{/users(page=${page.number}, size=${page.size}, sort=${'email,' + nextDir})}">
+                                        <span th:text="#{msg.user-detail.field.email}">Correo electrónico</span>
+                                        <span class="ms-1" th:if="${order != null}" th:text="${dir == 'asc'} ? '▲' : '▼'"></span>
+                                    </a>
+                                </th>
+
+                                <th th:text="#{msg.user-list.field.account}">Cuenta</th>
+
+                                <th th:with="
+                                    order=${page.sort.getOrderFor('failedLoginAttempts')},
+                                    dir=${order != null ? order.direction.name().toLowerCase() : 'asc'},
+                                    nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
+                                    <a class="text-white text-decoration-none"
+                                       th:href="@{/users(page=${page.number}, size=${page.size}, sort=${'failedLoginAttempts,' + nextDir})}">
+                                        <span th:text="#{msg.user-list.field.security}">Seguridad</span>
+                                        <span class="ms-1" th:if="${order != null}" th:text="${dir == 'asc'} ? '▲' : '▼'"></span>
+                                    </a>
+                                </th>
+
+                                <th th:with="
+                                    order=${page.sort.getOrderFor('lastPasswordChange')},
+                                    dir=${order != null ? order.direction.name().toLowerCase() : 'asc'},
+                                    nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
+                                    <a class="text-white text-decoration-none"
+                                       th:href="@{/users(page=${page.number}, size=${page.size}, sort=${'lastPasswordChange,' + nextDir})}">
+                                        <span th:text="#{msg.user-list.field.lifecycle}">Ciclo de contraseña</span>
+                                        <span class="ms-1" th:if="${order != null}" th:text="${dir == 'asc'} ? '▲' : '▼'"></span>
+                                    </a>
+                                </th>
+
+                                <th th:text="#{msg.user-list.col.roles}">Roles</th>
+                                <th th:text="#{msg.common.actions}">Acciones</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="user : ${page.content}">
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <span class="fw-semibold" th:text="${user.email}">admin@womhat.com</span>
+                                        <small class="text-muted">
+                                            <span th:text="#{msg.user-detail.field.id}">ID</span>
+                                            <span class="mx-1">·</span>
+                                            <span th:text="${user.id}">1</span>
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <div class="small text-muted">
+                                            <span th:text="#{msg.user-list.active}">Activa</span>
+                                            <span class="mx-1">·</span>
+                                            <span th:text="${user.active} ? #{msg.common.yes} : #{msg.common.no}">Sí</span>
+                                        </div>
+                                        <div class="small text-muted">
+                                            <span th:text="#{msg.user-list.emailVerified}">Correo electrónico verificado</span>
+                                            <span class="mx-1">·</span>
+                                            <span th:text="${user.emailVerified} ? #{msg.common.yes} : #{msg.common.no}">Sí</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <div class="small text-muted">
+                                            <span th:text="#{msg.user-list.nonlocked}">No bloqueada</span>
+                                            <span class="mx-1">·</span>
+                                            <span th:text="${user.accountNonLocked} ? #{msg.common.yes} : #{msg.common.no}">Sí</span>
+                                        </div>
+                                        <div class="small text-muted">
+                                            <span th:text="#{msg.user-list.mustChangePassword}">Debe cambiar de contraseña</span>
+                                            <span class="mx-1">·</span>
+                                            <span th:text="${user.mustChangePassword} ? #{msg.common.yes} : #{msg.common.no}">No</span>
+                                        </div>
+                                        <div class="small text-muted">
+                                            <span th:text="#{msg.user-list.failedLoginAttempts}">Intentos fallidos</span>
+                                            <span class="mx-1">·</span>
+                                            <span th:text="${user.failedLoginAttempts != null ? user.failedLoginAttempts : 0}">0</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <div class="small text-muted">
+                                            <span th:text="#{msg.user-list.lastPasswordChange}">Último cambio de contraseña</span>
+                                        </div>
+                                        <div th:text="${user.lastPasswordChange != null ? #temporals.format(user.lastPasswordChange, 'dd/MM/yyyy HH:mm') : '-'}">
+                                            -
+                                        </div>
+                                        <div class="small text-muted">
+                                            <span th:text="#{msg.user-list.passwordExpiresAt}">Caduca</span>
+                                            <span class="mx-1">·</span>
+                                            <span th:text="${user.passwordExpiresAt != null ? #temporals.format(user.passwordExpiresAt, 'dd/MM/yyyy HH:mm') : '-'}">-</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex flex-wrap gap-2" th:if="${user.roles != null and !#sets.isEmpty(user.roles)}">
+                                        <span th:each="role : ${user.roles}"
+                                              class="technical-chip"
+                                              th:text="${#strings.replace(role, 'ROLE_', '')}">
+                                            ADMIN
+                                        </span>
+                                    </div>
+                                    <span class="text-muted"
+                                          th:if="${user.roles == null or #sets.isEmpty(user.roles)}"
+                                          th:text="#{msg.user-detail.field.roles.empty}">
+                                        El usuario no tiene roles asignados
+                                    </span>
+                                </td>
+
+                                <td class="text-nowrap">
+                                    <a th:href="@{/users/detail(id=${user.id})}"
+                                       class="btn btn-outline-secondary btn-sm"
+                                       th:text="#{msg.user-list.viewDetail}">
+                                        Ver detalle
+                                    </a>
+
+                                    <a th:href="@{/users/edit(id=${user.id})}"
+                                       class="btn btn-primary btn-sm"
+                                       th:text="#{msg.user-list.edit}">
+                                        Editar
+                                    </a>
+
+                                    <form th:action="@{/users/delete}" method="post" class="d-inline"
+                                          th:attr="data-confirm=#{msg.user-list.confirm}">
+                                        <input type="hidden" name="id" th:value="${user.id}"/>
+                                        <button type="submit" class="btn btn-danger btn-sm" th:text="#{msg.user-list.delete}">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="empty-state" th:if="${page == null or #lists.isEmpty(page.content)}">
+                        <i class="bi bi-people fs-2 d-block mb-2"></i>
+                        <span th:text="#{msg.user-list.empty}">
+                            No hay usuarios registrados todavía.
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center p-3"
+                         th:if="${page != null and page.totalPages > 1}">
+                        <div class="small text-muted">
+                            <span th:text="#{msg.pagination.info(${page.number + 1}, ${page.totalPages}, ${page.totalElements})}">
+                                Página 1 de 1 (0 registros en total)
+                            </span>
+                        </div>
+
+                        <nav th:aria-label="#{msg.pagination.aria.label}">
+                            <ul class="pagination mb-0">
+                                <li class="page-item" th:classappend="${page.first} ? ' disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/users(page=${page.number - 1}, size=${page.size}, sort=${sortParam})}"
+                                       th:aria-label="#{msg.pagination.prev}">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+
+                                <li class="page-item"
+                                    th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                                    th:classappend="${i == page.number} ? ' active'">
+                                    <a class="page-link"
+                                       th:text="${i + 1}"
+                                       th:href="@{/users(page=${i}, size=${page.size}, sort=${sortParam})}">
+                                        1
+                                    </a>
+                                </li>
+
+                                <li class="page-item" th:classappend="${page.last} ? ' disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/users(page=${page.number + 1}, size=${page.size}, sort=${sortParam})}"
+                                       th:aria-label="#{msg.pagination.next}">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

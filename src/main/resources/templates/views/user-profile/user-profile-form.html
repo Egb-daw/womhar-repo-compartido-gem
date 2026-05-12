@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.userProfile.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-profile-page">
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="womhat-main flex-grow-1">
+    <section class="container py-4 py-lg-5">
+        <th:block th:replace="~{fragments/alerts :: flashMessages(true)}"></th:block>
+
+        <div class="technical-detail-shell">
+            <form enctype="multipart/form-data"
+                  method="post"
+                  th:action="@{/profile/update}"
+                  th:object="${userProfileForm}"
+                  data-womhat-validate="true"
+                  data-disable-on-submit="true">
+                <input th:field="*{userId}" type="hidden"/>
+                <input th:field="*{profileImage}" type="hidden"/>
+
+                <div class="alert alert-danger mb-4"
+                     th:if="${#fields.hasAnyErrors()}"
+                     th:text="#{msg.form.validation.review}">
+                    Revisa los campos marcados antes de continuar.
+                </div>
+
+                <div class="row g-4">
+                    <div class="profile-side-stack">
+                        <section class="surface-panel surface-panel--raised profile-side-card text-center">
+                            <div class="media-skeleton is-pending js-media-skeleton d-inline-block rounded-circle mb-3">
+                                <img class="profile-avatar-preview"
+                                     id="profileAvatarPreview"
+                                     loading="lazy"
+                                     decoding="async"
+                                     th:alt="#{msg.userProfile.image.alt}"
+                                     th:src="${#strings.isEmpty(userProfileForm.profileImage) ? '/assets/images/Perfil.svg' : userProfileForm.profileImage}"/>
+                            </div>
+
+                            <div class="mb-3">
+                                    <span class="badge text-bg-light border"
+                                          th:if="${#strings.isEmpty(userProfileForm.profileImage)}"
+                                          th:text="#{msg.userProfile.image.empty}">
+                                        No tienes una imagen personalizada
+                                    </span>
+                                <span class="badge text-bg-light border"
+                                      th:if="${!#strings.isEmpty(userProfileForm.profileImage)}"
+                                      th:text="#{msg.userProfile.image.current}">
+                                        Imagen personalizada activa
+                                    </span>
+                            </div>
+
+                            <div class="mb-3 text-start">
+                                <label class="form-label"
+                                       for="profileImageFile"
+                                       th:text="#{msg.userProfile.field.profileImageUpload}">
+                                    Nueva imagen de perfil
+                                </label>
+                                <input class="form-control"
+                                       id="profileImageFile"
+                                       name="profileImageFile"
+                                       type="file"
+                                       accept="image/png,image/jpeg,image/webp,image/gif"
+                                       th:classappend="${profileImageError != null} ? ' is-invalid' : ''"
+                                       th:attr="aria-invalid=${profileImageError != null} ? 'true' : null, aria-describedby=${profileImageError != null} ? 'profileImageHelp profileImageRules profileImageError' : 'profileImageHelp profileImageRules'"/>
+
+                                <small class="form-text text-muted d-block"
+                                       id="profileImageHelp"
+                                       th:text="#{msg.userProfile.field.profileImageUpload.help}">
+                                    Selecciona una imagen desde tu dispositivo para actualizar tu foto de perfil.
+                                </small>
+                                <small class="form-text text-muted d-block"
+                                       id="profileImageRules"
+                                       th:text="#{msg.userProfile.field.profileImageUpload.rules}">
+                                    Formatos admitidos: imagen. Tamaño máximo recomendado: 2 MB.
+                                </small>
+                                <div class="invalid-feedback d-block"
+                                     id="profileImageError"
+                                     th:if="${profileImageError != null}"
+                                     th:text="${profileImageError}">
+                                    La imagen no es válida (tipo o tamaño).
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-center"
+                                 th:if="${!#strings.isEmpty(userProfileForm.profileImage)}">
+                                <button class="btn btn-outline-danger"
+                                        type="submit"
+                                        form="profileDeleteImageForm">
+                                    <i class="bi bi-trash me-1"></i>
+                                    <span th:text="#{msg.userProfile.action.deleteImage}">Eliminar imagen</span>
+                                </button>
+                            </div>
+
+                            <hr>
+
+                            <div class="p-3 p-md-4">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label"
+                                               for="email"
+                                               th:text="#{msg.userProfile.field.email}">
+                                            Correo electrónico
+                                        </label>
+                                        <input class="form-control"
+                                               id="email"
+                                               type="email"
+                                               readonly
+                                               th:field="*{email}"
+                                               aria-describedby="emailHelp"/>
+                                        <small class="form-text text-muted"
+                                               id="emailHelp"
+                                               th:text="#{msg.userProfile.field.email.help}">
+                                            Este correo pertenece a tu cuenta y no se edita desde esta pantalla.
+                                        </small>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label"
+                                               for="firstName"
+                                               th:text="#{msg.userProfile.field.firstName}">
+                                            Nombre
+                                        </label>
+                                        <input class="form-control"
+                                               id="firstName"
+                                               type="text"
+                                               maxlength="60"
+                                               required
+                                               th:field="*{firstName}"
+                                               th:placeholder="#{msg.userProfile.field.firstName.placeholder}"
+                                               th:classappend="${#fields.hasErrors('firstName')} ? ' is-invalid' : ''"
+                                               th:attr="aria-invalid=${#fields.hasErrors('firstName')} ? 'true' : null, aria-describedby=${#fields.hasErrors('firstName')} ? 'firstNameHelp firstNameError' : 'firstNameHelp'"/>
+                                        <small class="form-text text-muted"
+                                               id="firstNameHelp"
+                                               th:text="#{msg.userProfile.field.firstName.help}">
+                                            Campo obligatorio para identificar tu perfil dentro de WoMHAT.
+                                        </small>
+                                        <div class="invalid-feedback d-block"
+                                             id="firstNameError"
+                                             th:if="${#fields.hasErrors('firstName')}"
+                                             th:errors="*{firstName}"></div>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label"
+                                               for="lastName"
+                                               th:text="#{msg.userProfile.field.lastName}">
+                                            Apellidos
+                                        </label>
+                                        <input class="form-control"
+                                               id="lastName"
+                                               type="text"
+                                               maxlength="80"
+                                               required
+                                               th:field="*{lastName}"
+                                               th:placeholder="#{msg.userProfile.field.lastName.placeholder}"
+                                               th:classappend="${#fields.hasErrors('lastName')} ? ' is-invalid' : ''"
+                                               th:attr="aria-invalid=${#fields.hasErrors('lastName')} ? 'true' : null, aria-describedby=${#fields.hasErrors('lastName')} ? 'lastNameHelp lastNameError' : 'lastNameHelp'"/>
+                                        <small class="form-text text-muted"
+                                               id="lastNameHelp"
+                                               th:text="#{msg.userProfile.field.lastName.help}">
+                                            Campo obligatorio para completar tu ficha personal.
+                                        </small>
+                                        <div class="invalid-feedback d-block"
+                                             id="lastNameError"
+                                             th:if="${#fields.hasErrors('lastName')}"
+                                             th:errors="*{lastName}"></div>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label"
+                                               for="phoneNumber"
+                                               th:text="#{msg.userProfile.field.phoneNumber}">
+                                            Teléfono
+                                        </label>
+                                        <input class="form-control"
+                                               id="phoneNumber"
+                                               type="text"
+                                               inputmode="tel"
+                                               maxlength="30"
+                                               th:field="*{phoneNumber}"
+                                               th:placeholder="#{msg.userProfile.field.phoneNumber.placeholder}"
+                                               th:classappend="${#fields.hasErrors('phoneNumber')} ? ' is-invalid' : ''"
+                                               th:attr="aria-invalid=${#fields.hasErrors('phoneNumber')} ? 'true' : null, aria-describedby=${#fields.hasErrors('phoneNumber')} ? 'phoneNumberHelp phoneNumberError' : 'phoneNumberHelp'"/>
+                                        <small class="form-text text-muted"
+                                               id="phoneNumberHelp"
+                                               th:text="#{msg.userProfile.field.phoneNumber.help}">
+                                            Campo opcional para contacto interno o profesional.
+                                        </small>
+                                        <div class="invalid-feedback d-block"
+                                             id="phoneNumberError"
+                                             th:if="${#fields.hasErrors('phoneNumber')}"
+                                             th:errors="*{phoneNumber}"></div>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label"
+                                               for="locale"
+                                               th:text="#{msg.userProfile.field.locale}">
+                                            Idioma preferido
+                                        </label>
+                                        <input class="form-control"
+                                               id="locale"
+                                               type="text"
+                                               maxlength="10"
+                                               th:field="*{locale}"
+                                               th:placeholder="#{msg.userProfile.field.locale.placeholder}"
+                                               th:classappend="${#fields.hasErrors('locale')} ? ' is-invalid' : ''"
+                                               th:attr="aria-invalid=${#fields.hasErrors('locale')} ? 'true' : null, aria-describedby=${#fields.hasErrors('locale')} ? 'localeHelp localeError' : 'localeHelp'"/>
+                                        <small class="form-text text-muted"
+                                               id="localeHelp"
+                                               th:text="#{msg.userProfile.field.locale.help}">
+                                            Ejemplo: es_ES o en_GB
+                                        </small>
+                                        <div class="invalid-feedback d-block"
+                                             id="localeError"
+                                             th:if="${#fields.hasErrors('locale')}"
+                                             th:errors="*{locale}"></div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label"
+                                               for="bio"
+                                               th:text="#{msg.userProfile.field.bio}">
+                                            Biografía
+                                        </label>
+                                        <textarea class="form-control"
+                                                  id="bio"
+                                                  rows="4"
+                                                  maxlength="500"
+                                                  th:field="*{bio}"
+                                                  th:placeholder="#{msg.userProfile.field.bio.placeholder}"
+                                                  th:classappend="${#fields.hasErrors('bio')} ? ' is-invalid' : ''"
+                                                  th:attr="aria-invalid=${#fields.hasErrors('bio')} ? 'true' : null, aria-describedby=${#fields.hasErrors('bio')} ? 'bioHelp bioCounter bioError' : 'bioHelp bioCounter'"
+                                                  data-char-counter="bioCounter"></textarea>
+
+                                        <div class="d-flex justify-content-between align-items-center gap-2 mt-2">
+                                            <small class="form-text text-muted mb-0"
+                                                   id="bioHelp"
+                                                   th:text="#{msg.userProfile.field.bio.help}">
+                                                Describe brevemente tu función o el contexto en el que trabajas dentro de la plataforma.
+                                            </small>
+                                            <small class="text-muted profile-bio-counter"
+                                                   id="bioCounter">0 / 500</small>
+                                        </div>
+
+                                        <div class="invalid-feedback d-block"
+                                             id="bioError"
+                                             th:if="${#fields.hasErrors('bio')}"
+                                             th:errors="*{bio}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4 flex-wrap justify-content-end">
+                    <a class="btn btn-outline-secondary"
+                       th:if="${customerAccess}"
+                       th:href="@{/catalog/orders}"
+                       th:text="#{msg.userProfile.orders.action}">
+                        Ver mis pedidos
+                    </a>
+                    <a class="btn btn-outline-secondary"
+                       th:if="${customerAccess}"
+                       th:href="@{/racks}"
+                       th:text="#{msg.userProfile.racks.action}">
+                        Mis racks
+                    </a>
+                    <a class="btn btn-outline-secondary"
+                       th:href="@{/dashboard}"
+                       th:text="#{msg.userProfile.action.back}">
+                        Volver
+                    </a>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-save me-1"></i>
+                        <span th:text="#{msg.userProfile.action.save}">Guardar cambios</span>
+                    </button>
+                </div>
+            </form>
+
+            <section class="surface-panel border border-danger-subtle mt-4 p-3 p-md-4">
+                <h2 class="h5 mb-2" th:text="#{msg.userProfile.account.deactivate.title}">
+                    Desactivar cuenta
+                </h2>
+                <p class="text-muted mb-3" th:text="#{msg.userProfile.account.deactivate.description}">
+                    Esta acción desactiva tu acceso sin borrar pedidos, permisos ni histórico técnico.
+                </p>
+
+                <form method="post"
+                      th:action="@{/profile/deactivate-account}"
+                      class="row g-3"
+                      data-account-deactivation-form="true"
+                      novalidate
+                      data-disable-on-submit="true">
+                    <div class="col-12 col-lg-8">
+                        <label class="form-label"
+                               for="deactivationConfirmText"
+                               th:text="#{msg.userProfile.account.deactivate.confirm.label}">
+                            Escribe DESACTIVAR para confirmar
+                        </label>
+                        <input class="form-control"
+                               id="deactivationConfirmText"
+                               name="deactivationConfirmText"
+                               autocomplete="off"
+                               maxlength="30"
+                               data-confirm-tokens="DESACTIVAR|DEACTIVATE"
+                               th:attrappend="data-confirm-invalid-msg=#{msg.userProfile.account.deactivate.confirm.invalid},data-confirm-required-msg=#{msg.userProfile.account.deactivate.confirm.required}"
+                               th:placeholder="#{msg.userProfile.account.deactivate.confirm.placeholder}"
+                               aria-describedby="deactivationConfirmHelp deactivationConfirmError">
+                        <small class="form-text text-muted"
+                               id="deactivationConfirmHelp"
+                               th:text="#{msg.userProfile.account.deactivate.confirm.help}">
+                            Se cerrará tu sesión inmediatamente después de desactivar la cuenta.
+                        </small>
+                        <div class="invalid-feedback d-block"
+                             id="deactivationConfirmError"
+                             hidden>
+                        </div>
+                    </div>
+
+                    <div class="col-12 d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-danger"
+                                type="submit"
+                                th:text="#{msg.userProfile.account.deactivate.action}">
+                            Desactivar mi cuenta
+                        </button>
+                        <a class="btn btn-outline-secondary"
+                           th:href="@{/contact}"
+                           th:text="#{msg.userProfile.account.deactivate.requestDeletion}">
+                            Solicitar eliminación al administrador
+                        </a>
+                    </div>
+                </form>
+            </section>
+
+            <form id="profileDeleteImageForm"
+                  th:if="${!#strings.isEmpty(userProfileForm.profileImage)}"
+                  th:action="@{/profile/delete-image}"
+                  method="post"
+                  th:attr="data-confirm=#{msg.userProfile.action.deleteImage.confirm}"
+                  data-disable-on-submit="true">
+            </form>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
