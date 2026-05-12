@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.dashboard.user.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-user-page">
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="womhat-main flex-grow-1">
+    <section class="container py-4 py-lg-5">
+        <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+        <div class="technical-detail-shell">
+            <section class="surface-panel surface-panel--raised technical-hero">
+                <div class="technical-hero__head">
+                    <div class="technical-hero__copy">
+                        <span class="womhat-kicker mb-3" th:text="#{msg.dashboard.user.kicker}">OPERATIVA WoMHAT</span>
+                        <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                            <div>
+                                <h1 class="section-title technical-hero__title mb-2"
+                                    th:text="#{msg.dashboard.user.title}">
+                                    Mi panel
+                                </h1>
+                                <p class="technical-hero__subtitle mb-0"
+                                   th:text="#{msg.dashboard.user.subtitle}">
+                                    Consulta tu infraestructura visible, revisa actividad y gestiona pedidos internos.
+                                </p>
+                            </div>
+                            <div class="technical-hero__actions">
+                                <a th:href="@{/catalog}" class="btn btn-primary">
+                                    <i class="bi bi-shop me-1"></i>
+                                    <span th:text="#{msg.dashboard.action.viewCatalog}">Ver catálogo</span>
+                                </a>
+                                <a th:href="@{/catalog/orders}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-box-seam me-1"></i>
+                                    <span th:text="#{msg.dashboard.action.viewOrders}">Mis pedidos</span>
+                                </a>
+                                <a th:href="@{/profile/edit}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    <span th:text="#{msg.dashboard.user.action.profile}">Mi perfil</span>
+                                </a>
+                            </div>
+                        </div>
+                        <ul class="womhat-tech-meta technical-hero__meta">
+                            <li>
+                                <i class="bi bi-person-badge"></i>
+                                <span class="fw-semibold" th:text="#{msg.dashboard.meta.access}">Acceso</span>
+                                <span class="text-muted">·</span>
+                                <span th:text="#{msg.dashboard.meta.access.user}">Usuario</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-hdd-rack"></i>
+                                <span class="fw-semibold" th:text="#{msg.dashboard.meta.racksVisible}">Racks asignados</span>
+                                <span class="text-muted">·</span>
+                                <span th:text="${summary != null and summary.totalRacks != null ? summary.totalRacks : 0}">0</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-clock-history"></i>
+                                <span class="fw-semibold" th:text="#{msg.dashboard.user.meta.recentActivity}">Actividad reciente</span>
+                                <span class="text-muted">·</span>
+                                <span th:text="${recentActivity != null ? #lists.size(recentActivity) : 0}">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-summary-grid" aria-label="User dashboard summary">
+                <article class="dashboard-summary-card">
+                    <div class="dashboard-summary-card__head">
+                        <div>
+                            <span class="dashboard-summary-card__label"
+                                  th:text="#{msg.dashboard.user.summary.assignedRacks}">
+                                Racks asignados
+                            </span>
+                            <strong class="dashboard-summary-card__value"
+                                    th:text="${summary != null and summary.totalRacks != null ? summary.totalRacks : 0}">
+                                0
+                            </strong>
+                        </div>
+                        <span class="dashboard-summary-card__icon">
+                            <i class="bi bi-hdd-rack"></i>
+                        </span>
+                    </div>
+                    <p class="dashboard-summary-card__meta mb-0"
+                       th:text="#{msg.dashboard.user.summary.assignedRacks.meta}">
+                        Infraestructura a la que tienes acceso real.
+                    </p>
+                </article>
+
+                <article class="dashboard-summary-card">
+                    <div class="dashboard-summary-card__head">
+                        <div>
+                            <span class="dashboard-summary-card__label"
+                                  th:text="#{msg.dashboard.user.summary.visibleEquipment}">
+                                Equipos visibles
+                            </span>
+                            <strong class="dashboard-summary-card__value"
+                                    th:text="${summary != null and summary.totalEquipments != null ? summary.totalEquipments : 0}">
+                                0
+                            </strong>
+                        </div>
+                        <span class="dashboard-summary-card__icon">
+                            <i class="bi bi-router"></i>
+                        </span>
+                    </div>
+                    <p class="dashboard-summary-card__meta mb-0"
+                       th:text="#{msg.dashboard.user.summary.visibleEquipment.meta}">
+                        Inventario filtrado por permisos.
+                    </p>
+                </article>
+
+                <article class="dashboard-summary-card">
+                    <div class="dashboard-summary-card__head">
+                        <div>
+                            <span class="dashboard-summary-card__label"
+                                  th:text="#{msg.dashboard.user.summary.pendingOrders}">
+                                Pedidos pendientes
+                            </span>
+                            <strong class="dashboard-summary-card__value"
+                                    th:text="${customerPlacedOrderCount}">
+                                0
+                            </strong>
+                        </div>
+                        <span class="dashboard-summary-card__icon">
+                            <i class="bi bi-hourglass-split"></i>
+                        </span>
+                    </div>
+                    <p class="dashboard-summary-card__meta mb-0"
+                       th:text="#{msg.dashboard.user.summary.pendingOrders.meta}">
+                        Solicitudes internas todavía en curso.
+                    </p>
+                </article>
+
+                <article class="dashboard-summary-card">
+                    <div class="dashboard-summary-card__head">
+                        <div>
+                            <span class="dashboard-summary-card__label"
+                                  th:text="#{msg.dashboard.user.summary.completedOrders}">
+                                Pedidos completados
+                            </span>
+                            <strong class="dashboard-summary-card__value"
+                                    th:text="${customerFulfilledOrderCount}">
+                                0
+                            </strong>
+                        </div>
+                        <span class="dashboard-summary-card__icon">
+                            <i class="bi bi-check2-circle"></i>
+                        </span>
+                    </div>
+                    <p class="dashboard-summary-card__meta mb-0"
+                       th:text="#{msg.dashboard.user.summary.completedOrders.meta}">
+                        Pedidos ya atendidos por administración.
+                    </p>
+                </article>
+            </section>
+
+            <div class="row g-4">
+                <div class="col-12 col-xl-4">
+                    <section class="crud-card technical-card h-100">
+                        <div class="crud-card-header technical-card__header">
+                            <div>
+                                <h2 class="technical-card__title mb-1" th:text="#{msg.dashboard.quick.title}">Accesos rápidos</h2>
+                                <p class="mb-0 text-muted" th:text="#{msg.dashboard.user.quick.subtitle}">
+                                    Entradas directas a las zonas útiles de tu operativa diaria.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="p-3 p-md-4">
+                            <div class="dashboard-action-grid">
+                                <a class="dashboard-action-card" th:href="@{/catalog}">
+                                    <span class="dashboard-action-card__icon"><i class="bi bi-shop"></i></span>
+                                    <span>
+                                        <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.catalog}">Catálogo interno</span>
+                                        <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.catalog.help}">Consulta racks publicados y registra solicitudes internas.</span>
+                                    </span>
+                                </a>
+                                <a class="dashboard-action-card" th:href="@{/catalog/orders}">
+                                    <span class="dashboard-action-card__icon"><i class="bi bi-box-seam"></i></span>
+                                    <span>
+                                        <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.orders}">Mis pedidos</span>
+                                        <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.orders.help}">Revisa el estado y el histórico de tus solicitudes.</span>
+                                    </span>
+                                </a>
+                                <a class="dashboard-action-card" th:href="@{/racks}">
+                                    <span class="dashboard-action-card__icon"><i class="bi bi-hdd-rack"></i></span>
+                                    <span>
+                                        <span class="dashboard-action-card__title" th:text="#{msg.dashboard.user.quick.racks}">Mis racks</span>
+                                        <span class="dashboard-action-card__text" th:text="#{msg.dashboard.user.quick.racks.help}">Consulta únicamente la infraestructura que tienes asignada.</span>
+                                    </span>
+                                </a>
+                                <a class="dashboard-action-card" th:href="@{/equipment}">
+                                    <span class="dashboard-action-card__icon"><i class="bi bi-router"></i></span>
+                                    <span>
+                                        <span class="dashboard-action-card__title" th:text="#{msg.dashboard.user.quick.equipment}">Mis equipos</span>
+                                        <span class="dashboard-action-card__text" th:text="#{msg.dashboard.user.quick.equipment.help}">Accede a detalle técnico, QR y PDF del inventario permitido.</span>
+                                    </span>
+                                </a>
+                                <a class="dashboard-action-card" th:href="@{/maintenance/work-orders}">
+                                    <span class="dashboard-action-card__icon"><i class="bi bi-tools"></i></span>
+                                    <span>
+                                        <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.maintenance}">Mantenimiento</span>
+                                        <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.maintenance.help}">Revisa incidencias abiertas y órdenes en progreso.</span>
+                                    </span>
+                                </a>
+                                <a class="dashboard-action-card" th:href="@{/profile/edit}">
+                                    <span class="dashboard-action-card__icon"><i class="bi bi-person-circle"></i></span>
+                                    <span>
+                                        <span class="dashboard-action-card__title" th:text="#{msg.dashboard.user.quick.profile}">Mi perfil</span>
+                                        <span class="dashboard-action-card__text" th:text="#{msg.dashboard.user.quick.profile.help}">Actualiza tus datos y revisa tu acceso operativo.</span>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-12 col-xl-8">
+                    <section class="crud-card technical-card h-100">
+                        <div class="crud-card-header technical-card__header">
+                            <div>
+                                <h2 class="technical-card__title mb-1" th:text="#{msg.dashboard.user.rackMap.title}">Racks con acceso asignado</h2>
+                                <p class="mb-0 text-muted" th:text="#{msg.dashboard.user.rackMap.subtitle}">
+                                    Resumen de la infraestructura disponible para consulta.
+                                </p>
+                            </div>
+                            <span class="technical-counter" th:text="${rackMapItems != null ? #lists.size(rackMapItems) : 0}">0</span>
+                        </div>
+                        <!-- Mapa operativo de racks filtrado por permisos efectivos del usuario. -->
+                        <div class="p-3 p-md-4" th:if="${rackMapItems != null and !#lists.isEmpty(rackMapItems)}">
+                            <div class="dashboard-rack-map">
+                                <a th:each="rack : ${rackMapItems}"
+                                   th:href="@{/racks/detail(id=${rack.rackId})}"
+                                   class="dashboard-rack-card">
+                                    <div class="dashboard-rack-card__head">
+                                        <div>
+                                            <h3 class="dashboard-rack-card__title" th:text="${rack.locationLabel != null ? rack.locationLabel : '-'}">Rack</h3>
+                                            <span class="dashboard-rack-card__subtitle" th:text="${rack.roomName != null ? rack.roomName : '-'}">Sala</span>
+                                        </div>
+                                        <span class="dashboard-rack-card__badge dashboard-rack-card__badge--active"
+                                              th:if="${rack.status != null and rack.status.name() == 'ACTIVE'}"
+                                              th:text="${rackStatusLabels.get(rack.status)}">Activo</span>
+                                        <span class="dashboard-rack-card__badge dashboard-rack-card__badge--maintenance"
+                                              th:if="${rack.status != null and rack.status.name() == 'MAINTENANCE'}"
+                                              th:text="${rackStatusLabels.get(rack.status)}">Mantenimiento</span>
+                                        <span class="dashboard-rack-card__badge dashboard-rack-card__badge--inactive"
+                                              th:if="${rack.status == null or rack.status.name() == 'INACTIVE'}"
+                                              th:text="${rack.status != null ? rackStatusLabels.get(rack.status) : '-'}">Inactivo</span>
+                                    </div>
+                                    <div class="dashboard-rack-card__meta">
+                                        <span>
+                                            <strong th:text="#{msg.dashboard.rackMap.location}">Ubicación</strong>
+                                            <span class="mx-1">·</span>
+                                            <span th:text="${rack.dataCenterName != null and rack.roomName != null ? rack.dataCenterName + ' / ' + rack.roomName : (rack.roomName != null ? rack.roomName : '-')}">CPD / Sala</span>
+                                        </span>
+                                        <span><strong th:text="#{msg.dashboard.rackMap.equipment}">Equipos</strong><span class="mx-1">·</span><span th:text="${rack.equipmentCount != null ? rack.equipmentCount : 0}">0</span></span>
+                                        <span><strong th:text="#{msg.dashboard.rackMap.capacity}">Capacidad</strong><span class="mx-1">·</span><span th:text="${rack.capacityU != null ? rack.capacityU + 'U' : '-'}">42U</span></span>
+                                        <span><strong th:text="#{msg.rack.field.position}">Posición</strong><span class="mx-1">·</span><span th:text="${rack.positionX != null and rack.positionY != null ? rack.positionX + ', ' + rack.positionY : '-'}">0, 0</span></span>
+                                        <span>
+                                            <strong th:text="#{msg.dashboard.rackMap.access}">Acceso</strong>
+                                            <span class="mx-1">·</span>
+                                            <span th:if="${rack.originalOwner}" th:text="#{msg.dashboard.rackMap.access.owner}">Propietario</span>
+                                            <span th:if="${!rack.originalOwner and rack.accessPermission != null and rack.accessPermission.name() == 'ADMIN'}" th:text="#{msg.dashboard.rackMap.access.admin}">Administración del rack</span>
+                                            <span th:if="${!rack.originalOwner and rack.accessPermission != null and rack.accessPermission.name() == 'WRITE'}" th:text="#{msg.dashboard.rackMap.access.write}">Lectura y escritura</span>
+                                            <span th:if="${!rack.originalOwner and (rack.accessPermission == null or rack.accessPermission.name() == 'READ')}" th:text="#{msg.dashboard.rackMap.access.read}">Solo lectura</span>
+                                        </span>
+                                    </div>
+                                    <div class="dashboard-rack-card__meter">
+                                        <div class="d-flex justify-content-between small text-muted mb-2">
+                                            <span th:text="#{msg.dashboard.rackMap.occupancy}">Ocupación</span>
+                                            <span th:text="${rack.occupancyPercent != null ? rack.occupancyPercent + '%' : '0%'}">0%</span>
+                                        </div>
+                                        <div class="technical-meter">
+                                            <span class="technical-meter__fill"
+                                                  th:style="'width:' + (${rack.occupancyPercent != null ? rack.occupancyPercent : 0}) + '%'"></span>
+                                        </div>
+                                    </div>
+                                    <div class="dashboard-rack-card__footer">
+                                        <span><strong th:text="#{msg.dashboard.rackMap.freeU}">Libres</strong><span class="mx-1">·</span><span th:text="${rack.freeU != null ? rack.freeU + 'U' : '-'}">0U</span></span>
+                                        <span th:text="#{msg.common.detail}">Detalle</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="empty-state" th:if="${rackMapItems == null or #lists.isEmpty(rackMapItems)}">
+                            <i class="bi bi-hdd-rack fs-2 d-block mb-2"></i>
+                            <span th:text="#{msg.dashboard.user.rackMap.empty}">
+                                Todavía no tienes racks asignados. Cuando un administrador te conceda acceso, aparecerán aquí.
+                            </span>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <section class="crud-card technical-card">
+                <div class="crud-card-header technical-card__header">
+                    <div>
+                        <h2 class="technical-card__title mb-1" th:text="#{msg.dashboard.recent.title}">Últimos cambios</h2>
+                        <p class="mb-0 text-muted" th:text="#{msg.dashboard.user.recent.subtitle}">
+                            Cambios del inventario asociados a tus racks o ejecutados por tu cuenta.
+                        </p>
+                    </div>
+                    <span class="technical-counter" th:text="${recentActivity != null ? #lists.size(recentActivity) : 0}">0</span>
+                </div>
+                <!-- Histórico reciente limitado al ámbito de racks/equipos visibles por este usuario. -->
+                <div class="p-3 p-md-4" th:if="${recentActivity != null and !#lists.isEmpty(recentActivity)}">
+                    <div class="dashboard-activity-feed">
+                        <article class="dashboard-activity-item" th:each="item : ${recentActivity}">
+                            <div class="dashboard-activity-item__icon dashboard-activity-item__icon--insert"
+                                 th:if="${item.action != null and item.action.name() == 'INSERT'}">
+                                <i class="bi bi-plus-lg"></i>
+                            </div>
+                            <div class="dashboard-activity-item__icon dashboard-activity-item__icon--delete"
+                                 th:if="${item.action != null and item.action.name() == 'DELETE'}">
+                                <i class="bi bi-trash"></i>
+                            </div>
+                            <div class="dashboard-activity-item__icon dashboard-activity-item__icon--update"
+                                 th:if="${item.action == null or item.action.name() == 'UPDATE'}">
+                                <i class="bi bi-pencil"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="dashboard-activity-item__head">
+                                    <div>
+                                        <h3 class="dashboard-activity-item__title"
+                                            th:text="${item.targetLabel != null and !#strings.isEmpty(item.targetLabel) ? item.targetLabel : '-'}">
+                                            Equipo
+                                        </h3>
+                                        <div class="dashboard-activity-item__meta">
+                                            <span th:text="${item.changedByEmail != null and !#strings.isEmpty(item.changedByEmail) ? item.changedByEmail : '-'}">usuario@app.local</span>
+                                            <span th:text="${item.changedAt != null ? #temporals.format(item.changedAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="dashboard-activity-item__message"
+                                   th:text="${item.message != null and !#strings.isEmpty(item.message) ? item.message : (item.eventType != null ? activityEventLabels.get(item.eventType) : recentMessageFallback)}">
+                                    Cambio registrado.
+                                </p>
+                                <div class="dashboard-activity-item__footer">
+                                    <div class="dashboard-activity-tags">
+                                        <span class="technical-chip" th:text="${item.action != null ? activityActionLabels.get(item.action) : '-'}">Actualización</span>
+                                        <span class="technical-chip" th:text="${item.eventType != null ? activityEventLabels.get(item.eventType) : '-'}">Actualizado</span>
+                                    </div>
+                                    <a th:if="${item.equipmentId != null}"
+                                       th:href="@{/equipment/detail(id=${item.equipmentId})}"
+                                       class="btn btn-outline-secondary btn-sm"
+                                       th:text="#{msg.common.detail}">
+                                        Detalle
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="empty-state" th:if="${recentActivity == null or #lists.isEmpty(recentActivity)}">
+                    <i class="bi bi-clock-history fs-2 d-block mb-2"></i>
+                    <span th:text="#{msg.dashboard.user.recent.empty}">
+                        No hay actividad reciente visible todavía. Cuando cambie tu infraestructura asignada, aparecerá aquí.
+                    </span>
+                </div>
+            </section>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale}">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT · Room Detail')}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-user-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 room-detail-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2"
+                                        th:text="${room.name}">
+                                        Sala A
+                                    </h1>
+
+                                    <p class="technical-hero__subtitle mb-0">
+                                        <span class="technical-chip"
+                                              th:text="${room.floor != null and !#strings.isEmpty(room.floor) ? room.floor : '-'}">
+                                            PB
+                                        </span>
+                                        <span class="technical-dot" aria-hidden="true"></span>
+                                        <span th:text="${room.dataCenterCode != null and !#strings.isEmpty(room.dataCenterCode) ? room.dataCenterCode : '-'}">
+                                            CPD-SEV-01
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div class="technical-hero__actions">
+                                    <a th:href="@{/racks/new}" class="btn btn-success">
+                                        <i class="bi bi-plus-lg me-1"></i>
+                                        <span th:text="#{msg.room.detail.action.newRack}">Nuevo rack</span>
+                                    </a>
+                                    <a th:href="@{/rooms}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        <span th:text="#{msg.room.detail.action.back}">Volver</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li>
+                                    <i class="bi bi-building"></i>
+                                    <span class="fw-semibold" th:text="#{msg.room.field.dataCenter}">CPD</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${room.dataCenterName != null and !#strings.isEmpty(room.dataCenterName) ? room.dataCenterName : '-'}">
+                                        CPD principal
+                                    </span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-upc"></i>
+                                    <span class="fw-semibold" th:text="#{msg.room.field.dataCenterCode}">Código CPD</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${room.dataCenterCode != null and !#strings.isEmpty(room.dataCenterCode) ? room.dataCenterCode : '-'}">
+                                        CPD-SEV-01
+                                    </span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-hdd-rack"></i>
+                                    <span class="fw-semibold" th:text="#{msg.room.field.rackCount}">Racks</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${room.racks != null ? #lists.size(room.racks) : 0}">
+                                        0
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="technical-quick-grid">
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.room.field.dataCenter}">
+                                CPD
+                            </span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${room.dataCenterName != null and !#strings.isEmpty(room.dataCenterName) ? room.dataCenterName : '-'}">
+                                CPD principal
+                            </strong>
+                            <span class="technical-quick-card__meta"
+                                  th:text="${room.dataCenterCode != null and !#strings.isEmpty(room.dataCenterCode) ? room.dataCenterCode : '-'}">
+                                CPD-SEV-01
+                            </span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.room.field.floor}">
+                                Planta
+                            </span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${room.floor != null and !#strings.isEmpty(room.floor) ? room.floor : '-'}">
+                                PB
+                            </strong>
+                            <span class="technical-quick-card__meta"
+                                  th:text="#{msg.room.field.name}">
+                                Sala
+                            </span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.room.field.rackCount}">
+                                Racks
+                            </span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${room.racks != null ? #lists.size(room.racks) : 0}">
+                                0
+                            </strong>
+                            <span class="technical-quick-card__meta"
+                                  th:text="${room.name != null and !#strings.isEmpty(room.name) ? room.name : '-'}">
+                                Sala A
+                            </span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.room.field.notes}">
+                                Notas
+                            </span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${room.notes != null and !#strings.isEmpty(room.notes) ? room.notes : '-'}">
+                                -
+                            </strong>
+                            <span class="technical-quick-card__meta"
+                                  th:text="#{msg.room.detail.section.main}">
+                                Datos de la sala
+                            </span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div>
+                            <h2 class="technical-card__title mb-0" th:text="#{msg.room.detail.section.main}">
+                                Datos de la sala
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="p-3 p-md-4">
+                        <div class="technical-split">
+                            <div class="table-responsive">
+                                <table class="table table-borderless align-middle technical-data-table">
+                                    <tbody>
+                                    <tr><th th:text="#{msg.room.detail.field.id}">ID</th><td th:text="${room.id}">1</td></tr>
+                                    <tr><th th:text="#{msg.room.field.name}">Nombre</th><td th:text="${room.name != null and !#strings.isEmpty(room.name) ? room.name : '-'}">Sala A</td></tr>
+                                    <tr><th th:text="#{msg.room.field.dataCenter}">CPD</th><td th:text="${room.dataCenterName != null and !#strings.isEmpty(room.dataCenterName) ? room.dataCenterName : '-'}">CPD principal</td></tr>
+                                    <tr><th th:text="#{msg.room.field.dataCenterCode}">Código CPD</th><td th:text="${room.dataCenterCode != null and !#strings.isEmpty(room.dataCenterCode) ? room.dataCenterCode : '-'}">CPD-SEV-01</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-borderless align-middle technical-data-table">
+                                    <tbody>
+                                    <tr><th th:text="#{msg.room.field.floor}">Planta</th><td th:text="${room.floor != null and !#strings.isEmpty(room.floor) ? room.floor : '-'}">PB</td></tr>
+                                    <tr><th th:text="#{msg.room.field.rackCount}">Racks</th><td th:text="${room.racks != null ? #lists.size(room.racks) : 0}">0</td></tr>
+                                    <tr><th th:text="#{msg.room.field.notes}">Notas</th><td th:text="${room.notes != null and !#strings.isEmpty(room.notes) ? room.notes : '-'}">-</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div>
+                            <h2 class="technical-card__title mb-0" th:text="#{msg.room.detail.section.racks}">
+                                Racks de la sala
+                            </h2>
+                        </div>
+
+                        <span class="technical-counter"
+                              th:text="${room.racks != null ? #lists.size(room.racks) : 0}">
+                            0
+                        </span>
+                    </div>
+
+                    <div class="table-responsive technical-table-shell"
+                         th:if="${room.racks != null and !#lists.isEmpty(room.racks)}">
+                        <table class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="table-dark">
+                            <tr>
+                                <th th:text="#{msg.room.detail.rack.locationLabel}">Etiqueta</th>
+                                <th th:text="#{msg.room.detail.rack.capacityU}">Capacidad U</th>
+                                <th th:text="#{msg.room.detail.rack.functionName}">Función</th>
+                                <th th:text="#{msg.room.detail.rack.groupName}">Grupo</th>
+                                <th th:text="#{msg.room.detail.rack.status}">Estado</th>
+                                <th th:text="#{msg.room.detail.rack.equipmentCount}">Equipos</th>
+                                <th th:text="#{msg.common.actions}">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="rack : ${room.racks}">
+                                <td th:text="${rack.locationLabel != null and !#strings.isEmpty(rack.locationLabel) ? rack.locationLabel : '-'}">A01</td>
+                                <td th:text="${rack.capacityU != null ? rack.capacityU + 'U' : '-'}">42U</td>
+                                <td th:text="${rack.functionName != null and !#strings.isEmpty(rack.functionName) ? rack.functionName : '-'}">Producción</td>
+                                <td th:text="${rack.groupName != null and !#strings.isEmpty(rack.groupName) ? rack.groupName : '-'}">Core</td>
+                                <td><span class="technical-chip" th:text="${rack.status != null ? rack.status : '-'}">ACTIVE</span></td>
+                                <td th:text="${rack.equipmentCount != null ? rack.equipmentCount : 0}">0</td>
+                                <td class="text-nowrap">
+                                    <a th:href="@{/racks/detail(id=${rack.id})}" class="btn btn-outline-secondary btn-sm">
+                                        <span th:text="#{msg.common.detail}">Detalle</span>
+                                    </a>
+                                    <a th:href="@{/racks/edit(id=${rack.id})}" class="btn btn-primary btn-sm">
+                                        <span th:text="#{msg.common.edit}">Editar</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="empty-state" th:if="${room.racks == null or #lists.isEmpty(room.racks)}">
+                        <i class="bi bi-hdd-rack fs-2 d-block mb-2"></i>
+                        <span th:text="#{msg.room.detail.racks.empty}">
+                            Esta sala no tiene racks registrados.
+                        </span>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.dashboard.admin.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-dashboard-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 dashboard-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3" th:text="#{msg.dashboard.admin.kicker}">BACKOFFICE WoMHAT</span>
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2" th:text="#{msg.dashboard.admin.title}">
+                                        Centro de control técnico
+                                    </h1>
+                                    <p class="technical-hero__subtitle mb-0" th:text="#{msg.dashboard.admin.subtitle}">
+                                        Visión global del inventario, la actividad operativa y el catálogo interno.
+                                    </p>
+                                </div>
+                                <div class="technical-hero__actions">
+                                    <a th:href="@{/data-centers}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-building me-1"></i>
+                                        <span th:text="#{msg.dashboard.admin.action.dataCenters}">CPDs</span>
+                                    </a>
+                                    <a th:href="@{/racks}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-hdd-rack me-1"></i>
+                                        <span th:text="#{msg.dashboard.admin.action.racks}">Racks</span>
+                                    </a>
+                                    <a th:href="@{/equipment}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-router me-1"></i>
+                                        <span th:text="#{msg.dashboard.admin.action.equipment}">Equipos</span>
+                                    </a>
+                                    <a th:href="@{/catalog}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-grid-1x2 me-1"></i>
+                                        <span th:text="#{msg.dashboard.admin.action.catalog}">Catálogo</span>
+                                    </a>
+                                    <a th:href="@{/catalog/orders}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-receipt me-1"></i>
+                                        <span th:text="#{msg.dashboard.admin.action.orders}">Pedidos</span>
+                                    </a>
+                                    <a th:href="@{/users}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-people me-1"></i>
+                                        <span th:text="#{msg.dashboard.admin.action.usersPermissions}">Usuarios y permisos</span>
+                                    </a>
+                                    <a th:href="@{/maintenance/work-orders}" class="btn btn-primary">
+                                        <i class="bi bi-tools me-1"></i>
+                                        <span th:text="#{msg.dashboard.admin.action.maintenance}">Mantenimiento</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li>
+                                    <i class="bi bi-diagram-3"></i>
+                                    <span class="fw-semibold" th:text="#{msg.dashboard.meta.scope}">Cobertura</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="#{msg.dashboard.admin.meta.scopeValue}">Infraestructura, mantenimiento, catálogo y pedidos internos</span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-clock-history"></i>
+                                    <span class="fw-semibold" th:text="#{msg.dashboard.meta.activity}">Actividad</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="#{msg.dashboard.meta.activityValue(${recentActivity != null ? #lists.size(recentActivity) : 0})}">0 eventos recientes</span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-person-badge"></i>
+                                    <span class="fw-semibold" th:text="#{msg.dashboard.meta.access}">Acceso</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="#{msg.dashboard.meta.access.admin}">Administrador</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6 col-xl-4">
+                            <article class="dashboard-summary-card">
+                                <div class="dashboard-summary-card__head">
+                                    <div>
+                                        <span class="dashboard-summary-card__label" th:text="#{msg.dashboard.card.totalRacks}">Racks documentados</span>
+                                        <strong class="dashboard-summary-card__value" th:text="${summary != null and summary.totalRacks != null ? summary.totalRacks : 0}">0</strong>
+                                    </div>
+                                    <span class="dashboard-summary-card__icon"><i class="bi bi-hdd-rack"></i></span>
+                                </div>
+                                <div class="dashboard-summary-card__meta" th:text="#{msg.dashboard.card.totalRacks.meta}">Infraestructura física inventariada.</div>
+                            </article>
+                        </div>
+                        <div class="col-12 col-sm-6 col-xl-4">
+                            <article class="dashboard-summary-card">
+                                <div class="dashboard-summary-card__head">
+                                    <div>
+                                        <span class="dashboard-summary-card__label" th:text="#{msg.dashboard.card.totalEquipments}">Equipos registrados</span>
+                                        <strong class="dashboard-summary-card__value" th:text="${summary != null and summary.totalEquipments != null ? summary.totalEquipments : 0}">0</strong>
+                                    </div>
+                                    <span class="dashboard-summary-card__icon"><i class="bi bi-router"></i></span>
+                                </div>
+                                <div class="dashboard-summary-card__meta" th:text="#{msg.dashboard.card.totalEquipments.meta}">Inventario técnico con trazabilidad activa.</div>
+                            </article>
+                        </div>
+                        <div class="col-12 col-sm-6 col-xl-4">
+                            <article class="dashboard-summary-card">
+                                <div class="dashboard-summary-card__head">
+                                    <div>
+                                        <span class="dashboard-summary-card__label" th:text="#{msg.dashboard.card.activeHosts}">Hosts activos</span>
+                                        <strong class="dashboard-summary-card__value" th:text="${summary != null and summary.activeHosts != null ? summary.activeHosts : 0}">0</strong>
+                                    </div>
+                                    <span class="dashboard-summary-card__icon"><i class="bi bi-cpu"></i></span>
+                                </div>
+                                <div class="dashboard-summary-card__meta" th:text="#{msg.dashboard.card.activeHosts.meta}">Servidores operativos documentados.</div>
+                            </article>
+                        </div>
+                        <div class="col-12 col-sm-6 col-xl-4">
+                            <article class="dashboard-summary-card">
+                                <div class="dashboard-summary-card__head">
+                                    <div>
+                                        <span class="dashboard-summary-card__label" th:text="#{msg.dashboard.card.pendingMaintenance}">Mantenimiento pendiente</span>
+                                        <strong class="dashboard-summary-card__value" th:text="${summary != null and summary.alerts != null ? summary.alerts : 0}">0</strong>
+                                    </div>
+                                    <span class="dashboard-summary-card__icon"><i class="bi bi-exclamation-triangle"></i></span>
+                                </div>
+                                <div class="dashboard-summary-card__meta" th:text="#{msg.dashboard.card.pendingMaintenance.meta}">Órdenes abiertas o en progreso.</div>
+                            </article>
+                        </div>
+                        <div class="col-12 col-sm-6 col-xl-4">
+                            <article class="dashboard-summary-card">
+                                <div class="dashboard-summary-card__head">
+                                    <div>
+                                        <span class="dashboard-summary-card__label" th:text="#{msg.dashboard.card.pendingOrders}">Pedidos pendientes</span>
+                                        <strong class="dashboard-summary-card__value" th:text="${adminPlacedOrderCount != null ? adminPlacedOrderCount : 0}">0</strong>
+                                    </div>
+                                    <span class="dashboard-summary-card__icon"><i class="bi bi-receipt"></i></span>
+                                </div>
+                                <div class="dashboard-summary-card__meta" th:text="#{msg.dashboard.card.pendingOrders.meta}">Solicitudes internas en estado pendiente.</div>
+                            </article>
+                        </div>
+                        <div class="col-12 col-sm-6 col-xl-4">
+                            <article class="dashboard-summary-card">
+                                <div class="dashboard-summary-card__head">
+                                    <div>
+                                        <span class="dashboard-summary-card__label" th:text="#{msg.dashboard.card.fulfilledOrders}">Pedidos completados</span>
+                                        <strong class="dashboard-summary-card__value" th:text="${adminFulfilledOrderCount != null ? adminFulfilledOrderCount : 0}">0</strong>
+                                    </div>
+                                    <span class="dashboard-summary-card__icon"><i class="bi bi-check2-circle"></i></span>
+                                </div>
+                                <div class="dashboard-summary-card__meta" th:text="#{msg.dashboard.card.fulfilledOrders.meta}">Pedidos cerrados por administración.</div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="row g-4">
+                    <div class="col-12 col-xl-4">
+                        <section class="crud-card technical-card h-100">
+                            <div class="crud-card-header technical-card__header">
+                                <div>
+                                    <h2 class="technical-card__title mb-1" th:text="#{msg.dashboard.quick.title}">Accesos rápidos</h2>
+                                    <p class="mb-0 text-muted" th:text="#{msg.dashboard.quick.subtitle}">
+                                        Acceso directo a las operaciones principales del backoffice.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="p-3 p-md-4">
+                                <div class="dashboard-action-grid">
+                                    <a class="dashboard-action-card" th:href="@{/data-centers/new}">
+                                        <span class="dashboard-action-card__icon"><i class="bi bi-building-add"></i></span>
+                                        <span>
+                                            <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.addDataCenter}">Nuevo CPD</span>
+                                            <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.addDataCenter.help}">Alta de una nueva localización técnica.</span>
+                                        </span>
+                                    </a>
+                                    <a class="dashboard-action-card" th:href="@{/rooms/new}">
+                                        <span class="dashboard-action-card__icon"><i class="bi bi-grid-3x3-gap"></i></span>
+                                        <span>
+                                            <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.addRoom}">Nueva sala</span>
+                                            <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.addRoom.help}">Organiza la infraestructura por espacios físicos.</span>
+                                        </span>
+                                    </a>
+                                    <a class="dashboard-action-card" th:href="@{/racks/new}">
+                                        <span class="dashboard-action-card__icon"><i class="bi bi-hdd-rack"></i></span>
+                                        <span>
+                                            <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.addRack}">Nuevo rack</span>
+                                            <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.addRack.help}">Añade capacidad física y publicación en catálogo.</span>
+                                        </span>
+                                    </a>
+                                    <a class="dashboard-action-card" th:href="@{/equipment/new}">
+                                        <span class="dashboard-action-card__icon"><i class="bi bi-router"></i></span>
+                                        <span>
+                                            <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.addEquipment}">Nuevo equipo</span>
+                                            <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.addEquipment.help}">Documenta hardware con QR e histórico técnico.</span>
+                                        </span>
+                                    </a>
+                                    <a class="dashboard-action-card" th:href="@{/catalog}">
+                                        <span class="dashboard-action-card__icon"><i class="bi bi-shop"></i></span>
+                                        <span>
+                                            <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.catalog}">Catálogo interno</span>
+                                            <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.catalog.help}">Revisa racks publicados y pedidos internos.</span>
+                                        </span>
+                                    </a>
+                                    <a class="dashboard-action-card" th:href="@{/catalog/orders}">
+                                        <span class="dashboard-action-card__icon"><i class="bi bi-box-seam"></i></span>
+                                        <span>
+                                            <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.orders}">Pedidos internos</span>
+                                            <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.orders.help}">Controla solicitudes pendientes, completadas o canceladas.</span>
+                                        </span>
+                                    </a>
+                                    <a class="dashboard-action-card" th:href="@{/users}">
+                                        <span class="dashboard-action-card__icon"><i class="bi bi-people"></i></span>
+                                        <span>
+                                            <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.usersPermissions}">Usuarios y permisos</span>
+                                            <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.usersPermissions.help}">Gestiona cuentas y accesos compartidos a racks.</span>
+                                        </span>
+                                    </a>
+                                    <a class="dashboard-action-card" th:href="@{/maintenance/work-orders}">
+                                        <span class="dashboard-action-card__icon"><i class="bi bi-tools"></i></span>
+                                        <span>
+                                            <span class="dashboard-action-card__title" th:text="#{msg.dashboard.quick.maintenance}">Mantenimiento</span>
+                                            <span class="dashboard-action-card__text" th:text="#{msg.dashboard.quick.maintenance.help}">Revisa incidencias abiertas y órdenes en progreso.</span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="col-12 col-xl-8">
+                        <section class="crud-card technical-card h-100">
+                            <div class="crud-card-header technical-card__header">
+                                <div>
+                                    <h2 class="technical-card__title mb-1" th:text="#{msg.dashboard.rackMap.title}">Mapa operativo de racks</h2>
+                                    <p class="mb-0 text-muted" th:text="#{msg.dashboard.rackMap.subtitle}">Estado y ocupación de la infraestructura documentada.</p>
+                                </div>
+                                <span class="technical-counter" th:text="${rackMapItems != null ? #lists.size(rackMapItems) : 0}">0</span>
+                            </div>
+                            <!-- Mapa global de racks para administración: estado, ocupación y navegación a detalle. -->
+                            <div class="p-3 p-md-4" th:if="${rackMapItems != null and !#lists.isEmpty(rackMapItems)}">
+                                <div class="dashboard-rack-map">
+                                    <a th:each="rack : ${rackMapItems}" th:href="@{/racks/detail(id=${rack.rackId})}" class="dashboard-rack-card">
+                                        <div class="dashboard-rack-card__head">
+                                            <div>
+                                                <h3 class="dashboard-rack-card__title" th:text="${rack.locationLabel != null ? rack.locationLabel : '-'}">Rack</h3>
+                                                <span class="dashboard-rack-card__subtitle" th:text="${rack.roomName != null ? rack.roomName : '-'}">Sala</span>
+                                            </div>
+                                            <span class="dashboard-rack-card__badge dashboard-rack-card__badge--active"
+                                                  th:if="${rack.status != null and rack.status.name() == 'ACTIVE'}"
+                                                  th:text="${rackStatusLabels.get(rack.status)}">Activo</span>
+                                            <span class="dashboard-rack-card__badge dashboard-rack-card__badge--maintenance"
+                                                  th:if="${rack.status != null and rack.status.name() == 'MAINTENANCE'}"
+                                                  th:text="${rackStatusLabels.get(rack.status)}">Mantenimiento</span>
+                                            <span class="dashboard-rack-card__badge dashboard-rack-card__badge--inactive"
+                                                  th:if="${rack.status == null or rack.status.name() == 'INACTIVE'}"
+                                                  th:text="${rack.status != null ? rackStatusLabels.get(rack.status) : '-'}">Inactivo</span>
+                                        </div>
+                                        <div class="dashboard-rack-card__meta">
+                                            <span>
+                                                <strong th:text="#{msg.dashboard.rackMap.location}">Ubicación</strong>
+                                                <span class="mx-1">·</span>
+                                                <span th:text="${rack.dataCenterName != null and rack.roomName != null ? rack.dataCenterName + ' / ' + rack.roomName : (rack.roomName != null ? rack.roomName : '-')}">CPD / Sala</span>
+                                            </span>
+                                            <span><strong th:text="#{msg.dashboard.rackMap.equipment}">Equipos</strong><span class="mx-1">·</span><span th:text="${rack.equipmentCount != null ? rack.equipmentCount : 0}">0</span></span>
+                                            <span><strong th:text="#{msg.dashboard.rackMap.capacity}">Capacidad</strong><span class="mx-1">·</span><span th:text="${rack.capacityU != null ? rack.capacityU + 'U' : '-'}">42U</span></span>
+                                            <span><strong th:text="#{msg.rack.field.position}">Posición</strong><span class="mx-1">·</span><span th:text="${rack.positionX != null and rack.positionY != null ? rack.positionX + ', ' + rack.positionY : '-'}">0, 0</span></span>
+                                            <span>
+                                                <strong th:text="#{msg.dashboard.rackMap.access}">Acceso</strong>
+                                                <span class="mx-1">·</span>
+                                                <span th:text="#{msg.dashboard.rackMap.access.globalAdmin}">Administrador global</span>
+                                            </span>
+                                        </div>
+                                        <div class="dashboard-rack-card__meter">
+                                            <div class="d-flex justify-content-between small text-muted mb-2">
+                                                <span th:text="#{msg.dashboard.rackMap.occupancy}">Ocupación</span>
+                                                <span th:text="${rack.occupancyPercent != null ? rack.occupancyPercent + '%' : '0%'}">0%</span>
+                                            </div>
+                                            <div class="technical-meter">
+                                                <span class="technical-meter__fill"
+                                                      th:style="'width:' + (${rack.occupancyPercent != null ? rack.occupancyPercent : 0}) + '%'"></span>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard-rack-card__footer">
+                                            <span><strong th:text="#{msg.dashboard.rackMap.freeU}">Libres</strong><span class="mx-1">·</span><span th:text="${rack.freeU != null ? rack.freeU + 'U' : '-'}">0U</span></span>
+                                            <span th:text="#{msg.common.detail}">Detalle</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="empty-state" th:if="${rackMapItems == null or #lists.isEmpty(rackMapItems)}">
+                                <i class="bi bi-hdd-rack fs-2 d-block mb-2"></i>
+                                <span th:text="#{msg.dashboard.admin.rackMap.empty}">No hay racks documentados para mostrar en el mapa operativo.</span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div>
+                            <h2 class="technical-card__title mb-1" th:text="#{msg.dashboard.recent.title}">Últimos cambios</h2>
+                            <p class="mb-0 text-muted" th:text="#{msg.dashboard.admin.recent.subtitle}">Últimos cambios registrados sobre equipos visibles.</p>
+                        </div>
+                        <span class="technical-counter" th:text="${recentActivity != null ? #lists.size(recentActivity) : 0}">0</span>
+                    </div>
+                    <!-- Feed de actividad global para auditoría operativa y trazabilidad técnica. -->
+                    <div class="p-3 p-md-4" th:if="${recentActivity != null and !#lists.isEmpty(recentActivity)}">
+                        <div class="dashboard-activity-feed">
+                            <article class="dashboard-activity-item" th:each="item : ${recentActivity}">
+                                <div class="dashboard-activity-item__icon dashboard-activity-item__icon--insert"
+                                     th:if="${item.action != null and item.action.name() == 'INSERT'}">
+                                    <i class="bi bi-plus-lg"></i>
+                                </div>
+                                <div class="dashboard-activity-item__icon dashboard-activity-item__icon--delete"
+                                     th:if="${item.action != null and item.action.name() == 'DELETE'}">
+                                    <i class="bi bi-trash"></i>
+                                </div>
+                                <div class="dashboard-activity-item__icon dashboard-activity-item__icon--update"
+                                     th:if="${item.action == null or item.action.name() == 'UPDATE'}">
+                                    <i class="bi bi-pencil"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="dashboard-activity-item__head">
+                                        <div>
+                                            <h3 class="dashboard-activity-item__title" th:text="${item.targetLabel != null and !#strings.isEmpty(item.targetLabel) ? item.targetLabel : '-'}">Equipo</h3>
+                                            <div class="dashboard-activity-item__meta">
+                                                <span th:text="${item.changedByEmail != null and !#strings.isEmpty(item.changedByEmail) ? item.changedByEmail : '-'}">admin@app.local</span>
+                                                <span th:text="${item.changedAt != null ? #temporals.format(item.changedAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="dashboard-activity-item__message"
+                                       th:text="${item.message != null and !#strings.isEmpty(item.message) ? item.message : (item.eventType != null ? activityEventLabels.get(item.eventType) : recentMessageFallback)}">
+                                        Cambio registrado.
+                                    </p>
+                                    <div class="dashboard-activity-item__footer">
+                                        <div class="dashboard-activity-tags">
+                                            <span class="technical-chip" th:text="${item.action != null ? activityActionLabels.get(item.action) : '-'}">Actualización</span>
+                                            <span class="technical-chip" th:text="${item.eventType != null ? activityEventLabels.get(item.eventType) : '-'}">Actualizado</span>
+                                        </div>
+                                        <a th:if="${item.equipmentId != null}"
+                                           th:href="@{/equipment/detail(id=${item.equipmentId})}"
+                                           class="btn btn-outline-secondary btn-sm"
+                                           th:text="#{msg.common.detail}">
+                                            Detalle
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                    <div class="empty-state" th:if="${recentActivity == null or #lists.isEmpty(recentActivity)}">
+                        <i class="bi bi-clock-history fs-2 d-block mb-2"></i>
+                        <span th:text="#{msg.dashboard.recent.empty}">Todavía no hay actividad registrada en el inventario.</span>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale}">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT · Data Center Form')}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-user-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 data-center-form-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2"
+                                        th:text="${dataCenter.id == null} ? #{msg.dataCenter.form.title.new} : #{msg.dataCenter.form.title.edit}">
+                                        CPD
+                                    </h1>
+                                    <p class="technical-hero__subtitle mb-0"
+                                       th:text="#{msg.dataCenter.form.subtitle}">
+                                        Formulario de creación y edición de CPDs.
+                                    </p>
+                                </div>
+
+                                <div class="technical-hero__actions">
+                                    <a th:href="@{/data-centers}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        <span th:text="#{msg.dataCenter.form.action.back}">Volver</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li>
+                                    <i class="bi bi-diagram-3"></i>
+                                    <span class="fw-semibold" th:text="#{msg.form.meta.scope}">Ámbito</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="#{msg.form.scope.infrastructure}">Infraestructura física</span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span class="fw-semibold" th:text="#{msg.form.meta.mode}">Modo</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${dataCenter.id == null} ? #{msg.form.mode.create} : #{msg.form.mode.edit}">
+                                        Alta
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <form th:action="${dataCenter.id == null} ? @{/data-centers/insert} : @{/data-centers/update}"
+                      th:object="${dataCenter}"
+                      method="post"
+                      data-womhat-validate="true"
+                      data-disable-on-submit="true">
+                    <input type="hidden" th:field="*{id}"/>
+
+                    <div class="alert alert-danger mb-4"
+                         th:if="${#fields.hasAnyErrors()}"
+                         th:text="#{msg.form.validation.review}">
+                        Revisa los campos marcados antes de continuar.
+                    </div>
+
+                    <section class="crud-card technical-card">
+                        <div class="crud-card-header technical-card__header">
+                            <div>
+                                <h2 class="technical-card__title mb-1" th:text="#{msg.dataCenter.form.section.main}">
+                                    Datos principales del CPD
+                                </h2>
+                                <p class="mb-0 text-muted" th:text="#{msg.dataCenter.form.subtitle}">
+                                    Formulario de creación y edición de CPDs.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 p-md-4">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label for="code" class="form-label" th:text="#{msg.dataCenter.field.code}">Código</label>
+                                    <input type="text"
+                                           th:field="*{code}"
+                                           id="code"
+                                           class="form-control"
+                                           th:classappend="${#fields.hasErrors('code')} ? ' is-invalid' : ''"
+                                           required
+                                           maxlength="30"
+                                           th:placeholder="#{msg.dataCenter.form.placeholder.code}"/>
+                                    <div th:if="${#fields.hasErrors('code')}" class="invalid-feedback d-block" th:errors="*{code}"></div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="name" class="form-label" th:text="#{msg.dataCenter.field.name}">Nombre</label>
+                                    <input type="text"
+                                           th:field="*{name}"
+                                           id="name"
+                                           class="form-control"
+                                           th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"
+                                           required
+                                           maxlength="120"
+                                           th:placeholder="#{msg.dataCenter.form.placeholder.name}"/>
+                                    <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback d-block" th:errors="*{name}"></div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="city" class="form-label" th:text="#{msg.dataCenter.field.city}">Ciudad</label>
+                                    <input type="text"
+                                           th:field="*{city}"
+                                           id="city"
+                                           class="form-control"
+                                           th:classappend="${#fields.hasErrors('city')} ? ' is-invalid' : ''"
+                                           maxlength="80"
+                                           th:placeholder="#{msg.dataCenter.form.placeholder.city}"/>
+                                    <div th:if="${#fields.hasErrors('city')}" class="invalid-feedback d-block" th:errors="*{city}"></div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="building" class="form-label" th:text="#{msg.dataCenter.field.building}">Edificio</label>
+                                    <input type="text"
+                                           th:field="*{building}"
+                                           id="building"
+                                           class="form-control"
+                                           th:classappend="${#fields.hasErrors('building')} ? ' is-invalid' : ''"
+                                           maxlength="120"
+                                           th:placeholder="#{msg.dataCenter.form.placeholder.building}"/>
+                                    <div th:if="${#fields.hasErrors('building')}" class="invalid-feedback d-block" th:errors="*{building}"></div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="status" class="form-label" th:text="#{msg.dataCenter.field.status}">Estado</label>
+                                    <select id="status"
+                                            th:field="*{status}"
+                                            class="form-select"
+                                            required
+                                            th:classappend="${#fields.hasErrors('status')} ? ' is-invalid' : ''">
+                                        <option value="" th:text="#{msg.dataCenter.form.option.status.select}">
+                                            -- Selecciona un estado --
+                                        </option>
+                                        <option th:each="statusItem : ${statuses}"
+                                                th:value="${statusItem}"
+                                                th:text="${statusItem}">
+                                            ACTIVE
+                                        </option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('status')}" class="invalid-feedback d-block" th:errors="*{status}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end mt-4">
+                        <a th:href="@{/data-centers}" class="btn btn-outline-secondary"
+                           th:text="#{msg.common.cancel}">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>
+                            <span th:text="${dataCenter.id == null} ? #{msg.dataCenter.form.action.create} : #{msg.dataCenter.form.action.update}">
+                                Guardar
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
