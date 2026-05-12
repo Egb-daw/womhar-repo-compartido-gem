@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.equipment.qrCard.pageTitle})}"></th:block>
+</head>
+
+<body class="womhat-report-page">
+<div class="report-toolbar report-print-hide">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <a th:href="@{/equipment/detail(id=${equipment.id})}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            <span th:text="#{msg.equipment.detail.qrCard.action.back}">Volver al equipo</span>
+        </a>
+    </div>
+
+    <button type="button" class="btn btn-primary" onclick="window.print()">
+        <i class="bi bi-printer me-1"></i>
+        <span th:text="#{msg.equipment.detail.qrCard.action.print}">Imprimir / Guardar PDF</span>
+    </button>
+</div>
+
+<main class="report-shell report-shell--narrow">
+    <article class="report-sheet qr-label-card">
+        <header class="report-sheet__header">
+            <div class="report-sheet__copy">
+                <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                <h1 class="report-sheet__title" th:text="#{msg.equipment.detail.qrCard.title}">
+                    Tarjeta QR del equipo
+                </h1>
+
+                <p class="report-sheet__subtitle" th:text="#{msg.equipment.detail.qrCard.subtitle}">
+                    Etiqueta imprimible para identificar el equipo y abrir su ficha operativa desde móvil.
+                </p>
+            </div>
+
+            <div class="report-sheet__meta">
+                <span class="report-sheet__meta-label" th:text="#{msg.equipment.field.name}">
+                    Nombre
+                </span>
+                <strong class="report-sheet__meta-value" th:text="${equipment.name}">
+                    Host-101
+                </strong>
+                <span class="report-sheet__meta-copy">
+                    <span th:text="#{msg.equipment.detail.qrCard.generatedAt}">Generado el</span>
+                    <span th:text="${generatedAt != null ? #temporals.format(generatedAt, 'dd/MM/yyyy HH:mm') : '-'}">
+                        14/04/2026 18:00
+                    </span>
+                </span>
+            </div>
+        </header>
+
+        <section class="report-section">
+            <div class="report-section__head">
+                <div>
+                    <h2 class="report-section__title" th:text="#{msg.equipment.detail.qrCard.section.summary}">
+                        Identificación del equipo
+                    </h2>
+                </div>
+            </div>
+
+            <div class="report-data-grid">
+                <section class="report-block">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle technical-data-table mb-0">
+                            <tbody>
+                            <tr><th th:text="#{msg.equipment.detail.field.id}">ID</th><td th:text="${equipment.id}">1</td></tr>
+                            <tr><th th:text="#{msg.equipment.field.name}">Nombre</th><td th:text="${equipment.name}">Host-101</td></tr>
+                            <tr><th th:text="#{msg.equipment.field.type}">Tipo</th><td><span class="technical-chip" th:text="${equipment.type != null ? equipment.type : '-'}">SERVER</span></td></tr>
+                            <tr><th th:text="#{msg.equipment.field.serialNumber}">Serie</th><td th:text="${equipment.serialNumber != null and !#strings.isEmpty(equipment.serialNumber) ? equipment.serialNumber : '-'}">SN-001</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="report-block">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle technical-data-table mb-0">
+                            <tbody>
+                            <tr><th th:text="#{msg.equipment.field.rack}">Rack</th><td th:text="${equipment.rackLocationLabel != null and !#strings.isEmpty(equipment.rackLocationLabel) ? equipment.rackLocationLabel : '-'}">Rack A01</td></tr>
+                            <tr><th th:text="#{msg.equipment.field.room}">Sala</th><td th:text="${equipment.roomName != null and !#strings.isEmpty(equipment.roomName) ? equipment.roomName : '-'}">Sala A</td></tr>
+                            <tr><th th:text="#{msg.equipment.field.dataCenter}">CPD</th><td th:text="${(equipment.dataCenterCode != null and !#strings.isEmpty(equipment.dataCenterCode) ? equipment.dataCenterCode : '-') + ((equipment.dataCenterName != null and !#strings.isEmpty(equipment.dataCenterName)) ? ' · ' + equipment.dataCenterName : '')}">CPD-SEV-01 · Principal</td></tr>
+                            <tr><th th:text="#{msg.equipment.field.status}">Estado</th><td><span class="technical-chip" th:text="${equipment.status != null ? equipmentStatusLabels.get(equipment.status) : '-'}">ACTIVE</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <section class="report-section">
+            <div class="report-section__head">
+                <div>
+                    <h2 class="report-section__title" th:text="#{msg.equipment.detail.qrCard.section.access}">
+                        Acceso móvil
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Bloque QR imprimible: URL directa + contexto de autenticación para uso en campo. -->
+            <div class="report-block">
+                <div class="qr-label-card__body">
+                    <div class="qr-label-card__code">
+                        <img class="qr-label-card__image"
+                             th:src="@{/equipment/qr.png(id=${equipment.id})}"
+                             th:alt="#{msg.equipment.detail.qr.alt}">
+                    </div>
+
+                    <div class="qr-label-card__copy">
+                        <p class="mb-3 text-muted" th:text="#{msg.equipment.detail.qr.description}">
+                            Úsalo para abrir el detalle directamente desde móvil cuando estés físicamente frente al rack.
+                        </p>
+
+                        <a class="btn btn-primary mb-3"
+                           th:href="${equipmentMobileEntryUrl}"
+                           target="_blank"
+                           rel="noopener">
+                            <i class="bi bi-phone me-1"></i>
+                            <span th:text="#{msg.equipment.detail.qr.action.open}">Abrir ficha operativa</span>
+                        </a>
+
+                        <div class="equipment-qr-entry__url">
+                            <span class="equipment-qr-entry__url-label" th:text="#{msg.equipment.detail.qr.url}">
+                                URL directa
+                            </span>
+                            <code th:text="${equipmentMobileEntryUrl}">
+                                https://womhat.local/equipment/detail?id=1
+                            </code>
+                        </div>
+
+                        <ul class="equipment-qr-entry__notes">
+                            <li th:text="#{msg.equipment.detail.qr.note.scan}">
+                                Escanea el QR para abrir esta ficha desde el móvil del técnico.
+                            </li>
+                            <li th:text="#{msg.equipment.detail.qr.note.auth}">
+                                Si la sesión no está iniciada, WoMHAT pedirá autenticación antes de mostrar el equipo.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </article>
+</main>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

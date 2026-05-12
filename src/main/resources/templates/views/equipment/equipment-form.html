@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.equipment.form.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-user-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar"><nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav></aside>
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 equipment-form-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2" th:text="${equipment.id == null} ? #{msg.equipment.form.title.new} : #{msg.equipment.form.title.edit}">Nuevo equipo</h1>
+                                    <p class="technical-hero__subtitle mb-0" th:text="#{msg.equipment.form.subtitle}">Formulario unificado para equipo y especializaciones.</p>
+                                </div>
+                                <div class="technical-hero__actions">
+                                    <a th:href="@{/equipment}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i><span th:text="#{msg.equipment.form.action.back}">Volver</span></a>
+                                </div>
+                            </div>
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li><i class="bi bi-diagram-3"></i><span class="fw-semibold" th:text="#{msg.form.meta.scope}">Ámbito</span><span class="text-muted">·</span><span th:text="#{msg.form.scope.inventory}">Inventario técnico</span></li>
+                                <li><i class="bi bi-pencil-square"></i><span class="fw-semibold" th:text="#{msg.form.meta.mode}">Modo</span><span class="text-muted">·</span><span th:text="${equipment.id == null} ? #{msg.form.mode.create} : #{msg.form.mode.edit}">Alta</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <form th:object="${equipment}"
+                      th:action="${equipment.id == null} ? @{/equipment/insert} : @{/equipment/update}"
+                      method="post"
+                      data-womhat-validate="true"
+                      data-disable-on-submit="true">
+                    <input type="hidden" th:field="*{id}" />
+
+                    <div class="alert alert-danger mb-4" th:if="${#fields.hasAnyErrors()}" th:text="#{msg.form.validation.review}">Revisa los campos marcados antes de continuar.</div>
+
+                    <section class="crud-card technical-card">
+                        <div class="crud-card-header technical-card__header">
+                            <div>
+                                <h2 class="technical-card__title mb-1" th:text="#{msg.equipment.form.section.base}">Datos base</h2>
+                                <p class="mb-0 text-muted" th:text="#{msg.equipment.form.section.main}">Datos del equipo</p>
+                            </div>
+                        </div>
+                        <div class="p-3 p-md-4">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="rackId" class="form-label" th:text="#{msg.equipment.field.rack}">Rack</label>
+                                    <select id="rackId" th:field="*{rackId}" class="form-select" required th:classappend="${#fields.hasErrors('rackId')} ? ' is-invalid' : ''">
+                                        <option value="" th:text="#{msg.equipment.form.option.rack.select}">-- Selecciona un rack --</option>
+                                        <option th:each="rack : ${racks}" th:value="${rack.id}" th:text="${rack.locationLabel + ' - ' + rack.roomName + ' (' + rack.capacityU + 'U)'}">Rack A01</option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('rackId')}" class="invalid-feedback d-block" th:errors="*{rackId}"></div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="name" class="form-label" th:text="#{msg.equipment.field.name}">Nombre</label>
+                                    <input type="text" id="name" th:field="*{name}" class="form-control" required maxlength="120" th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''" th:placeholder="#{msg.equipment.form.placeholder.name}" />
+                                    <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback d-block" th:errors="*{name}"></div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="equipmentType" class="form-label" th:text="#{msg.equipment.field.type}">Tipo</label>
+                                    <select id="equipmentType" th:field="*{type}" class="form-select" required th:classappend="${#fields.hasErrors('type')} ? ' is-invalid' : ''">
+                                        <option value="" th:text="#{msg.equipment.form.option.type.select}">-- Selecciona un tipo --</option>
+                                        <option th:each="type : ${equipmentTypes}" th:value="${type}" th:text="${type}">SERVER</option>
+                                    </select>
+                                    <div class="form-text" th:text="#{msg.equipment.form.type.help}">Según el tipo se mostrarán campos adicionales de host, red o almacenamiento.</div>
+                                    <div th:if="${#fields.hasErrors('type')}" class="invalid-feedback d-block" th:errors="*{type}"></div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="serialNumber" class="form-label" th:text="#{msg.equipment.field.serialNumber}">Serie</label>
+                                    <input type="text" id="serialNumber" th:field="*{serialNumber}" class="form-control" required maxlength="120" th:classappend="${#fields.hasErrors('serialNumber')} ? ' is-invalid' : ''" th:placeholder="#{msg.equipment.form.placeholder.serialNumber}" />
+                                    <div th:if="${#fields.hasErrors('serialNumber')}" class="invalid-feedback d-block" th:errors="*{serialNumber}"></div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="status" class="form-label" th:text="#{msg.equipment.field.status}">Estado</label>
+                                    <select id="status" th:field="*{status}" class="form-select" required th:classappend="${#fields.hasErrors('status')} ? ' is-invalid' : ''">
+                                        <option th:each="status : ${equipmentStatuses}" th:value="${status}" th:text="${equipmentStatusLabels != null ? equipmentStatusLabels.get(status) : status}">ACTIVE</option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('status')}" class="invalid-feedback d-block" th:errors="*{status}"></div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="primaryIp" class="form-label" th:text="#{msg.equipment.field.primaryIp}">IP principal</label>
+                                    <input type="text" id="primaryIp" th:field="*{primaryIp}" class="form-control" maxlength="45" pattern="^$|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}|(([0-9A-Fa-f]{1,4}:){2,7}[0-9A-Fa-f]{1,4}|::1|::))" th:attr="data-validation-pattern-msg=#{msg.equipment-form.primaryIp.invalid}" th:classappend="${#fields.hasErrors('primaryIp')} ? ' is-invalid' : ''" th:placeholder="#{msg.equipment.form.placeholder.primaryIp}" />
+                                    <div th:if="${#fields.hasErrors('primaryIp')}" class="invalid-feedback d-block" th:errors="*{primaryIp}"></div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="managementIp" class="form-label" th:text="#{msg.equipment.field.managementIp}">IP de gestión</label>
+                                    <input type="text" id="managementIp" th:field="*{managementIp}" class="form-control" maxlength="45" pattern="^$|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}|(([0-9A-Fa-f]{1,4}:){2,7}[0-9A-Fa-f]{1,4}|::1|::))" th:attr="data-validation-pattern-msg=#{msg.equipment-form.managementIp.invalid}" th:classappend="${#fields.hasErrors('managementIp')} ? ' is-invalid' : ''" th:placeholder="#{msg.equipment.form.placeholder.managementIp}" />
+                                    <div th:if="${#fields.hasErrors('managementIp')}" class="invalid-feedback d-block" th:errors="*{managementIp}"></div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label for="vlanId" class="form-label" th:text="#{msg.equipment.field.vlanId}">VLAN</label>
+                                    <input type="number" id="vlanId" th:field="*{vlanId}" class="form-control" th:classappend="${#fields.hasErrors('vlanId')} ? ' is-invalid' : ''" min="1" />
+                                    <div th:if="${#fields.hasErrors('vlanId')}" class="invalid-feedback d-block" th:errors="*{vlanId}"></div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label for="macAddress" class="form-label" th:text="#{msg.equipment.field.macAddress}">MAC</label>
+                                    <input type="text" id="macAddress" th:field="*{macAddress}" class="form-control" maxlength="17" pattern="^$|(([0-9A-Fa-f]{2}([:-][0-9A-Fa-f]{2}){5})|([0-9A-Fa-f]{4}(\.[0-9A-Fa-f]{4}){2}))" th:attr="data-validation-pattern-msg=#{msg.equipment-form.macAddress.invalid}" th:classappend="${#fields.hasErrors('macAddress')} ? ' is-invalid' : ''" th:placeholder="#{msg.equipment.form.placeholder.macAddress}" />
+                                    <div th:if="${#fields.hasErrors('macAddress')}" class="invalid-feedback d-block" th:errors="*{macAddress}"></div>
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <label for="slotPositionU" class="form-label" th:text="#{msg.equipment.field.slotPositionU}">U inicio</label>
+                                    <input type="number" id="slotPositionU" th:field="*{slotPositionU}" class="form-control" th:classappend="${#fields.hasErrors('slotPositionU')} ? ' is-invalid' : ''" min="1" />
+                                    <div th:if="${#fields.hasErrors('slotPositionU')}" class="invalid-feedback d-block" th:errors="*{slotPositionU}"></div>
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <label for="slotHeightU" class="form-label" th:text="#{msg.equipment.field.slotHeightU}">Altura</label>
+                                    <input type="number" id="slotHeightU" th:field="*{slotHeightU}" class="form-control" required th:classappend="${#fields.hasErrors('slotHeightU')} ? ' is-invalid' : ''" min="1" />
+                                    <div th:if="${#fields.hasErrors('slotHeightU')}" class="invalid-feedback d-block" th:errors="*{slotHeightU}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="crud-card technical-card mt-4" data-equipment-section="host" hidden>
+                        <div class="crud-card-header technical-card__header"><div><h2 class="technical-card__title mb-1" th:text="#{msg.equipment.form.section.host}">Datos de host / servidor</h2></div></div>
+                        <div class="p-3 p-md-4">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6"><label for="operatingSystem" class="form-label" th:text="#{msg.equipment.field.operatingSystem}">Sistema operativo</label><input type="text" id="operatingSystem" th:field="*{operatingSystem}" class="form-control" maxlength="120" th:classappend="${#fields.hasErrors('operatingSystem')} ? ' is-invalid' : ''" /><div th:if="${#fields.hasErrors('operatingSystem')}" class="invalid-feedback d-block" th:errors="*{operatingSystem}"></div></div>
+                                <div class="col-12 col-md-6"><label for="purpose" class="form-label" th:text="#{msg.equipment.field.purpose}">Finalidad</label><input type="text" id="purpose" th:field="*{purpose}" class="form-control" maxlength="120" th:classappend="${#fields.hasErrors('purpose')} ? ' is-invalid' : ''" /><div th:if="${#fields.hasErrors('purpose')}" class="invalid-feedback d-block" th:errors="*{purpose}"></div></div>
+                                <div class="col-12 col-md-4"><label for="installDate" class="form-label" th:text="#{msg.equipment.field.installDate}">Fecha instalación</label><input type="date" id="installDate" th:field="*{installDate}" class="form-control" th:classappend="${#fields.hasErrors('installDate')} ? ' is-invalid' : ''" /><div th:if="${#fields.hasErrors('installDate')}" class="invalid-feedback d-block" th:errors="*{installDate}"></div></div>
+                                <div class="col-12 col-md-4"><label for="cpuArchitecture" class="form-label" th:text="#{msg.equipment.field.cpuArchitecture}">Arquitectura CPU</label><input type="text" id="cpuArchitecture" th:field="*{cpuArchitecture}" class="form-control" maxlength="80" th:classappend="${#fields.hasErrors('cpuArchitecture')} ? ' is-invalid' : ''" /><div th:if="${#fields.hasErrors('cpuArchitecture')}" class="invalid-feedback d-block" th:errors="*{cpuArchitecture}"></div></div>
+                                <div class="col-12 col-md-4"><label for="cpuModel" class="form-label" th:text="#{msg.equipment.field.cpuModel}">Modelo CPU</label><input type="text" id="cpuModel" th:field="*{cpuModel}" class="form-control" maxlength="120" th:classappend="${#fields.hasErrors('cpuModel')} ? ' is-invalid' : ''" /><div th:if="${#fields.hasErrors('cpuModel')}" class="invalid-feedback d-block" th:errors="*{cpuModel}"></div></div>
+                                <div class="col-12 col-md-3"><label for="cpuCores" class="form-label" th:text="#{msg.equipment.field.cpuCores}">Núcleos</label><input type="number" id="cpuCores" th:field="*{cpuCores}" class="form-control" th:classappend="${#fields.hasErrors('cpuCores')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('cpuCores')}" class="invalid-feedback d-block" th:errors="*{cpuCores}"></div></div>
+                                <div class="col-12 col-md-3"><label for="cpuCacheMb" class="form-label" th:text="#{msg.equipment.field.cpuCacheMb}">Caché CPU</label><input type="number" id="cpuCacheMb" th:field="*{cpuCacheMb}" class="form-control" th:classappend="${#fields.hasErrors('cpuCacheMb')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('cpuCacheMb')}" class="invalid-feedback d-block" th:errors="*{cpuCacheMb}"></div></div>
+                                <div class="col-12 col-md-3"><label for="cpuGhz" class="form-label" th:text="#{msg.equipment.field.cpuGhz}">CPU GHz</label><input type="number" step="0.01" id="cpuGhz" th:field="*{cpuGhz}" class="form-control" th:classappend="${#fields.hasErrors('cpuGhz')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('cpuGhz')}" class="invalid-feedback d-block" th:errors="*{cpuGhz}"></div></div>
+                                <div class="col-12 col-md-3"><label for="ramType" class="form-label" th:text="#{msg.equipment.field.ramType}">Tipo RAM</label><input type="text" id="ramType" th:field="*{ramType}" class="form-control" maxlength="60" th:classappend="${#fields.hasErrors('ramType')} ? ' is-invalid' : ''" /><div th:if="${#fields.hasErrors('ramType')}" class="invalid-feedback d-block" th:errors="*{ramType}"></div></div>
+                                <div class="col-12 col-md-3"><label for="ramTotalGb" class="form-label" th:text="#{msg.equipment.field.ramTotalGb}">RAM total</label><input type="number" id="ramTotalGb" th:field="*{ramTotalGb}" class="form-control" th:classappend="${#fields.hasErrors('ramTotalGb')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('ramTotalGb')}" class="invalid-feedback d-block" th:errors="*{ramTotalGb}"></div></div>
+                                <div class="col-12 col-md-3"><label for="ramGhz" class="form-label" th:text="#{msg.equipment.field.ramGhz}">RAM GHz</label><input type="number" step="0.01" id="ramGhz" th:field="*{ramGhz}" class="form-control" th:classappend="${#fields.hasErrors('ramGhz')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('ramGhz')}" class="invalid-feedback d-block" th:errors="*{ramGhz}"></div></div>
+                                <div class="col-12 col-md-3"><label for="diskTotalGb" class="form-label" th:text="#{msg.equipment.field.diskTotalGb}">Disco total</label><input type="number" id="diskTotalGb" th:field="*{diskTotalGb}" class="form-control" th:classappend="${#fields.hasErrors('diskTotalGb')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('diskTotalGb')}" class="invalid-feedback d-block" th:errors="*{diskTotalGb}"></div></div>
+                                <div class="col-12 col-md-3"><label for="diskReadMbps" class="form-label" th:text="#{msg.equipment.field.diskReadMbps}">Lectura MB/s</label><input type="number" id="diskReadMbps" th:field="*{diskReadMbps}" class="form-control" th:classappend="${#fields.hasErrors('diskReadMbps')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('diskReadMbps')}" class="invalid-feedback d-block" th:errors="*{diskReadMbps}"></div></div>
+                                <div class="col-12 col-md-3"><label for="diskWriteMbps" class="form-label" th:text="#{msg.equipment.field.diskWriteMbps}">Escritura MB/s</label><input type="number" id="diskWriteMbps" th:field="*{diskWriteMbps}" class="form-control" th:classappend="${#fields.hasErrors('diskWriteMbps')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('diskWriteMbps')}" class="invalid-feedback d-block" th:errors="*{diskWriteMbps}"></div></div>
+                                <div class="col-12 col-md-3"><label for="nicCount" class="form-label" th:text="#{msg.equipment.field.nicCount}">NICs</label><input type="number" id="nicCount" th:field="*{nicCount}" class="form-control" th:classappend="${#fields.hasErrors('nicCount')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('nicCount')}" class="invalid-feedback d-block" th:errors="*{nicCount}"></div></div>
+                                <div class="col-12 col-md-3"><label for="nicSpeedMbps" class="form-label" th:text="#{msg.equipment.field.nicSpeedMbps}">Velocidad NIC</label><input type="number" id="nicSpeedMbps" th:field="*{nicSpeedMbps}" class="form-control" th:classappend="${#fields.hasErrors('nicSpeedMbps')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('nicSpeedMbps')}" class="invalid-feedback d-block" th:errors="*{nicSpeedMbps}"></div></div>
+                                <div class="col-12"><label for="hostNotes" class="form-label" th:text="#{msg.equipment.field.hostNotes}">Notas host</label><textarea id="hostNotes" th:field="*{hostNotes}" rows="3" class="form-control" maxlength="255" th:classappend="${#fields.hasErrors('hostNotes')} ? ' is-invalid' : ''"></textarea><div th:if="${#fields.hasErrors('hostNotes')}" class="invalid-feedback d-block" th:errors="*{hostNotes}"></div></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="crud-card technical-card mt-4" data-equipment-section="network" hidden>
+                        <div class="crud-card-header technical-card__header"><div><h2 class="technical-card__title mb-1" th:text="#{msg.equipment.form.section.network}">Datos de red</h2></div></div>
+                        <div class="p-3 p-md-4">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6"><label for="connection" class="form-label" th:text="#{msg.equipment.field.connection}">Conexión</label><select id="connection" th:field="*{connection}" class="form-select" th:classappend="${#fields.hasErrors('connection')} ? ' is-invalid' : ''"><option th:each="conn : ${networkConnectionTypes}" th:value="${conn}" th:text="${conn}">ETHERNET</option></select><div th:if="${#fields.hasErrors('connection')}" class="invalid-feedback d-block" th:errors="*{connection}"></div></div>
+                                <div class="col-12 col-md-6"><label for="totalPorts" class="form-label" th:text="#{msg.equipment.field.totalPorts}">Puertos totales</label><input type="number" id="totalPorts" th:field="*{totalPorts}" class="form-control" th:classappend="${#fields.hasErrors('totalPorts')} ? ' is-invalid' : ''" min="0" /><div th:if="${#fields.hasErrors('totalPorts')}" class="invalid-feedback d-block" th:errors="*{totalPorts}"></div></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="crud-card technical-card mt-4" data-equipment-section="storage" hidden>
+                        <div class="crud-card-header technical-card__header"><div><h2 class="technical-card__title mb-1" th:text="#{msg.equipment.form.section.storage}">Datos de almacenamiento</h2></div></div>
+                        <div class="p-3 p-md-4">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4"><label for="distributionType" class="form-label" th:text="#{msg.equipment.field.distributionType}">Distribución</label><input type="text" id="distributionType" th:field="*{distributionType}" class="form-control" maxlength="120" th:classappend="${#fields.hasErrors('distributionType')} ? ' is-invalid' : ''" /><div th:if="${#fields.hasErrors('distributionType')}" class="invalid-feedback d-block" th:errors="*{distributionType}"></div></div>
+                                <div class="col-12 col-md-4"><label for="storageInstallDate" class="form-label" th:text="#{msg.equipment.field.storageInstallDate}">Fecha instalación</label><input type="date" id="storageInstallDate" th:field="*{storageInstallDate}" class="form-control" th:classappend="${#fields.hasErrors('storageInstallDate')} ? ' is-invalid' : ''" /><div th:if="${#fields.hasErrors('storageInstallDate')}" class="invalid-feedback d-block" th:errors="*{storageInstallDate}"></div></div>
+                                <div class="col-12 col-md-4"><label for="storageType" class="form-label" th:text="#{msg.equipment.field.storageType}">Tipo storage</label><select id="storageType" th:field="*{storageType}" class="form-select" th:classappend="${#fields.hasErrors('storageType')} ? ' is-invalid' : ''"><option th:each="type : ${storageTypes}" th:value="${type}" th:text="${type}">BACKUP</option></select><div th:if="${#fields.hasErrors('storageType')}" class="invalid-feedback d-block" th:errors="*{storageType}"></div></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end mt-4">
+                        <a th:href="@{/equipment}" class="btn btn-outline-secondary" th:text="#{msg.common.cancel}">Cancelar</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i><span th:text="${equipment.id == null} ? #{msg.equipment.form.action.create} : #{msg.equipment.form.action.update}">Guardar</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

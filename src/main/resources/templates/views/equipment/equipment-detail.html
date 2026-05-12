@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.equipment.detail.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-user-page"
+      th:classappend="${adminAccess} ? ' womhat-private-page' : ''">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main th:class="${adminAccess} ? 'dashboard-layout womhat-main flex-grow-1' : 'womhat-main flex-grow-1'">
+    <aside th:if="${adminAccess}" class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section th:class="${adminAccess} ? 'dashboard-content' : 'py-4 py-lg-5'">
+        <div th:class="${adminAccess} ? 'container-fluid px-4 equipment-detail-view' : 'container equipment-detail-view'">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3" th:text="${adminAccess} ? #{msg.equipment.detail.kicker.admin} : #{msg.equipment.detail.kicker.user}">EQUIPO</span>
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2" th:text="${equipment.name}">Servidor 01</h1>
+                                    <p class="technical-hero__subtitle mb-0">
+                                        <span class="technical-chip" th:text="${equipment.type != null ? equipmentTypeLabels.get(equipment.type) : '-'}">SERVER</span>
+                                        <span class="technical-dot" aria-hidden="true"></span>
+                                        <span th:text="${equipment.serialNumber != null and !#strings.isEmpty(equipment.serialNumber) ? equipment.serialNumber : '-'}">SN-001</span>
+                                    </p>
+                                </div>
+                                <span class="equipment-status-pill" th:classappend="${equipment.status != null and equipment.status.toString() == 'ACTIVE' ? ' equipment-status-pill--active' : ''}" th:text="${equipment.status != null ? equipmentStatusLabels.get(equipment.status) : '-'}">ACTIVE</span>
+                            </div>
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li><i class="bi bi-hdd-rack"></i><span class="fw-semibold" th:text="#{msg.equipment.field.rack}">Rack</span><span class="text-muted">·</span><span th:text="${equipment.rackLocationLabel != null and !#strings.isEmpty(equipment.rackLocationLabel) ? equipment.rackLocationLabel : '-'}">Rack A01</span></li>
+                                <li><i class="bi bi-door-open"></i><span class="fw-semibold" th:text="#{msg.equipment.field.room}">Sala</span><span class="text-muted">·</span><span th:text="${equipment.roomName != null and !#strings.isEmpty(equipment.roomName) ? equipment.roomName : '-'}">Sala A</span></li>
+                                <li><i class="bi bi-building"></i><span class="fw-semibold" th:text="#{msg.equipment.field.dataCenter}">CPD</span><span class="text-muted">·</span><span th:text="${(equipment.dataCenterCode != null and !#strings.isEmpty(equipment.dataCenterCode) ? equipment.dataCenterCode : '-') + ((equipment.dataCenterName != null and !#strings.isEmpty(equipment.dataCenterName)) ? ' · ' + equipment.dataCenterName : '')}">CPD-SEV-01 · Principal</span></li>
+                            </ul>
+                        </div>
+                        <div class="technical-hero__actions">
+                            <a th:if="${canWriteEquipment}" class="btn btn-primary" th:href="@{/equipment/edit(id=${equipment.id})}"><i class="bi bi-pencil me-1"></i><span th:text="#{msg.common.edit}">Editar</span></a>
+                            <a th:if="${canWriteEquipment}" class="btn btn-outline-primary" th:href="@{/maintenance/work-orders/new(equipmentId=${equipment.id})}"><i class="bi bi-tools me-1"></i><span th:text="#{msg.equipment.detail.action.newWorkOrder}">Nueva orden</span></a>
+                            <a class="btn btn-outline-secondary" th:href="@{/equipment}"><i class="bi bi-arrow-left me-1"></i><span th:text="#{msg.equipment.detail.action.back}">Volver</span></a>
+                        </div>
+                    </div>
+
+                    <div class="technical-quick-grid">
+                        <article class="technical-quick-card"><span class="technical-quick-card__label" th:text="#{msg.equipment.field.primaryIp}">IP principal</span><strong class="technical-quick-card__value" th:text="${equipment.primaryIp != null and !#strings.isEmpty(equipment.primaryIp) ? equipment.primaryIp : '-'}">10.0.0.10</strong><span class="technical-quick-card__meta" th:text="${equipment.vlanId != null ? 'VLAN ' + equipment.vlanId : '-'}">VLAN 10</span></article>
+                        <article class="technical-quick-card"><span class="technical-quick-card__label" th:text="#{msg.equipment.field.managementIp}">IP de gestión</span><strong class="technical-quick-card__value" th:text="${equipment.managementIp != null and !#strings.isEmpty(equipment.managementIp) ? equipment.managementIp : '-'}">10.0.99.10</strong><span class="technical-quick-card__meta" th:text="${equipment.macAddress != null and !#strings.isEmpty(equipment.macAddress) ? equipment.macAddress : '-'}">AA:BB:CC:DD:EE:FF</span></article>
+                        <article class="technical-quick-card"><span class="technical-quick-card__label" th:text="#{msg.equipment.field.rack}">Rack</span><strong class="technical-quick-card__value" th:text="${equipment.rackLocationLabel != null and !#strings.isEmpty(equipment.rackLocationLabel) ? equipment.rackLocationLabel : '-'}">Rack A01</strong><span class="technical-quick-card__meta" th:text="${(equipment.slotPositionU != null ? 'U' + equipment.slotPositionU : '-') + (equipment.slotHeightU != null ? ' · ' + equipment.slotHeightU + 'U' : '')}">U1 · 2U</span></article>
+                        <article class="technical-quick-card"><span class="technical-quick-card__label" th:text="#{msg.equipment.field.lastUpdate}">Última actualización</span><strong class="technical-quick-card__value" th:text="${equipment.lastUpdate != null ? #temporals.format(equipment.lastUpdate, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</strong><span class="technical-quick-card__meta" th:text="${equipment.roomName != null and !#strings.isEmpty(equipment.roomName) ? equipment.roomName : '-'}">Sala A</span></article>
+                    </div>
+                </section>
+
+                <section th:if="${!adminAccess}" class="surface-panel surface-panel--soft technical-support-card">
+                    <!-- Panel de permisos efectivos sobre el rack del equipo para usuario no admin. -->
+                    <div class="technical-card__header mb-3"><div><h2 class="technical-card__title mb-0" th:text="#{msg.equipment.detail.userAccess.title}">Tu acceso a este equipo</h2></div></div>
+                    <div class="technical-support-card__body">
+                        <p class="text-muted mb-3" th:text="#{msg.equipment.detail.userAccess.subtitle}">Puedes consultar la ficha, el QR operativo y el histórico asociado siempre que mantengas acceso al rack al que pertenece este equipo.</p>
+                        <div class="mb-3" th:if="${currentRackPermission != null}">
+                            <span class="technical-chip" th:text="${permissionLabels.get(currentRackPermission)}">Solo lectura</span>
+                            <span class="badge text-bg-primary ms-2" th:if="${canManageEquipmentRack}" th:text="#{msg.equipment.detail.userAccess.managerBadge}">Gestor del rack</span>
+                        </div>
+                        <ul class="list-unstyled small mb-0 d-grid gap-2">
+                            <li><i class="bi bi-check2-circle text-success me-2"></i><span th:text="#{msg.equipment.detail.userAccess.item.view}">Puedes revisar IPs, ubicación, especializaciones y el histórico registrado.</span></li>
+                            <li><i class="bi bi-check2-circle text-success me-2"></i><span th:text="#{msg.equipment.detail.userAccess.item.qr}">Puedes abrir el QR operativo y la tarjeta imprimible para identificar el equipo sobre el terreno.</span></li>
+                            <li th:if="${canWriteEquipment}"><i class="bi bi-check2-circle text-success me-2"></i><span th:text="#{msg.equipment.detail.userAccess.item.write}">Puedes editar los datos operativos de este equipo dentro del rack permitido.</span></li>
+                            <li th:if="${canWriteEquipment}"><i class="bi bi-check2-circle text-success me-2"></i><span th:text="#{msg.equipment.detail.userAccess.item.lifecycle}">Puedes cambiar su estado operativo sin borrar trazabilidad.</span></li>
+                            <li><i class="bi bi-slash-circle text-danger me-2"></i><span th:text="#{msg.equipment.detail.userAccess.item.restrictions}">No puedes crear órdenes de mantenimiento ni acceder a backoffice global si no eres administrador.</span></li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section th:if="${canWriteEquipment}" class="surface-panel surface-panel--soft technical-support-card">
+                    <div class="technical-card__header mb-3">
+                        <div>
+                            <h2 class="technical-card__title mb-0" th:text="#{msg.equipment.lifecycle.title}">Ciclo de vida del equipo</h2>
+                            <p class="text-muted mb-0" th:text="#{msg.equipment.lifecycle.subtitle}">Actualiza el estado operativo sin eliminar el equipo ni perder QR, histórico o reportes.</p>
+                        </div>
+                    </div>
+                    <div class="technical-support-card__body">
+                        <p class="text-muted small mb-3" th:text="#{msg.equipment.lifecycle.help}">El borrado físico queda reservado a administración global; la operativa normal usa estados.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <form th:each="targetStatus : ${availableLifecycleStatuses}"
+                                  th:if="${equipment.status == null or equipment.status != targetStatus}"
+                                  th:action="@{/equipment/status}"
+                                  method="post"
+                                  class="m-0">
+                                <input type="hidden" name="id" th:value="${equipment.id}">
+                                <input type="hidden" name="status" th:value="${targetStatus}">
+                                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        class="btn btn-outline-primary btn-sm"
+                                        th:text="#{msg.equipment.lifecycle.action(${equipmentStatusLabels.get(targetStatus)})}">
+                                    Marcar estado
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <!-- Bloque QR operativo para acceso móvil y tarjeta imprimible del equipo. -->
+                    <div class="crud-card-header technical-card__header">
+                        <div><h2 class="technical-card__title mb-1" th:text="#{msg.equipment.detail.section.qr}">Acceso móvil</h2><p class="mb-0 text-muted" th:text="#{msg.equipment.detail.qr.subtitle}">Escanea este código desde el pasillo del CPD para abrir la ficha operativa del equipo.</p></div>
+                        <a class="btn btn-outline-secondary" th:href="@{/equipment/qr-card(id=${equipment.id})}" target="_blank" rel="noopener"><i class="bi bi-printer me-1"></i><span th:text="#{msg.equipment.detail.qr.action.print}">Abrir tarjeta imprimible</span></a>
+                    </div>
+                    <div class="p-3 p-md-4">
+                        <div class="equipment-qr-entry">
+                            <div class="equipment-qr-entry__code"><img class="equipment-qr-entry__image" th:src="@{/equipment/qr.png(id=${equipment.id})}" th:alt="#{msg.equipment.detail.qr.alt}"></div>
+                            <div class="equipment-qr-entry__copy">
+                                <span class="womhat-kicker mb-2" th:text="#{msg.equipment.detail.qr.kicker}">Operativa de campo</span>
+                                <h3 class="h4 mb-2" th:text="#{msg.equipment.detail.qr.title}">QR operativo del equipo</h3>
+                                <p class="text-muted mb-3" th:text="#{msg.equipment.detail.qr.description}">Úsalo para abrir el detalle directamente desde móvil cuando estés físicamente frente al rack.</p>
+                                <div class="equipment-qr-entry__actions">
+                                    <a class="btn btn-primary" th:href="${equipmentMobileEntryUrl}" target="_blank" rel="noopener"><i class="bi bi-phone me-1"></i><span th:text="#{msg.equipment.detail.qr.action.open}">Abrir ficha operativa</span></a>
+                                    <a class="btn btn-outline-primary" th:href="@{/equipment/qr-card(id=${equipment.id})}" target="_blank" rel="noopener"><i class="bi bi-upc-scan me-1"></i><span th:text="#{msg.equipment.detail.qr.action.card}">Ver tarjeta QR</span></a>
+                                </div>
+                                <div class="equipment-qr-entry__url"><span class="equipment-qr-entry__url-label" th:text="#{msg.equipment.detail.qr.url}">URL directa</span><code th:text="${equipmentMobileEntryUrl}">https://womhat.local/equipment/detail?id=1</code></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header"><div><h2 class="technical-card__title mb-0" th:text="#{msg.equipment.detail.section.main}">Datos generales del equipo</h2></div></div>
+                    <div class="p-3 p-md-4">
+                        <div class="technical-split">
+                            <div class="table-responsive">
+                                <table class="table table-borderless align-middle technical-data-table">
+                                    <tbody>
+                                    <tr><th th:text="#{msg.equipment.detail.field.id}">ID</th><td th:text="${equipment.id}">1</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.name}">Nombre</th><td th:text="${equipment.name}">Servidor 01</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.type}">Tipo</th><td><span class="technical-chip" th:text="${equipment.type != null ? equipmentTypeLabels.get(equipment.type) : '-'}">SERVER</span></td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.serialNumber}">Serie</th><td th:text="${equipment.serialNumber != null and !#strings.isEmpty(equipment.serialNumber) ? equipment.serialNumber : '-'}">SN-001</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.rack}">Rack</th><td th:text="${equipment.rackLocationLabel != null and !#strings.isEmpty(equipment.rackLocationLabel) ? equipment.rackLocationLabel : '-'}">Rack A01</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.room}">Sala</th><td th:text="${equipment.roomName != null and !#strings.isEmpty(equipment.roomName) ? equipment.roomName : '-'}">Sala A</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.dataCenter}">CPD</th><td th:text="${(equipment.dataCenterCode != null and !#strings.isEmpty(equipment.dataCenterCode) ? equipment.dataCenterCode : '-') + ((equipment.dataCenterName != null and !#strings.isEmpty(equipment.dataCenterName)) ? ' · ' + equipment.dataCenterName : '')}">CPD-SEV-01 · Principal</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-borderless align-middle technical-data-table">
+                                    <tbody>
+                                    <tr><th th:text="#{msg.equipment.field.primaryIp}">IP principal</th><td th:text="${equipment.primaryIp != null and !#strings.isEmpty(equipment.primaryIp) ? equipment.primaryIp : '-'}">10.0.0.10</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.managementIp}">IP de gestión</th><td th:text="${equipment.managementIp != null and !#strings.isEmpty(equipment.managementIp) ? equipment.managementIp : '-'}">10.0.99.10</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.vlanId}">VLAN</th><td th:text="${equipment.vlanId != null ? equipment.vlanId : '-'}">10</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.macAddress}">MAC</th><td th:text="${equipment.macAddress != null and !#strings.isEmpty(equipment.macAddress) ? equipment.macAddress : '-'}">AA:BB:CC:DD:EE:FF</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.slotPositionU}">U inicio</th><td th:text="${equipment.slotPositionU != null ? equipment.slotPositionU : '-'}">1</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.slotHeightU}">Altura</th><td th:text="${equipment.slotHeightU != null ? equipment.slotHeightU + 'U' : '-'}">2U</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.status}">Estado</th><td><span class="technical-chip" th:text="${equipment.status != null ? equipmentStatusLabels.get(equipment.status) : '-'}">ACTIVE</span></td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.lastUpdate}">Última actualización</th><td th:text="${equipment.lastUpdate != null ? #temporals.format(equipment.lastUpdate, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="row g-4">
+                    <div class="col-12 col-xl-4" th:if="${equipment.hostSpecification != null}">
+                        <section class="surface-panel surface-panel--soft technical-spec-card h-100">
+                            <div class="technical-spec-card__head"><span class="technical-spec-card__icon"><i class="bi bi-cpu"></i></span><div><h2 class="technical-spec-card__title" th:text="#{msg.equipment.detail.section.host}">Host / servidor</h2></div></div>
+                            <div class="p-3">
+                                <table class="table table-borderless align-middle technical-data-table technical-data-table--compact">
+                                    <tbody>
+                                    <tr><th th:text="#{msg.equipment.field.operatingSystem}">Sistema operativo</th><td th:text="${equipment.hostSpecification.operatingSystem != null ? equipment.hostSpecification.operatingSystem : '-'}">Ubuntu</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.purpose}">Finalidad</th><td th:text="${equipment.hostSpecification.purpose != null ? equipment.hostSpecification.purpose : '-'}">Virtualización</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.installDate}">Instalación</th><td th:text="${equipment.hostSpecification.installDate != null ? #temporals.format(equipment.hostSpecification.installDate, 'dd/MM/yyyy') : '-'}">01/01/2026</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.cpuModel}">Modelo CPU</th><td th:text="${equipment.hostSpecification.cpuModel != null ? equipment.hostSpecification.cpuModel : '-'}">Xeon</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.cpuCores}">Núcleos</th><td th:text="${equipment.hostSpecification.cpuCores != null ? equipment.hostSpecification.cpuCores : '-'}">24</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.ramTotalGb}">RAM total</th><td th:text="${equipment.hostSpecification.ramTotalGb != null ? equipment.hostSpecification.ramTotalGb + ' GB' : '-'}">128 GB</td></tr>
+                                    <tr><th th:text="#{msg.equipment.field.diskTotalGb}">Disco total</th><td th:text="${equipment.hostSpecification.diskTotalGb != null ? equipment.hostSpecification.diskTotalGb + ' GB' : '-'}">4000 GB</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-12 col-xl-4" th:if="${equipment.networkElement != null}">
+                        <section class="surface-panel surface-panel--soft technical-spec-card h-100">
+                            <div class="technical-spec-card__head"><span class="technical-spec-card__icon"><i class="bi bi-diagram-3"></i></span><div><h2 class="technical-spec-card__title" th:text="#{msg.equipment.detail.section.network}">Elemento de red</h2></div></div>
+                            <div class="p-3">
+                                <table class="table table-borderless align-middle technical-data-table technical-data-table--compact">
+                                    <tbody><tr><th th:text="#{msg.equipment.field.connection}">Conexión</th><td th:text="${equipment.networkElement.connection != null ? equipment.networkElement.connection : '-'}">ETHERNET</td></tr><tr><th th:text="#{msg.equipment.field.totalPorts}">Puertos</th><td th:text="${equipment.networkElement.totalPorts != null ? equipment.networkElement.totalPorts : '-'}">48</td></tr></tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-12 col-xl-4" th:if="${equipment.storageBackup != null}">
+                        <section class="surface-panel surface-panel--soft technical-spec-card h-100">
+                            <div class="technical-spec-card__head"><span class="technical-spec-card__icon"><i class="bi bi-device-hdd"></i></span><div><h2 class="technical-spec-card__title" th:text="#{msg.equipment.detail.section.storage}">Almacenamiento</h2></div></div>
+                            <div class="p-3">
+                                <table class="table table-borderless align-middle technical-data-table technical-data-table--compact">
+                                    <tbody><tr><th th:text="#{msg.equipment.field.distributionType}">Distribución</th><td th:text="${equipment.storageBackup.distributionType != null ? equipment.storageBackup.distributionType : '-'}">RAID</td></tr><tr><th th:text="#{msg.equipment.field.storageInstallDate}">Instalación</th><td th:text="${equipment.storageBackup.installDate != null ? #temporals.format(equipment.storageBackup.installDate, 'dd/MM/yyyy') : '-'}">01/01/2026</td></tr><tr><th th:text="#{msg.equipment.field.storageType}">Tipo storage</th><td th:text="${equipment.storageBackup.storageType != null ? equipment.storageBackup.storageType : '-'}">BACKUP</td></tr></tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header"><div><h2 class="technical-card__title mb-0" th:text="#{msg.equipment.detail.section.workOrders}">Órdenes de mantenimiento</h2></div><span class="technical-counter" th:text="${equipment.workOrders != null ? #lists.size(equipment.workOrders) : 0}">0</span></div>
+                    <div class="table-responsive technical-table-shell" th:if="${equipment.workOrders != null and !#lists.isEmpty(equipment.workOrders)}">
+                        <table class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="table-dark"><tr><th>ID</th><th th:text="#{msg.workOrder.field.summary}">Resumen</th><th th:text="#{msg.workOrder.field.status}">Estado</th><th th:text="#{msg.workOrder.field.priority}">Prioridad</th><th th:text="#{msg.workOrder.field.notesCount}">Notas</th><th th:text="#{msg.common.actions}">Acciones</th></tr></thead>
+                            <tbody>
+                            <tr th:each="wo : ${equipment.workOrders}">
+                                <td th:text="${wo.id}">1</td><td th:text="${wo.summary}">Actualizar firmware</td><td><span class="technical-chip" th:text="${wo.status}">OPEN</span></td><td><span class="technical-chip" th:text="${wo.priority}">HIGH</span></td><td th:text="${wo.notesCount != null ? wo.notesCount : 0}">0</td><td><a th:href="@{/maintenance/work-orders/detail(id=${wo.id})}" class="btn btn-outline-secondary btn-sm" th:text="#{msg.common.detail}">Detalle</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="empty-state" th:if="${equipment.workOrders == null or #lists.isEmpty(equipment.workOrders)}"><i class="bi bi-tools fs-2 d-block mb-2"></i><span th:text="#{msg.equipment.detail.workOrders.empty}">Este equipo no tiene órdenes de mantenimiento.</span></div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <!-- Histórico técnico del equipo: trazabilidad de cambios y eventos de mantenimiento/estado. -->
+                    <div class="crud-card-header technical-card__header"><div><h2 class="technical-card__title mb-0" th:text="#{msg.equipment.detail.section.eventLog}">Histórico del equipo</h2></div><span class="technical-counter" th:text="${eventLog != null ? #lists.size(eventLog) : 0}">0</span></div>
+                    <div class="table-responsive technical-table-shell" th:if="${eventLog != null and !#lists.isEmpty(eventLog)}">
+                        <table class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="table-dark"><tr><th th:text="#{msg.equipment.detail.eventLog.changedAt}">Fecha</th><th th:text="#{msg.equipment.detail.eventLog.changedBy}">Usuario</th><th th:text="#{msg.equipment.detail.eventLog.action}">Acción</th><th th:text="#{msg.equipment.detail.eventLog.eventType}">Evento</th><th th:text="#{msg.equipment.detail.eventLog.message}">Mensaje</th></tr></thead>
+                            <tbody>
+                            <tr th:each="log : ${eventLog}">
+                                <td th:text="${log.changedAt != null ? #temporals.format(log.changedAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</td>
+                                <td><span th:if="${log.changedByEmail != null and !#strings.isEmpty(log.changedByEmail)}" th:text="${log.changedByEmail}">admin@womhat.com</span><span th:unless="${log.changedByEmail != null and !#strings.isEmpty(log.changedByEmail)}" th:text="#{msg.equipment.detail.eventLog.system}">Sistema</span></td>
+                                <td><span class="technical-chip" th:text="${log.action != null ? equipmentActionLabels.get(log.action) : '-'}">UPDATE</span></td>
+                                <td><span class="technical-chip" th:text="${log.eventType != null ? equipmentEventTypeLabels.get(log.eventType) : '-'}">STATUS_CHANGED</span></td>
+                                <td th:text="${log.message != null and !#strings.isEmpty(log.message) ? log.message : '-'}">Cambio realizado</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="empty-state" th:if="${eventLog == null or #lists.isEmpty(eventLog)}"><i class="bi bi-clock-history fs-2 d-block mb-2"></i><span th:text="#{msg.equipment.detail.eventLog.empty}">No hay eventos registrados para este equipo.</span></div>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

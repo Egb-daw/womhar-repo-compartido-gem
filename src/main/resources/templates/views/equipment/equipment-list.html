@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.equipment.list.pageTitle})}"></th:block>
+</head>
+<body class="d-flex flex-column h-100 womhat-body womhat-user-page"
+      th:classappend="${adminAccess} ? ' womhat-private-page' : ''">
+<header th:replace="~{fragments/header :: header(${!adminAccess})}"></header>
+
+<main th:class="${adminAccess} ? 'dashboard-layout womhat-main flex-grow-1' : 'womhat-main flex-grow-1'">
+    <aside th:if="${adminAccess}" class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section th:class="${adminAccess} ? 'dashboard-content' : 'py-4 py-lg-5'">
+        <div th:class="${adminAccess} ? 'container-fluid px-4 equipment-list-view' : 'container equipment-list-view'">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(true)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3"
+                                  th:text="${adminAccess} ? #{msg.equipment.list.kicker.admin} : #{msg.equipment.list.kicker.user}">EQUIPOS</span>
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2"
+                                        th:text="${adminAccess} ? #{msg.equipment.list.title.admin} : #{msg.equipment.list.title.user}">Equipos</h1>
+                                    <p class="technical-hero__subtitle mb-0"
+                                       th:text="${adminAccess} ? #{msg.equipment.list.subtitle.admin} : #{msg.equipment.list.subtitle.user}">Inventario técnico.</p>
+                                </div>
+                                <div class="technical-hero__actions">
+                                    <a th:if="${!includeClosed and page != null}" th:href="@{/equipment(includeClosed=true, size=${page.size}, sort=${sortParam})}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-archive me-1"></i><span th:text="#{msg.equipment.list.filter.showClosed}">Mostrar retirados/archivados</span>
+                                    </a>
+                                    <a th:if="${includeClosed and page != null}" th:href="@{/equipment(includeClosed=false, size=${page.size}, sort=${sortParam})}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-eye-slash me-1"></i><span th:text="#{msg.equipment.list.filter.hideClosed}">Ocultar retirados/archivados</span>
+                                    </a>
+                                    <a th:if="${adminAccess}" th:href="@{/equipment/new}" class="btn btn-success">
+                                        <i class="bi bi-plus-lg me-1"></i><span th:text="#{msg.equipment.list.action.new}">Nuevo equipo</span>
+                                    </a>
+                                    <a th:if="${!adminAccess}" th:href="@{/racks}" class="btn btn-outline-primary">
+                                        <i class="bi bi-hdd-rack me-1"></i><span th:text="#{msg.dashboard.user.quick.racks}">Mis racks</span>
+                                    </a>
+                                    <a th:if="${!adminAccess}" th:href="@{/dashboard}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i><span th:text="#{msg.catalog.list.action.dashboard}">Mi panel</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <ul class="womhat-tech-meta technical-hero__meta" th:if="${page != null}">
+                                <li><i class="bi bi-router"></i><span class="fw-semibold" th:text="#{msg.equipment.list.metric.total}">Total</span><span class="text-muted">·</span><span th:text="${page.totalElements}">0</span></li>
+                                <li><i class="bi bi-arrow-left-right"></i><span class="fw-semibold" th:text="#{msg.equipment.list.meta.sort}">Orden</span><span class="text-muted">·</span><span th:text="#{msg.equipment.list.sort.default}">Nombre: A-Z</span></li>
+                                <li><i class="bi bi-filter-circle"></i><span class="fw-semibold" th:text="#{msg.equipment.list.filter.label}">Filtro</span><span class="text-muted">·</span><span th:text="${includeClosed} ? #{msg.equipment.list.filter.closedIncluded} : #{msg.equipment.list.filter.default}">Operativos</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="technical-quick-grid" th:if="${page != null}">
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.equipment.list.metric.visible}">Equipos visibles</span>
+                            <strong class="technical-quick-card__value" th:text="${page.totalElements}">0</strong>
+                            <span class="technical-quick-card__meta"
+                                  th:text="${adminAccess} ? #{msg.equipment.list.metric.visible.admin} : #{msg.equipment.list.metric.visible.user}">Inventario completo</span>
+                        </article>
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.equipment.list.metric.currentPage}">Página actual</span>
+                            <strong class="technical-quick-card__value" th:text="${page.number + 1}">1</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.equipment.list.metric.currentPage.meta(${page.totalPages})}">de 1 páginas</span>
+                        </article>
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.equipment.list.metric.pageSize}">Tamaño de página</span>
+                            <strong class="technical-quick-card__value" th:text="${page.size}">10</strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.equipment.list.metric.pageSizeValue}">Registros por página</span>
+                        </article>
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.equipment.list.metric.access}">Acceso</span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${adminAccess} ? #{msg.list.access.admin} : #{msg.list.access.user}">Lectura</strong>
+                            <span class="technical-quick-card__meta"
+                                  th:text="${adminAccess} ? #{msg.equipment.list.metric.access.adminMeta} : #{msg.equipment.list.metric.access.userMeta}">Detalle</span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div><h2 class="technical-card__title mb-0" th:text="${adminAccess} ? #{msg.equipment.list.section.admin} : #{msg.equipment.list.section.user}">Equipos</h2></div>
+                        <span class="technical-counter" th:text="${page != null ? page.totalElements : 0}">0</span>
+                    </div>
+
+                    <div class="crud-toolbar" th:if="${page != null}">
+                        <div class="small text-muted">
+                            <span th:text="#{msg.pagination.info(${page.number + 1}, ${page.totalPages}, ${page.totalElements})}">Página 1 de 1 (0 registros en total)</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive technical-table-shell" th:if="${page != null and !#lists.isEmpty(page.content)}">
+                        <table class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="table-dark">
+                            <tr>
+                                <th th:text="#{msg.equipment.field.name}">Nombre</th>
+                                <th th:text="#{msg.equipment.field.type}">Tipo</th>
+                                <th th:text="#{msg.equipment.field.rack}">Rack</th>
+                                <th th:text="#{msg.equipment.field.serialNumber}">Serie</th>
+                                <th th:text="#{msg.equipment.field.primaryIp}">IP principal</th>
+                                <th th:text="#{msg.equipment.field.slotSummary}">U</th>
+                                <th th:text="#{msg.equipment.field.status}">Estado</th>
+                                <th th:text="#{msg.common.actions}">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="equipment : ${page.content}">
+                                <td><div class="d-flex flex-column gap-1"><span class="fw-semibold" th:text="${equipment.name != null and !#strings.isEmpty(equipment.name) ? equipment.name : '-'}">Equipo</span><small class="text-muted" th:text="${equipment.managementIp != null and !#strings.isEmpty(equipment.managementIp) ? equipment.managementIp : '-'}">10.0.99.10</small></div></td>
+                                <td><span class="technical-chip" th:text="${equipment.type != null ? equipment.type : '-'}">SERVER</span></td>
+                                <td th:text="${equipment.rackLocationLabel != null and !#strings.isEmpty(equipment.rackLocationLabel) ? equipment.rackLocationLabel : '-'}">Rack A01</td>
+                                <td th:text="${equipment.serialNumber != null and !#strings.isEmpty(equipment.serialNumber) ? equipment.serialNumber : '-'}">SERIE</td>
+                                <td th:text="${equipment.primaryIp != null and !#strings.isEmpty(equipment.primaryIp) ? equipment.primaryIp : '-'}">10.0.0.10</td>
+                                <td th:text="${(equipment.slotPositionU != null ? 'U' + equipment.slotPositionU : '-') + (equipment.slotHeightU != null ? ' · ' + equipment.slotHeightU + 'U' : '')}">U1 · 2U</td>
+                                <td>
+                                    <span class="technical-chip"
+                                          th:text="${equipment.status != null ? equipmentStatusLabels.get(equipment.status) : '-'}">ACTIVE</span>
+                                </td>
+                                <td class="text-nowrap">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a th:href="@{/equipment/detail(id=${equipment.id})}" class="btn btn-outline-secondary btn-sm" th:text="#{msg.common.detail}">Detalle</a>
+                                        <a th:if="${adminAccess}" th:href="@{/equipment/edit(id=${equipment.id})}" class="btn btn-primary btn-sm" th:text="#{msg.common.edit}">Editar</a>
+                                        <form th:if="${adminAccess}" th:action="@{/equipment/delete}" method="post" class="d-inline">
+                                            <input type="hidden" name="id" th:value="${equipment.id}"/>
+                                            <button type="submit" class="btn btn-danger btn-sm" th:text="#{msg.common.delete}">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="empty-state" th:if="${page == null or #lists.isEmpty(page.content)}">
+                        <i class="bi bi-router fs-2 d-block mb-2"></i>
+                        <span th:text="${adminAccess} ? #{msg.equipment.list.empty} : #{msg.equipment.list.empty.user}">No hay equipos registrados.</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center p-3" th:if="${page != null and page.totalPages > 1}">
+                        <div class="small text-muted">
+                            <span th:text="#{msg.pagination.info(${page.number + 1}, ${page.totalPages}, ${page.totalElements})}">Página 1 de 1 (0 registros en total)</span>
+                        </div>
+                        <nav th:attr="aria-label=#{msg.pagination.aria.label}">
+                            <ul class="pagination mb-0">
+                                <li class="page-item" th:classappend="${page.first} ? ' disabled'"><a class="page-link" th:href="@{/equipment(page=${page.number - 1}, size=${page.size}, sort=${sortParam}, includeClosed=${includeClosed})}" th:text="#{msg.pagination.prev}">Anterior</a></li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? ' active'"><a class="page-link" th:text="${i + 1}" th:href="@{/equipment(page=${i}, size=${page.size}, sort=${sortParam}, includeClosed=${includeClosed})}">1</a></li>
+                                <li class="page-item" th:classappend="${page.last} ? ' disabled'"><a class="page-link" th:href="@{/equipment(page=${page.number + 1}, size=${page.size}, sort=${sortParam}, includeClosed=${includeClosed})}" th:text="#{msg.pagination.next}">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

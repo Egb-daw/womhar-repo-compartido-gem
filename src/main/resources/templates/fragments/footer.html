@@ -1,0 +1,58 @@
+<footer th:fragment="footer"
+        class="footer"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <div class="container">
+        <div class="footer-grid">
+            <section class="footer-brand">
+                <a class="footer-brand__mark" th:href="@{/}">
+                    <span class="footer-brand__badge">
+                        <img th:src="@{/assets/images/Logo1.svg}" alt="WoMHAT">
+                    </span>
+
+                    <span>
+                        <strong th:text="#{msg.footer.brand.title}">WoMHAT</strong>
+                    </span>
+                </a>
+
+                <p class="footer-brand__text" th:text="#{msg.footer.brand.text}">
+                    DCIM, catálogo interno y documentación técnica operativa para infraestructura de CPD.
+                </p>
+            </section>
+
+            <section class="footer-column">
+                <h2 class="footer-title" th:text="#{msg.footer.nav.title}">Navegación</h2>
+                <ul class="footer-links">
+                    <li><a th:href="@{/}" th:text="#{msg.public.nav.home}">Inicio</a></li>
+                    <li><a th:href="@{/about}" th:text="#{msg.public.nav.about}">Sobre nosotros</a></li>
+                    <li><a th:href="@{/contact}" th:text="#{msg.public.nav.contact}">Contacto</a></li>
+                </ul>
+            </section>
+
+            <section class="footer-column">
+                <h2 class="footer-title" th:text="#{msg.footer.access.title}">Acceso</h2>
+                <ul class="footer-links" sec:authorize="isAnonymous()">
+                    <li><a th:href="@{/login}" th:text="#{msg.nav.login}">Iniciar sesión</a></li>
+                    <li><a th:href="@{/register}" th:text="#{msg.nav.register}">Registrarse</a></li>
+                </ul>
+
+                <ul class="footer-links" sec:authorize="isAuthenticated()">
+                    <li><a th:href="@{/dashboard}" th:text="#{msg.sidebar.dashboard}">Dashboard</a></li>
+                    <li><a th:href="@{/profile/edit}" th:text="#{msg.nav.profile.edit}">Editar perfil</a></li>
+                </ul>
+
+                <ul class="footer-links" sec:authorize="hasRole('USER') and !hasRole('ADMIN')">
+                    <li><a th:href="@{/catalog}" th:text="#{msg.sidebar.catalog}">Catálogo interno</a></li>
+                    <li><a th:href="@{/catalog/orders}" th:text="#{msg.sidebar.orders}">Mis pedidos</a></li>
+                    <li><a th:href="@{/racks}" th:text="#{msg.sidebar.racks}">Racks</a></li>
+                    <li><a th:href="@{/equipment}" th:text="#{msg.sidebar.equipment}">Equipos</a></li>
+                </ul>
+            </section>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="copyright" th:text="#{msg.footer.copyright}">© 2026 WoMHAT</p>
+        </div>
+    </div>
+</footer>
