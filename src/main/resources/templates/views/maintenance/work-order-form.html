@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.workOrder.form.pageTitle})}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-user-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 work-order-form-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2"
+                                        th:text="${workOrder.id == null} ? #{msg.workOrder.form.title.new} : #{msg.workOrder.form.title.edit}">
+                                        Nueva orden
+                                    </h1>
+                                    <p class="technical-hero__subtitle mb-0"
+                                       th:text="#{msg.workOrder.form.subtitle}">
+                                        Formulario de creación y edición de órdenes de mantenimiento.
+                                    </p>
+                                </div>
+
+                                <div class="technical-hero__actions">
+                                    <a th:href="@{/maintenance/work-orders}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        <span th:text="#{msg.workOrder.form.action.back}">Volver</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li>
+                                    <i class="bi bi-diagram-3"></i>
+                                    <span class="fw-semibold" th:text="#{msg.form.meta.scope}">Ámbito</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="#{msg.form.scope.maintenance}">Operaciones de mantenimiento</span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span class="fw-semibold" th:text="#{msg.form.meta.mode}">Modo</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${workOrder.id == null} ? #{msg.form.mode.create} : #{msg.form.mode.edit}">
+                                        Alta
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <form th:object="${workOrder}"
+                      th:action="${workOrder.id == null} ? @{/maintenance/work-orders/insert} : @{/maintenance/work-orders/update}"
+                      method="post"
+                      data-womhat-validate="true"
+                      data-disable-on-submit="true">
+                    <input type="hidden" th:field="*{id}" />
+
+                    <div class="alert alert-danger mb-4"
+                         th:if="${#fields.hasAnyErrors()}"
+                         th:text="#{msg.form.validation.review}">
+                        Revisa los campos marcados antes de continuar.
+                    </div>
+
+                    <section class="crud-card technical-card">
+                        <div class="crud-card-header technical-card__header">
+                            <div>
+                                <h2 class="technical-card__title mb-1" th:text="#{msg.workOrder.form.section.main}">
+                                    Datos de la orden de mantenimiento
+                                </h2>
+                                <p class="mb-0 text-muted" th:text="#{msg.workOrder.form.subtitle}">
+                                    Formulario de creación y edición de órdenes de mantenimiento.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 p-md-4">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="equipmentId" class="form-label" th:text="#{msg.workOrder.field.equipment}">
+                                        Equipo
+                                    </label>
+                                    <select id="equipmentId"
+                                            th:field="*{equipmentId}"
+                                            class="form-select"
+                                            required
+                                            th:classappend="${#fields.hasErrors('equipmentId')} ? ' is-invalid' : ''">
+                                        <option value="" th:text="#{msg.workOrder.form.option.equipment.select}">
+                                            -- Selecciona un equipo --
+                                        </option>
+                                        <option th:each="equipment : ${equipmentOptions}"
+                                                th:value="${equipment.id}"
+                                                th:text="${equipment.name + ' - ' + equipment.serialNumber}">
+                                            Servidor 01 - SN-001
+                                        </option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('equipmentId')}" class="invalid-feedback d-block" th:errors="*{equipmentId}"></div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="status" class="form-label" th:text="#{msg.workOrder.field.status}">
+                                        Estado
+                                    </label>
+                                    <select id="status"
+                                            th:field="*{status}"
+                                            class="form-select"
+                                            required
+                                            th:classappend="${#fields.hasErrors('status')} ? ' is-invalid' : ''">
+                                        <option th:each="status : ${statuses}"
+                                                th:value="${status}"
+                                                th:text="${status}">
+                                            OPEN
+                                        </option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('status')}" class="invalid-feedback d-block" th:errors="*{status}"></div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="priority" class="form-label" th:text="#{msg.workOrder.field.priority}">
+                                        Prioridad
+                                    </label>
+                                    <select id="priority"
+                                            th:field="*{priority}"
+                                            class="form-select"
+                                            required
+                                            th:classappend="${#fields.hasErrors('priority')} ? ' is-invalid' : ''">
+                                        <option th:each="priority : ${priorities}"
+                                                th:value="${priority}"
+                                                th:text="${priority}">
+                                            MEDIUM
+                                        </option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('priority')}" class="invalid-feedback d-block" th:errors="*{priority}"></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="summary" class="form-label" th:text="#{msg.workOrder.field.summary}">
+                                        Resumen
+                                    </label>
+                                    <input type="text"
+                                           id="summary"
+                                           th:field="*{summary}"
+                                           class="form-control"
+                                           required
+                                           maxlength="180"
+                                           th:classappend="${#fields.hasErrors('summary')} ? ' is-invalid' : ''"
+                                           th:placeholder="#{msg.workOrder.form.placeholder.summary}" />
+                                    <div th:if="${#fields.hasErrors('summary')}" class="invalid-feedback d-block" th:errors="*{summary}"></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="details" class="form-label" th:text="#{msg.workOrder.field.details}">
+                                        Detalles
+                                    </label>
+                                    <textarea id="details"
+                                              th:field="*{details}"
+                                              rows="6"
+                                              maxlength="2000"
+                                              class="form-control"
+                                              th:classappend="${#fields.hasErrors('details')} ? ' is-invalid' : ''"
+                                              th:placeholder="#{msg.workOrder.form.placeholder.details}"></textarea>
+                                    <div th:if="${#fields.hasErrors('details')}" class="invalid-feedback d-block" th:errors="*{details}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end mt-4">
+                        <a th:href="@{/maintenance/work-orders}" class="btn btn-outline-secondary"
+                           th:text="#{msg.common.cancel}">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>
+                            <span th:text="${workOrder.id == null} ? #{msg.workOrder.form.action.create} : #{msg.workOrder.form.action.update}">
+                                Guardar
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

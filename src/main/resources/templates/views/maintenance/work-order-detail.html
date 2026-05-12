@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.workOrder.detail.pageTitle})}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-user-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 work-order-detail-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(false)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2">
+                                        <span th:text="#{msg.workOrder.detail.title}">Orden</span>
+                                        <span class="ms-1" th:text="'#' + ${workOrder.id}">#1</span>
+                                    </h1>
+                                    <p class="technical-hero__subtitle mb-0"
+                                       th:text="${workOrder.summary != null and !#strings.isEmpty(workOrder.summary) ? workOrder.summary : '-'}">
+                                        Actualizar firmware
+                                    </p>
+                                </div>
+
+                                <div class="technical-hero__actions">
+                                    <a class="btn btn-primary"
+                                       th:if="${canEditWorkOrders}"
+                                       th:href="@{/maintenance/work-orders/edit(id=${workOrder.id})}">
+                                        <i class="bi bi-pencil me-1"></i>
+                                        <span th:text="#{msg.common.edit}">Editar</span>
+                                    </a>
+                                    <form th:if="${canDeleteWorkOrders}"
+                                          th:action="@{/maintenance/work-orders/delete}"
+                                          method="post"
+                                          class="d-inline"
+                                          th:attr="data-confirm=#{msg.workOrder.detail.confirm.delete}"
+                                          data-disable-on-submit="true">
+                                        <input type="hidden" name="id" th:value="${workOrder.id}" />
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="bi bi-trash me-1"></i>
+                                            <span th:text="#{msg.workOrder.list.action.delete}">Eliminar</span>
+                                        </button>
+                                    </form>
+                                    <a class="btn btn-outline-secondary" th:href="@{/maintenance/work-orders}">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        <span th:text="#{msg.workOrder.detail.action.back}">Volver</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li>
+                                    <i class="bi bi-router"></i>
+                                    <span class="fw-semibold" th:text="#{msg.workOrder.field.equipment}">Equipo</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${workOrder.equipmentName != null and !#strings.isEmpty(workOrder.equipmentName) ? workOrder.equipmentName : '-'}">
+                                        Servidor 01
+                                    </span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span class="fw-semibold" th:text="#{msg.workOrder.field.openedAt}">Apertura</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="${workOrder.openedAt != null ? #temporals.format(workOrder.openedAt, 'dd/MM/yyyy HH:mm') : '-'}">
+                                        01/01/2026 10:00
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="technical-quick-grid">
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.workOrder.field.status}">Estado</span>
+                            <strong class="technical-quick-card__value" th:text="${workOrder.status != null ? workOrder.status : '-'}">
+                                OPEN
+                            </strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.form.scope.maintenance}">
+                                Operaciones de mantenimiento
+                            </span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.workOrder.field.priority}">Prioridad</span>
+                            <strong class="technical-quick-card__value" th:text="${workOrder.priority != null ? workOrder.priority : '-'}">
+                                HIGH
+                            </strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.workOrder.detail.section.main}">
+                                Datos de la orden
+                            </span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.workOrder.field.notesCount}">Notas</span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${workOrder.notes != null ? #lists.size(workOrder.notes) : 0}">
+                                0
+                            </strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.workOrder.detail.section.notes}">
+                                Notas de mantenimiento
+                            </span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.workOrder.detail.field.createdBy}">Creada por</span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${workOrder.createdByEmail != null and !#strings.isEmpty(workOrder.createdByEmail) ? workOrder.createdByEmail : '-'}">
+                                admin@womhat.com
+                            </strong>
+                            <span class="technical-quick-card__meta" th:text="${workOrder.closedAt != null ? #temporals.format(workOrder.closedAt, 'dd/MM/yyyy HH:mm') : '-'}">
+                                -
+                            </span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div>
+                            <h2 class="technical-card__title mb-0" th:text="#{msg.workOrder.detail.section.main}">
+                                Datos de la orden
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="p-3 p-md-4">
+                        <div class="row g-4">
+                            <div class="col-12 col-xl-6">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless align-middle mb-0">
+                                        <tbody>
+                                        <tr>
+                                            <th th:text="#{msg.workOrder.field.id}">ID</th>
+                                            <td th:text="${workOrder.id}">1</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.workOrder.field.equipment}">Equipo</th>
+                                            <td th:text="${workOrder.equipmentName != null and !#strings.isEmpty(workOrder.equipmentName) ? workOrder.equipmentName : '-'}">Servidor 01</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.workOrder.detail.field.equipmentId}">ID equipo</th>
+                                            <td th:text="${workOrder.equipmentId != null ? workOrder.equipmentId : '-'}">10</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.workOrder.detail.field.createdBy}">Creada por</th>
+                                            <td th:text="${workOrder.createdByEmail != null and !#strings.isEmpty(workOrder.createdByEmail) ? workOrder.createdByEmail : '-'}">admin@womhat.com</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-xl-6">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless align-middle mb-0">
+                                        <tbody>
+                                        <tr>
+                                            <th th:text="#{msg.workOrder.field.status}">Estado</th>
+                                            <td><span class="technical-chip" th:text="${workOrder.status != null ? workOrder.status : '-'}">OPEN</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.workOrder.field.priority}">Prioridad</th>
+                                            <td><span class="technical-chip" th:text="${workOrder.priority != null ? workOrder.priority : '-'}">HIGH</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.workOrder.field.openedAt}">Apertura</th>
+                                            <td th:text="${workOrder.openedAt != null ? #temporals.format(workOrder.openedAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</td>
+                                        </tr>
+                                        <tr>
+                                            <th th:text="#{msg.workOrder.field.closedAt}">Cierre</th>
+                                            <td th:text="${workOrder.closedAt != null ? #temporals.format(workOrder.closedAt, 'dd/MM/yyyy HH:mm') : '-'}">-</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="surface-panel p-3">
+                                    <div class="small text-muted mb-2" th:text="#{msg.workOrder.field.summary}">Resumen</div>
+                                    <div class="fw-semibold" th:text="${workOrder.summary != null and !#strings.isEmpty(workOrder.summary) ? workOrder.summary : '-'}">
+                                        Actualizar firmware
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="surface-panel p-3">
+                                    <div class="small text-muted mb-2" th:text="#{msg.workOrder.field.details}">Detalles</div>
+                                    <div th:text="${workOrder.details != null and !#strings.isEmpty(workOrder.details) ? workOrder.details : '-'}">
+                                        Detalle
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="row g-4">
+                    <div class="col-12 col-xl-7">
+                        <section class="crud-card technical-card h-100">
+                            <div class="crud-card-header technical-card__header">
+                                <div>
+                                    <h2 class="technical-card__title mb-0" th:text="#{msg.workOrder.detail.section.notes}">
+                                        Notas de mantenimiento
+                                    </h2>
+                                </div>
+                                <span class="technical-counter" th:text="${workOrder.notes != null ? #lists.size(workOrder.notes) : 0}">
+                                    0
+                                </span>
+                            </div>
+
+                            <div th:if="${workOrder.notes != null and !#lists.isEmpty(workOrder.notes)}" class="list-group list-group-flush">
+                                <!-- Histórico de notas de mantenimiento con autoría y borrado restringido por permisos. -->
+                                <div th:each="note : ${workOrder.notes}" class="list-group-item p-3 bg-transparent border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start gap-3">
+                                        <div>
+                                            <div class="fw-semibold"
+                                                 th:text="${note.createdByEmail != null and !#strings.isEmpty(note.createdByEmail) ? note.createdByEmail : '-'}">
+                                                admin@womhat.com
+                                            </div>
+
+                                            <div class="small text-muted mb-2"
+                                                 th:text="${note.createdAt != null ? #temporals.format(note.createdAt, 'dd/MM/yyyy HH:mm') : '-'}">
+                                                01/01/2026 10:30
+                                            </div>
+
+                                            <div th:text="${note.note != null and !#strings.isEmpty(note.note) ? note.note : '-'}">
+                                                Se ha actualizado el firmware correctamente.
+                                            </div>
+                                        </div>
+
+                                        <form th:if="${canDeleteNotes}"
+                                              th:action="@{/maintenance-notes/delete}" method="post"
+                                              class="d-inline"
+                                              th:attr="data-confirm=#{msg.workOrder.detail.note.confirm.delete}"
+                                              data-disable-on-submit="true">
+                                            <input type="hidden" name="id" th:value="${note.id}" />
+                                            <input type="hidden" name="workOrderId" th:value="${workOrder.id}" />
+                                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                    th:text="#{msg.workOrder.detail.note.delete}">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="empty-state"
+                                 th:if="${workOrder.notes == null or #lists.isEmpty(workOrder.notes)}">
+                                <i class="bi bi-journal-text fs-2 d-block mb-2"></i>
+                                <span th:text="#{msg.workOrder.detail.notes.empty}">
+                                    Esta orden no tiene notas registradas.
+                                </span>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="col-12 col-xl-5">
+                        <section class="crud-card technical-card h-100">
+                            <div class="crud-card-header technical-card__header">
+                                <div>
+                                    <h2 class="technical-card__title mb-0" th:text="#{msg.workOrder.detail.section.newNote}">
+                                        Añadir nota
+                                    </h2>
+                                </div>
+                            </div>
+
+                            <div class="p-3 p-md-4">
+                                <!-- Alta de nota técnica: sólo disponible con permisos de escritura sobre el rack del equipo. -->
+                                <form th:if="${canAddNotes}"
+                                      th:action="@{/maintenance-notes/insert}"
+                                      th:object="${maintenanceNote}"
+                                      method="post"
+                                      data-womhat-validate="true"
+                                      data-disable-on-submit="true">
+                                    <input type="hidden" th:field="*{workOrderId}" />
+
+                                    <div class="mb-3">
+                                        <label for="note" class="form-label" th:text="#{msg.workOrder.detail.note.content}">
+                                            Contenido
+                                        </label>
+                                        <textarea id="note"
+                                                  th:field="*{note}"
+                                                  rows="8"
+                                                  required
+                                                  maxlength="2000"
+                                                  class="form-control"
+                                                  th:classappend="${#fields.hasErrors('note')} ? ' is-invalid' : ''"
+                                                  th:placeholder="#{msg.workOrder.detail.note.placeholder}"></textarea>
+                                        <div th:if="${#fields.hasErrors('note')}" class="invalid-feedback d-block" th:errors="*{note}"></div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-save me-1"></i>
+                                        <span th:text="#{msg.workOrder.detail.note.save}">Guardar nota</span>
+                                    </button>
+                                </form>
+                                <div class="empty-state mb-0" th:if="${!canAddNotes}">
+                                    <i class="bi bi-lock fs-2 d-block mb-2"></i>
+                                    <span th:text="#{msg.workOrder.detail.note.readOnly}">
+                                        Solo lectura: necesitas permisos de escritura sobre el rack para añadir notas.
+                                    </span>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

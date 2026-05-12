@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale}">
+<head>
+    <th:block th:replace="~{fragments/head :: head('WoMHAT · Maintenance Work Orders')}"></th:block>
+</head>
+
+<body class="d-flex flex-column h-100 womhat-body womhat-private-page womhat-user-page">
+<header th:replace="~{fragments/header :: header(false)}"></header>
+
+<main class="dashboard-layout womhat-main flex-grow-1">
+    <aside class="dashboard-sidebar">
+        <nav th:replace="~{fragments/sidebar :: sidebar(${active})}"></nav>
+    </aside>
+
+    <section class="dashboard-content">
+        <div class="container-fluid px-4 work-order-list-view">
+            <th:block th:replace="~{fragments/alerts :: flashMessages(true)}"></th:block>
+
+            <div class="technical-detail-shell">
+                <section class="surface-panel surface-panel--raised technical-hero">
+                    <div class="technical-hero__head">
+                        <div class="technical-hero__copy">
+                            <span class="womhat-kicker mb-3">WoMHAT DCIM</span>
+
+                            <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3">
+                                <div>
+                                    <h1 class="section-title technical-hero__title mb-2"
+                                        th:text="#{msg.workOrder.list.title}">
+                                        Órdenes de mantenimiento
+                                    </h1>
+                                    <p class="technical-hero__subtitle mb-0"
+                                       th:text="#{msg.workOrder.list.subtitle}">
+                                        Seguimiento de tareas e incidencias técnicas.
+                                    </p>
+                                </div>
+
+                                <div class="technical-hero__actions" th:if="${canCreateWorkOrder}">
+                                    <a th:href="@{/maintenance/work-orders/new}" class="btn btn-success">
+                                        <i class="bi bi-plus-lg me-1"></i>
+                                        <span th:text="#{msg.workOrder.list.action.new}">Nueva orden</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <ul class="womhat-tech-meta technical-hero__meta">
+                                <li>
+                                    <i class="bi bi-tools"></i>
+                                    <span class="fw-semibold" th:text="#{msg.list.meta.flow}">Flujo</span>
+                                    <span class="text-muted">·</span>
+                                    <span th:text="#{msg.workOrder.list.meta.flowValue}">Seguimiento operativo</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="technical-quick-grid">
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.list.metric.total}">Total</span>
+                            <strong class="technical-quick-card__value"
+                                    th:text="${listWorkOrders != null ? #lists.size(listWorkOrders) : 0}">
+                                0
+                            </strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.workOrder.list.title}">
+                                Órdenes de mantenimiento
+                            </span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.workOrder.filter.equipmentId}">ID equipo</span>
+                            <strong class="technical-quick-card__value" th:text="${equipmentId != null ? equipmentId : '-'}">
+                                -
+                            </strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.form.scope.maintenance}">
+                                Operaciones de mantenimiento
+                            </span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.workOrder.field.status}">Estado</span>
+                            <strong class="technical-quick-card__value" th:text="${selectedStatus != null ? selectedStatus : '-'}">
+                                OPEN
+                            </strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.workOrder.filter.status.all}">
+                                Todos
+                            </span>
+                        </article>
+
+                        <article class="technical-quick-card">
+                            <span class="technical-quick-card__label" th:text="#{msg.workOrder.field.priority}">Prioridad</span>
+                            <strong class="technical-quick-card__value" th:text="${selectedPriority != null ? selectedPriority : '-'}">
+                                HIGH
+                            </strong>
+                            <span class="technical-quick-card__meta" th:text="#{msg.workOrder.filter.priority.all}">
+                                Todas
+                            </span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div>
+                            <h2 class="technical-card__title mb-1" th:text="#{msg.workOrder.list.filters.title}">
+                                Filtros
+                            </h2>
+                            <p class="mb-0 text-muted" th:text="#{msg.form.scope.maintenance}">
+                                Operaciones de mantenimiento
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 p-md-4">
+                        <form method="get" th:action="@{/maintenance/work-orders}" class="row g-3 align-items-end">
+                            <div class="col-12 col-md-3">
+                                <label for="equipmentId" class="form-label" th:text="#{msg.workOrder.filter.equipmentId}">
+                                    ID equipo
+                                </label>
+                                <input type="number" id="equipmentId" name="equipmentId" class="form-control"
+                                       th:value="${equipmentId}" min="1">
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label for="status" class="form-label" th:text="#{msg.workOrder.field.status}">
+                                    Estado
+                                </label>
+                                <select id="status" name="status" class="form-select">
+                                    <option value="" th:text="#{msg.workOrder.filter.status.all}">Todos</option>
+                                    <option th:each="status : ${statuses}"
+                                            th:value="${status}"
+                                            th:text="${status}"
+                                            th:selected="${selectedStatus == status}">
+                                        OPEN
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label for="priority" class="form-label" th:text="#{msg.workOrder.field.priority}">
+                                    Prioridad
+                                </label>
+                                <select id="priority" name="priority" class="form-select">
+                                    <option value="" th:text="#{msg.workOrder.filter.priority.all}">Todas</option>
+                                    <option th:each="priority : ${priorities}"
+                                            th:value="${priority}"
+                                            th:text="${priority}"
+                                            th:selected="${selectedPriority == priority}">
+                                        MEDIUM
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-3 d-flex flex-column flex-md-row gap-2">
+                                <button type="submit" class="btn btn-primary flex-fill">
+                                    <i class="bi bi-funnel me-1"></i>
+                                    <span th:text="#{msg.workOrder.filter.apply}">Aplicar filtros</span>
+                                </button>
+                                <a th:href="@{/maintenance/work-orders}" class="btn btn-outline-secondary flex-fill"
+                                   th:text="#{msg.workOrder.filter.reset}">
+                                    Restablecer
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="crud-card technical-card">
+                    <div class="crud-card-header technical-card__header">
+                        <div>
+                            <h2 class="technical-card__title mb-0" th:text="#{msg.workOrder.list.title}">
+                                Órdenes de mantenimiento
+                            </h2>
+                        </div>
+
+                        <span class="technical-counter"
+                              th:text="${listWorkOrders != null ? #lists.size(listWorkOrders) : 0}">
+                            0
+                        </span>
+                    </div>
+
+                    <div class="crud-toolbar">
+                        <div class="small text-muted">
+                            <span th:text="#{msg.workOrder.list.resultCount(${listWorkOrders != null ? #lists.size(listWorkOrders) : 0})}">
+                                Resultado actual: 0 órdenes
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive technical-table-shell"
+                         th:if="${listWorkOrders != null and !#lists.isEmpty(listWorkOrders)}">
+                        <table class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="table-dark">
+                            <tr>
+                                <th th:text="#{msg.workOrder.field.id}">ID</th>
+                                <th th:text="#{msg.workOrder.field.equipment}">Equipo</th>
+                                <th th:text="#{msg.workOrder.field.summary}">Resumen</th>
+                                <th th:text="#{msg.workOrder.field.status}">Estado</th>
+                                <th th:text="#{msg.workOrder.field.priority}">Prioridad</th>
+                                <th th:text="#{msg.workOrder.field.openedAt}">Apertura</th>
+                                <th th:text="#{msg.workOrder.field.closedAt}">Cierre</th>
+                                <th th:text="#{msg.workOrder.field.notesCount}">Notas</th>
+                                <th th:text="#{msg.common.actions}">Acciones</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="wo : ${listWorkOrders}">
+                                <td>
+                                    <span class="fw-semibold" th:text="${wo.id}">1</span>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <span class="fw-semibold"
+                                              th:text="${wo.equipmentName != null and !#strings.isEmpty(wo.equipmentName) ? wo.equipmentName : '-'}">
+                                            Servidor 01
+                                        </span>
+                                        <small class="text-muted">
+                                            <span th:text="#{msg.workOrder.filter.equipmentId}">ID equipo</span>
+                                            <span class="mx-1">·</span>
+                                            <span th:text="${wo.equipmentId != null ? wo.equipmentId : '-'}">10</span>
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span th:text="${wo.summary != null and !#strings.isEmpty(wo.summary) ? wo.summary : '-'}">
+                                        Actualizar firmware
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="technical-chip" th:text="${wo.status != null ? wo.status : '-'}">
+                                        OPEN
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="technical-chip" th:text="${wo.priority != null ? wo.priority : '-'}">
+                                        HIGH
+                                    </span>
+                                </td>
+
+                                <td th:text="${wo.openedAt != null ? #temporals.format(wo.openedAt, 'dd/MM/yyyy HH:mm') : '-'}">
+                                    01/01/2026 10:00
+                                </td>
+
+                                <td th:text="${wo.closedAt != null ? #temporals.format(wo.closedAt, 'dd/MM/yyyy HH:mm') : '-'}">
+                                    -
+                                </td>
+
+                                <td>
+                                    <span class="technical-chip" th:text="${wo.notesCount != null ? wo.notesCount : 0}">
+                                        0
+                                    </span>
+                                </td>
+
+                                <td class="text-nowrap">
+                                    <a th:href="@{/maintenance/work-orders/detail(id=${wo.id})}"
+                                       class="btn btn-outline-secondary btn-sm"
+                                       th:text="#{msg.common.detail}">
+                                        Detalle
+                                    </a>
+
+                                    <a th:if="${canEditWorkOrders or (editableWorkOrderIds != null and editableWorkOrderIds.contains(wo.id))}"
+                                       th:href="@{/maintenance/work-orders/edit(id=${wo.id})}"
+                                       class="btn btn-primary btn-sm"
+                                       th:text="#{msg.common.edit}">
+                                        Editar
+                                    </a>
+
+                                    <form th:if="${canDeleteWorkOrders}"
+                                          th:action="@{/maintenance/work-orders/delete}" method="post" class="d-inline"
+                                          data-confirm="¿Seguro que quieres eliminar esta orden de mantenimiento?">
+                                        <input type="hidden" name="id" th:value="${wo.id}" />
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                th:text="#{msg.workOrder.list.action.delete}">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="empty-state" th:if="${listWorkOrders == null or #lists.isEmpty(listWorkOrders)}">
+                        <i class="bi bi-tools fs-2 d-block mb-2"></i>
+                        <span th:text="#{msg.workOrder.list.empty}">
+                            No hay órdenes que coincidan con los filtros.
+                        </span>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
