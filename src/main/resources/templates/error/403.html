@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.title} + ' - 403')}"></th:block>
+</head>
+
+<body class="womhat-body womhat-error-page d-flex flex-column h-100">
+
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="error-shell container py-4 py-lg-5">
+    <section class="error-card">
+        <div class="error-code-wrap">
+            <i class="bi bi-shield-lock" aria-hidden="true"></i>
+            <p class="error-code">403</p>
+        </div>
+
+        <h1 class="error-title" th:text="#{msg.error.403.title}">No tienes acceso a esta zona</h1>
+
+        <p class="error-tip mb-0" th:text="#{msg.error.403.tip}">
+            Puedes volver a la portada, regresar a la página anterior o contactar con el administrador si crees que se trata de un error de permisos.
+        </p>
+
+        <div class="error-actions">
+            <a class="btn btn-primary" th:href="@{/}" th:text="#{msg.error.action.home}">Volver al inicio</a>
+            <a class="btn btn-outline-primary"
+               sec:authorize="isAuthenticated()"
+               th:href="@{/dashboard}"
+               th:text="#{msg.error.action.dashboard}">
+                Ir al panel
+            </a>
+            <a class="btn btn-outline-primary"
+               sec:authorize="isAnonymous()"
+               th:href="@{/login}"
+               th:text="#{msg.nav.login}">
+                Iniciar sesión
+            </a>
+            <button class="btn btn-outline-secondary"
+                    type="button"
+                    onclick="history.back()"
+                    th:text="#{msg.error.action.back}">
+                Volver atrás
+            </button>
+        </div>
+
+        <div class="error-meta" th:if="${path != null or timestamp != null}">
+            <div class="error-meta-title" th:text="#{msg.error.meta.title}">Información técnica</div>
+            <ul class="error-meta-list list-unstyled mb-0">
+                <li th:if="${path != null}">
+                    <span th:text="#{msg.error.meta.path}">Ruta</span>
+                    <code th:text="${path}">/ruta</code>
+                </li>
+                <li th:if="${timestamp != null}">
+                    <span th:text="#{msg.error.meta.timestamp}">Fecha</span>
+                    <code th:text="${timestamp}">timestamp</code>
+                </li>
+            </ul>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+
+</body>
+</html>
