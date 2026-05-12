@@ -1,0 +1,55 @@
+/* =============================================================================
+   WoMHAT · components/_buttons.scss
+   =============================================================================
+   Ajustes globales de botones.
+============================================================================= */
+
+/* Forzar texto blanco */
+.womhat-force-white {
+  color: #fff !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Botón success redefinido con primary
+----------------------------------------------------------------------------- */
+.btn-success {
+  background-color: var(--btn-primary-bg) !important;
+  border-color: var(--btn-primary-bg) !important;
+
+  color: #fff !important;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.btn-success:hover {
+  background-color: var(--btn-primary-hover) !important;
+  border-color: var(--btn-primary-hover) !important;
+}
+
+/* Hover suave para botones de header */
+.womhat-pill:hover,
+.womhat-grid-btn:hover {
+  filter: brightness(0.98);
+}
+
+/* TEMA CLARO: El botón se vuelve gris muy oscuro (casi negro) para resaltar sobre blanco */
+[data-bs-theme="light"] .btn-outline-secondary {
+    color: #212529 !important;      /* Gris muy oscuro */
+    border-color: #212529 !important;
+}
+/* Al pasar el mouse en tema claro */
+[data-bs-theme="light"] .btn-outline-secondary:hover {
+    background-color: #212529 !important;
+    color: #ffffff !important;
+}
+
+/* 2. TEMA OSCURO: El botón se vuelve blanco puro para resaltar sobre el fondo azul/negro */
+[data-bs-theme="dark"] .btn-outline-secondary {
+    color: #ffffff !important;      /* Blanco puro */
+    border-color: #ffffff !important;
+}
+/* Al pasar el mouse en tema oscuro */
+[data-bs-theme="dark"] .btn-outline-secondary:hover {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}

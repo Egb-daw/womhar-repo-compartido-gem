@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:lang="${#locale.language}">
+<head>
+    <th:block th:replace="~{fragments/head :: head(#{msg.title} + ' - 404')}"></th:block>
+</head>
+
+<body class="womhat-body womhat-error-page d-flex flex-column h-100">
+
+<header th:replace="~{fragments/header :: header(true)}"></header>
+
+<main class="error-shell container py-4 py-lg-5">
+    <section class="error-card">
+        <div class="error-code-wrap">
+            <i class="bi bi-signpost-split" aria-hidden="true"></i>
+            <p class="error-code">404</p>
+        </div>
+
+        <h1 class="error-title" th:text="#{msg.error.404.title}">La página que buscas no existe</h1>
+
+        <p class="error-tip mb-0" th:text="#{msg.error.404.tip}">
+            Revisa la dirección solicitada o vuelve a una de las secciones principales de WoMHAT.
+        </p>
+
+        <div class="error-actions">
+            <a class="btn btn-primary" th:href="@{/}" th:text="#{msg.error.action.home}">Ir al inicio</a>
+            <a class="btn btn-outline-primary"
+               sec:authorize="isAuthenticated()"
+               th:href="@{/dashboard}"
+               th:text="#{msg.error.action.dashboard}">
+                Ir al panel
+            </a>
+            <a class="btn btn-outline-primary"
+               sec:authorize="isAnonymous()"
+               th:href="@{/login}"
+               th:text="#{msg.nav.login}">
+                Iniciar sesión
+            </a>
+            <button class="btn btn-outline-secondary"
+                    type="button"
+                    onclick="history.back()"
+                    th:text="#{msg.error.action.back}">
+                Volver atrás
+            </button>
+        </div>
+
+        <div class="error-meta" th:if="${path != null}">
+            <div class="error-meta-title" th:text="#{msg.error.404.meta.title}">Ruta solicitada</div>
+            <ul class="error-meta-list list-unstyled mb-0">
+                <li>
+                    <span th:text="#{msg.error.meta.path}">Ruta</span>
+                    <code th:text="${path}">/ruta</code>
+                </li>
+            </ul>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+
+</body>
+</html>

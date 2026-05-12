@@ -1,0 +1,245 @@
+/* =============================================================================
+   WoMHAT · utils/_base.scss
+   =============================================================================
+   Estilos globales:
+   - Tamaño base de fuente
+   - Tipografía general
+   - Colores usando variables CSS
+   - Enlaces, textos secundarios
+   - Accesibilidad: focus visible
+   - Reduce motion: desactiva animaciones
+============================================================================= */
+
+/* -----------------------------------------------------------------------------
+  Tamaño base
+----------------------------------------------------------------------------- */
+html {
+  font-size: 120%;
+}
+
+/* -----------------------------------------------------------------------------
+   Body global
+----------------------------------------------------------------------------- */
+.womhat-body {
+  font-family: "Roboto", sans-serif;
+  background: var(--page-gradient);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* -----------------------------------------------------------------------------
+   Tipografías de marca/títulos
+----------------------------------------------------------------------------- */
+.section-title,
+.hero-title,
+.womhat-brand {
+  font-family: "Raleway", sans-serif;
+}
+
+/* -----------------------------------------------------------------------------
+   Enlaces
+----------------------------------------------------------------------------- */
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* -----------------------------------------------------------------------------
+   Texto secundario
+----------------------------------------------------------------------------- */
+.text-secondary {
+  color: var(--text-2) !important;
+}
+
+.womhat-muted {
+  color: var(--text-soft) !important;
+}
+
+.womhat-page-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.surface-panel {
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface-soft);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+}
+
+.surface-panel--raised {
+  background: linear-gradient(180deg, var(--surface-glass), var(--surface-raised));
+  box-shadow: var(--shadow);
+}
+
+.surface-panel--soft {
+  background: linear-gradient(180deg, var(--surface-soft), var(--surface));
+}
+
+.womhat-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.womhat-kicker::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 0 0.2rem var(--ring-accent);
+}
+
+.womhat-tech-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.womhat-tech-meta li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.womhat-tech-meta li i {
+  color: var(--accent);
+}
+
+.table-responsive {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive > .table {
+  margin-bottom: 0;
+}
+
+.form-label {
+  margin-bottom: 0.35rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.form-control,
+.form-select {
+  min-height: 46px;
+}
+
+textarea.form-control {
+  min-height: 120px;
+}
+
+.invalid-feedback {
+  font-size: 0.86rem;
+}
+
+/* -----------------------------------------------------------------------------
+   Accesibilidad: outline cuando se navega con teclado (Tab)
+----------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 3px solid rgba(89, 46, 242, 0.42);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  box-shadow: 0 0 0 0.24rem var(--ring-accent);
+}
+
+/* -----------------------------------------------------------------------------
+   Reduce Motion (accesibilidad)
+   - Si el usuario tiene “reducir movimiento”, se quitan animaciones y transiciones.
+----------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* Desplazamiento instantáneo */
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .womhat-tech-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .crud-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .crud-toolbar .btn,
+  .crud-toolbar .btn-group {
+    width: 100%;
+  }
+
+  .crud-toolbar .btn-group .btn {
+    width: auto;
+    flex: 1 1 auto;
+  }
+
+  .crud-card .table,
+  .table-card .table,
+  .report-list-table,
+  .technical-data-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .crud-card .table tbody,
+  .crud-card .table thead,
+  .table-card .table tbody,
+  .table-card .table thead,
+  .report-list-table tbody,
+  .report-list-table thead,
+  .technical-data-table tbody,
+  .technical-data-table thead {
+    display: table;
+    width: 100%;
+  }
+
+  .empty-state {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+
+  .table-responsive > .table {
+    font-size: 0.92rem;
+  }
+}

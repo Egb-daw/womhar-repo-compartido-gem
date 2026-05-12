@@ -1,0 +1,609 @@
+/* =============================================================================
+   WoMHAT · layout/_catalog.scss
+   ============================================================================= */
+
+.womhat-catalog-page {
+  background:
+    radial-gradient(circle at top right, rgba(89, 46, 242, 0.10), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(41, 242, 128, 0.08), transparent 20%),
+    var(--bg);
+}
+
+.catalog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent), var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.catalog-card__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.catalog-card__title {
+  margin: 0 0 0.4rem;
+  font-family: "Raleway", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.catalog-card__summary {
+  color: var(--text-2);
+  font-size: 0.95rem;
+}
+
+.catalog-card__price {
+  flex-shrink: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(89, 46, 242, 0.12);
+  border: 1px solid rgba(89, 46, 242, 0.22);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.catalog-card__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.catalog-card__metric {
+  min-height: 84px;
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.catalog-card__metric span {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.catalog-card__metric strong {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.catalog-card__meta {
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.93rem;
+  color: var(--text-2);
+}
+
+.catalog-card__actions {
+  margin-top: auto;
+}
+
+.womhat-catalog-page .technical-hero,
+.womhat-profile-page .technical-hero,
+.womhat-user-page:not(.womhat-private-page) .technical-hero {
+  border-radius: 24px;
+}
+
+.womhat-catalog-page .technical-quick-card,
+.womhat-profile-page .technical-quick-card,
+.womhat-user-page:not(.womhat-private-page) .technical-quick-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent), var(--surface);
+}
+
+.womhat-catalog-page .crud-card,
+.womhat-profile-page .crud-card,
+.womhat-user-page:not(.womhat-private-page) .crud-card {
+  border-radius: 20px;
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.womhat-catalog-page .table-responsive,
+.womhat-profile-page .table-responsive,
+.womhat-user-page:not(.womhat-private-page) .table-responsive {
+  background: var(--surface);
+}
+
+@media (max-width: 768px) {
+  .catalog-card {
+    padding: 1rem;
+  }
+
+  .catalog-card__head {
+    flex-direction: column;
+  }
+
+  .catalog-card__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =============================================================================
+   WoMHAT · layout/_catalog.scss
+   ============================================================================= */
+
+.womhat-catalog-page {
+  background:
+          radial-gradient(circle at top right, rgba(89, 46, 242, 0.10), transparent 24%),
+          radial-gradient(circle at bottom left, rgba(41, 242, 128, 0.08), transparent 20%),
+          var(--bg);
+}
+
+.catalog-page-shell {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.catalog-hero {
+  border-radius: 24px;
+}
+
+.catalog-filter-card,
+.womhat-catalog-page .crud-card {
+  border-radius: 20px;
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.catalog-filter-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.catalog-filter-summary__label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.catalog-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.catalog-filter-pill i {
+  color: var(--text-2);
+}
+
+.catalog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent), var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.catalog-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 46px rgba(15, 20, 32, 0.12);
+  border-color: var(--accent-strong);
+}
+
+[data-bs-theme="dark"] .catalog-card:hover {
+  box-shadow: 0 22px 46px rgba(0, 0, 0, 0.42);
+}
+
+.catalog-card__topline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.catalog-status-badge,
+.catalog-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.catalog-status-badge--active {
+  color: #0f1420;
+  background: rgba(41, 242, 128, 0.18);
+  border: 1px solid rgba(41, 242, 128, 0.34);
+}
+
+.catalog-status-badge--inactive {
+  color: var(--text);
+  background: rgba(242, 27, 30, 0.10);
+  border: 1px solid rgba(242, 27, 30, 0.24);
+}
+
+.catalog-stock-badge--ok {
+  color: #0f1420;
+  background: rgba(41, 242, 128, 0.18);
+  border: 1px solid rgba(41, 242, 128, 0.34);
+}
+
+.catalog-stock-badge--low {
+  color: #0f1420;
+  background: rgba(255, 193, 7, 0.24);
+  border: 1px solid rgba(255, 193, 7, 0.42);
+}
+
+.catalog-stock-badge--out {
+  color: var(--text);
+  background: rgba(242, 27, 30, 0.10);
+  border: 1px solid rgba(242, 27, 30, 0.24);
+}
+
+.catalog-card__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.catalog-card__title {
+  margin: 0 0 0.4rem;
+  font-family: "Raleway", sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.catalog-card__summary {
+  color: var(--text-2);
+  font-size: 0.95rem;
+}
+
+.catalog-card__price-block {
+  min-width: 112px;
+  text-align: right;
+}
+
+.catalog-card__price-label {
+  display: block;
+  margin-bottom: 0.22rem;
+  color: var(--text-2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.catalog-card__price {
+  display: inline-flex;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(89, 46, 242, 0.12);
+  border: 1px solid rgba(89, 46, 242, 0.22);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.catalog-card__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.catalog-card__metric {
+  min-height: 84px;
+  padding: 0.85rem 0.9rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.catalog-card__metric span {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.catalog-card__metric strong {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.catalog-card__meta {
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.93rem;
+  color: var(--text-2);
+}
+
+.catalog-card__actions {
+  margin-top: auto;
+}
+
+.catalog-detail-summary {
+  display: grid;
+  gap: 1rem;
+}
+
+.catalog-detail-summary__panel {
+  padding: 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-2);
+}
+
+.catalog-detail-summary__title {
+  margin: 0 0 1rem;
+  font-family: "Raleway", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.catalog-detail-progress {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.catalog-detail-progress__label-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.92rem;
+  color: var(--text-2);
+}
+
+.catalog-detail-progress__label-row strong {
+  color: var(--text);
+}
+
+.catalog-detail-progress__bar {
+  height: 10px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.catalog-detail-progress__bar .progress-bar {
+  background: linear-gradient(90deg, #592EF2, #2933F3);
+  border-radius: 999px;
+}
+
+.catalog-detail-summary__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.catalog-detail-summary__item {
+  padding: 0.85rem 0.9rem;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.catalog-detail-summary__item span {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.catalog-detail-summary__item strong {
+  color: var(--text);
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.catalog-detail-summary__note {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.catalog-order-card .form-text {
+  color: var(--text-soft);
+}
+
+.catalog-order-summary {
+  padding: 1rem 1rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-2);
+}
+
+.catalog-order-summary__title {
+  margin: 0 0 0.85rem;
+  font-family: "Raleway", sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.catalog-order-summary__list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.catalog-order-summary__list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.catalog-order-summary__list dt {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.catalog-order-summary__list dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.catalog-equipment-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent), var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.catalog-equipment-card__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.catalog-equipment-card__title {
+  margin: 0 0 0.22rem;
+  font-family: "Raleway", sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.catalog-equipment-card__subtitle {
+  color: var(--text-2);
+  font-size: 0.85rem;
+}
+
+.catalog-equipment-card__meta {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+.womhat-catalog-page .technical-quick-card,
+.womhat-profile-page .technical-quick-card,
+.womhat-user-page:not(.womhat-private-page) .technical-quick-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent), var(--surface);
+}
+
+.womhat-catalog-page .table-responsive,
+.womhat-profile-page .table-responsive,
+.womhat-user-page:not(.womhat-private-page) .table-responsive {
+  background: var(--surface);
+}
+
+@media (max-width: 991.98px) {
+  .catalog-card__head {
+    flex-direction: column;
+  }
+
+  .catalog-card__price-block {
+    text-align: left;
+    min-width: 0;
+  }
+
+  .catalog-detail-summary__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .catalog-card {
+    padding: 1rem;
+  }
+
+  .catalog-card__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-side-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.profile-side-card {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent), var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.profile-inline-meta {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.profile-inline-meta__item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.profile-inline-meta__label {
+  color: var(--text-2);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.profile-inline-meta__item strong {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.profile-bio-counter {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1199.98px) {
+  .profile-side-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .profile-inline-meta__item {
+    flex-direction: column;
+  }
+}

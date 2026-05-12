@@ -1,0 +1,85 @@
+.page-about .about-story-card {
+  padding: clamp(1.4rem, 2vw, 2rem);
+}
+
+.about-story-card .display-4 {
+  color: var(--text);
+  letter-spacing: -0.04em;
+}
+
+.about-story-card .lead {
+  color: var(--text-2) !important;
+  line-height: 1.7;
+}
+
+.about-story-card p {
+  color: var(--text);
+  line-height: 1.75;
+}
+
+.womhat-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(89, 46, 242, 0.10);
+  border: 1px solid rgba(89, 46, 242, 0.14);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.womhat-kicker::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--accent-2);
+}
+
+.womhat-tech-meta {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.womhat-tech-meta li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.womhat-tech-meta i {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(89, 46, 242, 0.10);
+  color: var(--accent);
+}
+
+.about-card {
+  border-radius: 28px !important;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.about-card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+@media (max-width: 991.98px) {
+  .page-about .about-story-card {
+    border-radius: 24px;
+  }
+}

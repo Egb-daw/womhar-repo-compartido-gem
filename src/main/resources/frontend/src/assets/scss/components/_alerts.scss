@@ -1,0 +1,49 @@
+.womhat-flash-messages {
+  display: grid;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.womhat-alert {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
+  padding: 1rem 1rem 1rem 1.05rem;
+}
+
+.womhat-alert .btn-close {
+  opacity: 0.85;
+}
+
+.womhat-alert__title {
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.womhat-alert__body {
+  color: inherit;
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.alert-success.womhat-alert {
+  background: rgba(41, 242, 128, 0.10);
+  border-color: rgba(41, 242, 128, 0.25);
+}
+
+.alert-danger.womhat-alert {
+  background: rgba(242, 27, 30, 0.08);
+  border-color: rgba(242, 27, 30, 0.22);
+}
+
+.alert-warning.womhat-alert {
+  background: rgba(122, 91, 255, 0.10);
+  border-color: rgba(122, 91, 255, 0.22);
+}
+
+.alert-info.womhat-alert {
+  background: rgba(41, 51, 243, 0.08);
+  border-color: rgba(41, 51, 243, 0.20);
+}
