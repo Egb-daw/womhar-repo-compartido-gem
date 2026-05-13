@@ -395,6 +395,69 @@ function statusMsg(msg) {
     document.body.appendChild(status);
     setTimeout(() => status.remove(), 2500);
 }
+// --- CARGAR DATOS DESDE EL BACKEND ---
+async function cargarDatosDesdeBD() {
+    try {
+        const response = await fetch('/api/mapcpd/racks');
+        if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
+        const racksBD = await response.json();
+        const width = parseInt(document.getElementById('widthInput').value) || 10;
+
+        racksBD.forEach(rack => {
+            // Calculamos la posición en el array basándonos en X e Y
+            const index = (rack.positionY * width) + rack.positionX;
+
+            if (index >= 0 && index < gridData.length) {
+                gridData[index] = {
+                    id: rack.id,
+                    name: rack.locationLabel,
+                    desc: rack.description || '',
+                    capacity: rack.capacityU,
+                    color: rack.color || '#4CAF50',
+                    isEmpty: false,
+                    equipment: rack.equipments ? rack.equipments.map(eq => ({
+                        id: eq.id,
+                        name: eq.name,
+                        topU: eq.slotPositionU,
+                        height: eq.slotHeightU,
+                        desc: eq.description,
+                        func: eq.functionality,
+                        comp: eq.componentType
+                    })) : []
+                };
+            }
+        });
+
+        // Esta función debe redibujar los cuadritos con los colores y nombres nuevos
+        generarCuadriculaVisualmente();
+    } catch (error) {
+        console.error("Error al cargar desde BD:", error);
+    }
+}
+
+// --- ACTUALIZAR SOLO LA VISTA ---
+function generarCuadriculaVisualmente() {
+    const container = document.getElementById('gridContainer');
+    const items = container.querySelectorAll('.grid-item');
+
+    gridData.forEach((data, i) => {
+        const div = items[i];
+        if (div && !data.isEmpty) {
+            div.textContent = data.name;
+            div.style.backgroundColor = data.color;
+            div.classList.remove('empty');
+        }
+    });
+}
+
+// --- ACTUALIZAR EL LISTENER FINAL ---
+// Asegúrate de que el final de tu archivo se vea así:
+window.addEventListener('DOMContentLoaded', () => {
+    generarCuadricula(); // Primero crea los divs vacíos
+    cargarDatosDesdeBD(); // Luego trae los datos de Java y los rellena
+});
+
 
 // funcion final para ejecutar el script.js
 window.addEventListener('DOMContentLoaded', () => {
