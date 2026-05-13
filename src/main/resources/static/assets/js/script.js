@@ -120,69 +120,102 @@ function configurarBotones(isEmpty) {
 }
 
 // --- OPERACIONES RACK ---
+// --- OPERACIÓN GUARDAR EN BASE DE DATOS (CORREGIDA) ---
 async function guardarCelda() {
     const nameInput = document.getElementById('editName').value.trim();
-    if (!nameInput) { alert("El nombre del Rack es obligatorio"); return; }
 
-    const width = parseInt(document.getElementById('widthInput').value);
+    // Validación básica
+    if (!nameInput) {
+        alert("El nombre del Rack es obligatorio");
+        return;
+    }
 
-    // 1. Construimos el objeto EXACTO que tu RackDTO espera recibir
+    const widthInput = document.getElementById('widthInput');
+    const width = parseInt(widthInput.value) || 10;
+
+    // 1. Construcción del objeto RackDTO completo
+    // Aseguramos que ningún campo NOT NULL de tu BD llegue vacío
     const rackDTO = {
         id: gridData[selectedIndex].id || null,
         locationLabel: nameInput,
-        description: document.getElementById('editDesc').value,
-        capacityU: parseInt(document.getElementById('editCapacity').value),
+        description: document.getElementById('editDesc').value || "Sin descripción",
+        capacityU: parseInt(document.getElementById('editCapacity').value) || 42,
+
+        // Coordenadas para el mapa
         positionX: selectedIndex % width,
         positionY: Math.floor(selectedIndex / width),
 
-        // --- CAMPOS OBLIGATORIOS SEGÚN TUS LOGS ---
-        catalogStock: 0,          // Valor por defecto para que no sea null
-        catalogPrice: 0.0,        // Valor por defecto
-        catalogVisible: true,     // Valor por defecto
-        status: "ACTIVE",         // Estado inicial
-        roomId: 1,                // ¡OJO! Aquí deberías poner un ID de sala válido que exista en tu BD
+        // --- CAMPOS OBLIGATORIOS EXIGIDOS POR TU BASE DE DATOS ---
+        // Estos nombres deben coincidir con tu RackDTO.java (normalmente camelCase)
+        functionName: "General",       // Reclamado por log: Column 'function_name' cannot be null
+        groupName: "Default Group",    // Reclamado por log: group_name
+        dimension: "600x800x2000",     // Reclamado por log: dimension
+        catalogSummary: "Rack DCIM",   // Reclamado por log: catalog_summary
 
-        equipments: gridData[selectedIndex].equipment.map(eq => ({
+        // Campos de estado y catálogo
+        catalogStock: 0,
+        catalogPrice: 0.0,
+        catalogVisible: true,
+        status: "ACTIVE",
+        roomId: 1, // IMPORTANTE: Debe existir un ID 1 en tu tabla data_center_rooms
+
+        // Mapeo de equipos hijos
+        equipments: (gridData[selectedIndex].equipment || []).map(eq => ({
             id: eq.id || null,
             name: eq.name,
             slotPositionU: eq.topU,
             slotHeightU: eq.height,
-            description: eq.desc,
-            functionality: eq.func,
+            description: eq.desc || "",
+            functionality: eq.func || "SERVER",
             componentType: eq.comp || "SERVER"
         }))
     };
 
+    console.log("Enviando RackDTO al servidor:", rackDTO);
 
-    // 2. Envío al controlador MapcpdController
+    // 2. Envío mediante Fetch
     try {
         const response = await fetch('/api/mapcpd/racks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Si tienes activado Spring Security, esto es vital:
+                // Token CSRF por si tienes Spring Security activo
                 'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.content
             },
             body: JSON.stringify(rackDTO)
         });
 
         if (response.ok) {
-            const savedData = await response.json();
-            // Guardamos el ID que nos devuelve la base de datos
-            gridData[selectedIndex].id = savedData.id;
+            const savedRack = await response.json();
 
-            statusMsg("¡Conexión exitosa! Guardado en MariaDB");
-            actualizarInterfazTrasGuardar(savedData);
+            // Actualizamos los datos locales con lo que nos devuelve el servidor (como el ID generado)
+            gridData[selectedIndex].id = savedRack.id;
+            gridData[selectedIndex].name = savedRack.locationLabel;
+            gridData[selectedIndex].isEmpty = false;
+
+            // Actualizamos la parte visual
+            const currentDiv = document.querySelector(`.grid-item[data-index="${selectedIndex}"]`);
+            if (currentDiv) {
+                currentDiv.textContent = savedRack.locationLabel;
+                currentDiv.classList.remove('empty');
+                currentDiv.style.backgroundColor = document.getElementById('editColor').value;
+            }
+
+            statusMsg("¡Guardado correctamente en MariaDB!");
+            configurarBotones(false); // Cambia el botón a "Actualizar"
         } else {
-            const errorText = await response.text();
-            console.error("Error del servidor:", errorText);
-            alert("El servidor rechazó los datos. Revisa la consola.");
+            const errorMsg = await response.text();
+            console.error("Error del servidor:", errorMsg);
+            alert("Error al guardar: " + (errorMsg.includes("1048") ? "Falta un campo obligatorio en la BD" : "Revisa la consola"));
         }
     } catch (error) {
-        console.error("Error de red:", error);
-        alert("No se pudo contactar con el servidor. ¿Está el backend corriendo?");
+        console.error("Error de conexión:", error);
+        alert("No se pudo conectar con el servidor Java.");
     }
 }
+
+
+
 
 
 async function cargarDatosDesdeBackend() {
