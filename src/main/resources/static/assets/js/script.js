@@ -121,66 +121,59 @@ function configurarBotones(isEmpty) {
 
 // --- OPERACIONES RACK ---
 async function guardarCelda() {
-    const name = document.getElementById('editName').value.trim();
-    if (!name) { alert("El nombre es obligatorio."); return; }
+    const nameInput = document.getElementById('editName').value.trim();
+    if (!nameInput) { alert("El nombre del Rack es obligatorio"); return; }
 
-    const data = gridData[selectedIndex];
+    const width = parseInt(document.getElementById('widthInput').value);
 
-    // Preparamos el objeto para tu RackDTO de Java
-    const payload = {
-        id: data.id, // Si es nulo, el backend crea uno nuevo
-        locationLabel: name,
+    // 1. Construimos el objeto EXACTO que tu RackDTO espera recibir
+    const rackDTO = {
+        id: gridData[selectedIndex].id || null, // Importante para actualizar en lugar de duplicar
+        locationLabel: nameInput,
+        description: document.getElementById('editDesc').value,
         capacityU: parseInt(document.getElementById('editCapacity').value),
-        positionX: selectedIndex % parseInt(document.getElementById('widthInput').value),
-        positionY: Math.floor(selectedIndex / parseInt(document.getElementById('widthInput').value)),
-        status: "ACTIVE",
-        // Mapeamos los equipos al formato que espera tu Backend
-        equipments: data.equipment.map(eq => ({
+        color: document.getElementById('editColor').value,
+        positionX: selectedIndex % width,
+        positionY: Math.floor(selectedIndex / width),
+        // Mapeo de equipos al formato de tu backend
+        equipments: gridData[selectedIndex].equipment.map(eq => ({
             id: eq.id || null,
             name: eq.name,
             slotPositionU: eq.topU,
             slotHeightU: eq.height,
-            type: eq.comp || "SERVER"
+            description: eq.desc,
+            functionality: eq.func,
+            componentType: eq.comp || "SERVER" // Valor por defecto si está vacío
         }))
     };
 
+    // 2. Envío al controlador MapcpdController
     try {
         const response = await fetch('/api/mapcpd/racks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Si usas Spring Security, necesitamos el token CSRF
+                // Si tienes activado Spring Security, esto es vital:
                 'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.content
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(rackDTO)
         });
 
         if (response.ok) {
-            const savedRack = await response.json();
+            const savedData = await response.json();
+            // Guardamos el ID que nos devuelve la base de datos
+            gridData[selectedIndex].id = savedData.id;
 
-            // Actualizamos la memoria local con lo que nos devuelve la BD (incluyendo el ID generado)
-            gridData[selectedIndex] = {
-                ...data,
-                id: savedRack.id,
-                name: savedRack.locationLabel,
-                isEmpty: false,
-                equipment: savedRack.equipments.map(e => ({
-                    id: e.id,
-                    name: e.name,
-                    topU: e.slotPositionU,
-                    height: e.slotHeightU,
-                    comp: e.type
-                }))
-            };
-
-            actualizarUIVisual();
-            statusMsg("¡Guardado en Base de Datos!");
+            statusMsg("¡Conexión exitosa! Guardado en MariaDB");
+            actualizarInterfazTrasGuardar(savedData);
         } else {
-            alert("Error al guardar en el servidor");
+            const errorText = await response.text();
+            console.error("Error del servidor:", errorText);
+            alert("El servidor rechazó los datos. Revisa la consola.");
         }
     } catch (error) {
         console.error("Error de red:", error);
-        alert("No se pudo conectar con el servidor.");
+        alert("No se pudo contactar con el servidor. ¿Está el backend corriendo?");
     }
 }
 
@@ -403,5 +396,10 @@ function statusMsg(msg) {
     setTimeout(() => status.remove(), 2500);
 }
 
-window.addEventListener('DOMContentLoaded', generarCuadricula);
+// funcion final para ejecutar el script.js
+window.addEventListener('DOMContentLoaded', () => {
+    generarCuadricula(); // Dibuja el tablero
+    cargarDatosDesdeBD(); // Trae los racks de MariaDB y los pinta
+});
+
 
