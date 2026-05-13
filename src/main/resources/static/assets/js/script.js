@@ -128,14 +128,20 @@ async function guardarCelda() {
 
     // 1. Construimos el objeto EXACTO que tu RackDTO espera recibir
     const rackDTO = {
-        id: gridData[selectedIndex].id || null, // Importante para actualizar en lugar de duplicar
+        id: gridData[selectedIndex].id || null,
         locationLabel: nameInput,
         description: document.getElementById('editDesc').value,
         capacityU: parseInt(document.getElementById('editCapacity').value),
-        color: document.getElementById('editColor').value,
         positionX: selectedIndex % width,
         positionY: Math.floor(selectedIndex / width),
-        // Mapeo de equipos al formato de tu backend
+
+        // --- CAMPOS OBLIGATORIOS SEGÚN TUS LOGS ---
+        catalogStock: 0,          // Valor por defecto para que no sea null
+        catalogPrice: 0.0,        // Valor por defecto
+        catalogVisible: true,     // Valor por defecto
+        status: "ACTIVE",         // Estado inicial
+        roomId: 1,                // ¡OJO! Aquí deberías poner un ID de sala válido que exista en tu BD
+
         equipments: gridData[selectedIndex].equipment.map(eq => ({
             id: eq.id || null,
             name: eq.name,
@@ -143,9 +149,10 @@ async function guardarCelda() {
             slotHeightU: eq.height,
             description: eq.desc,
             functionality: eq.func,
-            componentType: eq.comp || "SERVER" // Valor por defecto si está vacío
+            componentType: eq.comp || "SERVER"
         }))
     };
+
 
     // 2. Envío al controlador MapcpdController
     try {
@@ -461,8 +468,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // funcion final para ejecutar el script.js
 window.addEventListener('DOMContentLoaded', () => {
-    generarCuadricula(); // Dibuja el tablero
-    cargarDatosDesdeBD(); // Trae los racks de MariaDB y los pinta
+    // 1. Inicializamos la cuadrícula vacía
+    generarCuadricula();
+
+    // 2. Cargamos los datos reales si existen
+    // Importante: comprueba que la función está definida arriba
+    if (typeof cargarDatosDesdeBD === 'function') {
+        cargarDatosDesdeBD();
+    }
 });
+
 
 
